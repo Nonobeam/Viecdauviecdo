@@ -1,70 +1,28 @@
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Link } from "react-router-dom";
 import { useState } from "react";
-import { Moon } from "lucide-react"
-import TabList from "@/utils/TabList";
-import ViecdauviecdoLogo from "@/utils/Logo";
+import TabList from "@/components/TabList";
 import Talent from "@/pages/homepage/module/Talent";
 import Company from "@/pages/homepage/module/Company";
 import Project from "@/pages/homepage/module/Project";
+import Header from "@/components/Header";
+
+import { useDarkMode } from "@/hooks/DarkModeContext";
+import DarkModeToggle from "@/components/DarkModeToggle";
 
 
 export default function Home() {
+  const { isDarkMode } = useDarkMode();
+
   // Use for Custom Tab list
   const tabs = ["talents", "projects", "companies"];
   const labels = { talents: "Tài năng", projects: "Dự án", companies: "Công ty" };
   const [activeTab, setActiveTab] = useState(tabs[0]);
 
-  // Dark mode
-  const [isDarkMode, setIsDarkMode] = useState(false)
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode)
-    document.documentElement.classList.toggle("dark")
-  }
-
   return (
     <div className={`min-h-screen bg-background ${isDarkMode ? "dark" : ""}`}>  
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={toggleDarkMode}
-        className="absolute bottom-0 right-0 m-4 rounded-full h-14 w-14 p-4 bg-muted"
-      >
-        <Moon className="h-6 w-6" />
-        <span className="sr-only">Toggle dark mode</span>
-      </Button>
-
-      {/* Navigation Bar */}
-      <header className="border-b">
-        <div className="container mx-auto px-4">
-          <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center space-x-8">
-              <Link href="/" className="text-xl font-semibold">
-                <ViecdauviecdoLogo />
-              </Link>
-              <nav className="hidden md:flex space-x-6">
-                <Link href="/" className="text-primary">
-                  Trang chủ
-                </Link>
-                <Link href="/about" className="text-muted-foreground hover:text-primary">
-                  Về chúng tôi
-                </Link>
-                <Link href="/career" className="text-muted-foreground hover:text-primary">
-                  Giá trị bền vững
-                </Link>
-                <Link href="/blog" className="text-muted-foreground hover:text-primary">
-                  Blog
-                </Link>
-              </nav>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost">Hồ sơ</Button>
-              <Button>Dự án</Button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <DarkModeToggle />
+      <Header />
 
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row gap-8">

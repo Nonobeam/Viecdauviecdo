@@ -1,18 +1,13 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { Button } from "../components/ui/button"
-import { Input } from "../components/ui/input"
-import { Label } from "../components/ui/label"
-import { Checkbox } from "../components/ui/checkbox"
-import { Moon } from "lucide-react"
-import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
+import { useDarkMode } from "@/hooks/DarkModeContext";
+import DarkModeToggle from "@/components/DarkModeToggle";
 
 function Login() {
-    const [isDarkMode, setIsDarkMode] = useState(false)
-
-    const toggleDarkMode = () => {
-        setIsDarkMode(!isDarkMode)
-        document.documentElement.classList.toggle("dark")
-    }
+    const { isDarkMode } = useDarkMode();
 
     return (
         <div className={`flex h-screen w-full ${isDarkMode ? "dark" : ""}`}>
@@ -31,15 +26,7 @@ function Login() {
 
             {/* Right side - Login form */}
             <div className="flex flex-col items-center justify-center p-8 md:p-12 w-full md:w-7/12 bg-background">
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={toggleDarkMode}
-                    className="absolute top-0 right-0 m-4 rounded-full h-14 w-14 p-4 bg-muted"
-                >
-                    <Moon className="h-6 w-6" />
-                    <span className="sr-only">Toggle dark mode</span>
-                </Button>
+                <DarkModeToggle />
                 <div className="flex justify-between items-center mb-8">
                     <Tabs defaultValue="login" className="w-[600px]">
                         <TabsList className="grid w-full grid-cols-2 h-14 text-lg">
