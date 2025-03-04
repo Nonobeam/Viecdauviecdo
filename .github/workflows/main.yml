@@ -57,7 +57,7 @@ jobs:
               ssh admin@pog.threemusketeer.click << EOF
                 set -e
                 cd /home/admin/Documents/viecdauviecday
-                echo "${{ secrets.SSH_PASS }}" | sudo -S docker compose pull frontend
+                echo "${{ secrets.SSH_PASS }}" | sudo -S docker compose pull exe-frontend
                 echo "${{ secrets.SSH_PASS }}" | sudo -S docker compose up -d
               EOF
         
