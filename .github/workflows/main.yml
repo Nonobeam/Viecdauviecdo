@@ -31,19 +31,12 @@ jobs:
             with:
               context: .
               push: true
-              tags: bobbyjohnson/app:latest
-              cache-from: type=registry,ref=bobbyjohnson/app:latest
+              tags: bobbyjohnson/viecdauviecday:latest
+              cache-from: type=registry,ref=bobbyjohnson/viecdauviecday:latest
               cache-to: type=inline
-      
-          - name: Generate artifact attestation
-            uses: actions/attest-build-provenance@v2
-            with:
-                subject-name: ghcr.io/${{ github.repository }}
-                subject-digest: ${{ steps.push.outputs.digest }}
-                push-to-registry: true
-                
 
     deploy:
+        needs: build-and-push-image
         runs-on: ubuntu-latest
         steps:
           - name: Checkout repository
