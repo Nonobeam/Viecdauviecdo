@@ -4,6 +4,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 const Talent = () => {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+            <div className="border rounded-lg p-6 space-y-4 col-span-1 md:col-span-2 lg:col-span-3 text-center">
+                Lướt qua các ứng viên tài năng và tìm kiếm người phù hợp với công việc của bạn.
+            </div>
             {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="border rounded-lg p-6 space-y-4">
                     <div className="flex items-center space-x-4">

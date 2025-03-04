@@ -25,7 +25,7 @@ export default function Header() {
                                 Giá trị bền vững
                             </Link>
                             <Link to="/job" className="text-muted-foreground hover:text-primary">
-                                Blog
+                                Cơ hội nghề nghiệp
                             </Link>
                         </nav>
                     </div>
