@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge"
+import AnimatedPinDemo from "@/components/MotionSlider"
 
 const Project = () => {
   const projects = Array.from({ length: 4 }).map((_, i) => ({
@@ -11,6 +12,7 @@ const Project = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+      {/* <AnimatedPinDemo /> */}
       {projects.map((project) => (
         <div key={project.id} className="border rounded-lg overflow-hidden bg-card">
           {/* Image Container */}
