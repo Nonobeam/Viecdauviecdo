@@ -1,4 +1,5 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -16,7 +17,9 @@ function Login() {
                 <h1 className="text-6xl font-bold mb-4">
                     Chào mừng tới
                     <br />
-                    <span className="hover:text-indigo-300 transition-colors duration-300">Viecdauviecdo</span>
+                    <Link to="/" className="hover:text-indigo-300 transition-colors duration-300">
+                        Viecdauviecdo
+                    </Link>
                 </h1>
                 <p className="text-lg opacity-90 italic">
                     Kết nối, cộng tác và hiện thực hóa các dự án độc đáo của bạn — vượt qua ngoài công việc, vượt qua những giới

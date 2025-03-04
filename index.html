@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!--<link rel="icon" type="image/svg+xml" href="/vite.svg" />-->
+    <link rel="apple-touch-icon" sizes="180x180" href="/logo/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/logo//favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Viecdauviecdo</title>
   </head>
@@ -36,16 +39,14 @@
     <script>
       const coords = { x: 0, y: 0 };
       const circles = document.querySelectorAll(".circle");
+      let hoverTimer = null;
 
-      const colors = ["#3949AB"];
-
-      circles.forEach(function (circle, index) {
+      circles.forEach((circle, index) => {
         circle.x = 0;
         circle.y = 0;
-        circle.style.backgroundColor = colors[index % colors.length];
       });
 
-      window.addEventListener("mousemove", function (e) {
+      window.addEventListener("mousemove", (e) => {
         coords.x = e.clientX;
         coords.y = e.clientY;
       });
@@ -54,10 +55,9 @@
         let x = coords.x;
         let y = coords.y;
 
-        circles.forEach(function (circle, index) {
-          circle.style.left = x - 12 + "px";
-          circle.style.top = y - 12 + "px";
-
+        circles.forEach((circle, index) => {
+          circle.style.left = `${x - 10}px`; 
+          circle.style.top = `${y - 10}px`; 
           circle.style.scale = (circles.length - index) / circles.length;
 
           circle.x = x;
@@ -72,6 +72,20 @@
       }
 
       animateCircles();
+
+      document.body.addEventListener("mouseover", (e) => {
+        if (e.target !== document.body) {
+          clearTimeout(hoverTimer);
+          hoverTimer = setTimeout(() => {
+            circles[0].classList.add("hovered");
+          }, 500);
+        }
+      });
+
+      document.body.addEventListener("mouseout", (e) => {
+        clearTimeout(hoverTimer);
+        circles[0].classList.remove("hovered");
+      });
     </script>
   </body>
 </html>
