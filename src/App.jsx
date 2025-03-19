@@ -14,6 +14,8 @@ function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/job" element={<Home />} />
                     <Route path="/aboutus" element={<AboutUs />} />
+
+                    <Route path="*" element={<div>404 Not Found</div>} />
                 </Routes>
             </Router>
         </DarkModeProvider>
