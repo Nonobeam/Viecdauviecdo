@@ -13,8 +13,6 @@ const Post = () => {
       <DarkModeToggle />
       <Header />
 
-      
-
       <div className="max-w-2xl mx-auto bg-background">
         <div className="border rounded-lg p-6 space-y-4">
           <div className="flex items-start space-x-4">

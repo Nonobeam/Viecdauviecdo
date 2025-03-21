@@ -8,14 +8,15 @@ export function TalentCard({ cards, onCardClick }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-5xl mx-auto md:px-8 w-full">
       {cards?.map((card, index) => (
-        <Card
-          key={card.id}
-          card={card}
-          index={index}
-          hovered={hovered}
-          setHovered={setHovered}
-          onClick={() => onCardClick(card)}
-        />
+        <div key={card.id} className="h-96">
+          <Card
+            card={card}
+            index={index}
+            hovered={hovered}
+            setHovered={setHovered}
+            onClick={() => onCardClick(card)}
+          />
+      </div>
       ))}
     </div>
   );

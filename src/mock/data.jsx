@@ -62,10 +62,10 @@ const talents = [
     },
     {
         id: 6,
-        name: "Robert Martinez",
+        name: "Bảo Chi",
         location: "Sydney",
         role: "DevOps Engineer",
-        avatar: "/placeholder.svg",
+        avatar: "/imgs/chi.jpg",
         fallback: "RM",
         skills: [
             { id: "1", name: "Docker", color: "bg-blue-100 text-blue-700" },

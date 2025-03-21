@@ -22,7 +22,7 @@ export default function Header() {
                                 Về chúng tôi
                             </Link>
                             <Link to="/career" className="text-muted-foreground hover:text-primary">
-                                Giá trị bền vững
+                                Định hướng phát triển
                             </Link>
                             <Link to="/job" className="text-muted-foreground hover:text-primary">
                                 Cơ hội nghề nghiệp

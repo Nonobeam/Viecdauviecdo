@@ -1,4 +1,4 @@
-import { TalentCard } from "@/components/TalentCard";
+import { TalentCard } from "@/components/ui/TalentCard";
 import SwipeView from "@/components/SwipeView";
 import { useState } from "react";
 import talents from "@/mock/data";
@@ -13,7 +13,7 @@ const Talent = () => {
   };
 
   return (
-    <div className="h-screen overflow-auto p-4">
+    <div className="h-210 overflow-auto p-4">
       {viewMode === "grid" ? (
         <TalentCard cards={talents} onCardClick={handleCardClick} />
       ) : (

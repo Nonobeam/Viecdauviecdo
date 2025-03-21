@@ -8,6 +8,7 @@ import Header from "@/components/Header";
 import { useDarkMode } from "@/hooks/DarkModeContext";
 import DarkModeToggle from "@/components/DarkModeToggle";
 import ChangeColorToggle from "@/components/ChangeColorToggle";
+import { FileUploadDemo } from "@/components/items/FileUpdloadBox"
 
 export default function Home() {
   const { isDarkMode } = useDarkMode();
@@ -21,14 +22,17 @@ export default function Home() {
       <ChangeColorToggle />
       <DarkModeToggle />
       <Header />
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col md:flex-row gap-8">
+      <FileUploadDemo />
+      <div className="container mx-auto px-4 py-8 h-screen">
+        <div className="flex flex-col md:flex-row gap-8 min-h-screen">
           <SearchFilter />
-          <main className="flex-1">
+          <main className="flex-1 flex flex-col">
             <TabList tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} labels={labels} />
-            {activeTab === "talents" && <Talent />}
-            {activeTab === "projects" && <Project />}
-            {activeTab === "companies" && <Company />}
+            <div className="flex-1 overflow-y-auto">
+              {activeTab === "talents" && <Talent />}
+              {activeTab === "projects" && <Project />}
+              {activeTab === "companies" && <Company />}
+            </div>
           </main>
         </div>
       </div>

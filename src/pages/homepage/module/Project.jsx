@@ -1,47 +1,69 @@
-import { Badge } from "@/components/ui/badge"
-import AnimatedPinDemo from "@/components/MotionSlider"
+import BentoGridDemo from "@/components/BentoGridLayout"
+import {
+  IconArrowWaveRightUp,
+  IconBoxAlignRightFilled,
+  IconBoxAlignTopLeft,
+  IconClipboardCopy,
+  IconFileBroken,
+  IconSignature,
+  IconTableColumn,
+} from "@tabler/icons-react";
 
 const Project = () => {
-  const projects = Array.from({ length: 4 }).map((_, i) => ({
-    id: i,
-    title: "DeFi Platform",
-    teamSize: "8 members",
-    description: "Developing a decentralized finance application with focus on security and scalability",
-    image: "/fake/project.png",
-  }))
+  const Skeleton = () => (
+    <div className="flex flex-1 w-full h-full min-h-[6rem] rounded-xl bg-gradient-to-br from-neutral-200 dark:from-neutral-900 dark:to-neutral-800 to-neutral-100"></div>
+  );
+  const items = [
+    {
+      title: "The Dawn of Innovation",
+      description: "Explore the birth of groundbreaking ideas and inventions.",
+      header: <Skeleton />,
+      icon: <IconClipboardCopy className="h-4 w-4 text-neutral-500" />,
+    },
+    {
+      title: "The Digital Revolution",
+      description: "Dive into the transformative power of technology.",
+      header: <Skeleton />,
+      icon: <IconFileBroken className="h-4 w-4 text-neutral-500" />,
+    },
+    {
+      title: "The Art of Design",
+      description: "Discover the beauty of thoughtful and functional design.",
+      header: <Skeleton />,
+      icon: <IconSignature className="h-4 w-4 text-neutral-500" />,
+    },
+    {
+      title: "The Power of Communication",
+      description:
+        "Understand the impact of effective communication in our lives.",
+      header: <Skeleton />,
+      icon: <IconTableColumn className="h-4 w-4 text-neutral-500" />,
+    },
+    {
+      title: "The Pursuit of Knowledge",
+      description: "Join the quest for understanding and enlightenment.",
+      header: <Skeleton />,
+      icon: <IconArrowWaveRightUp className="h-4 w-4 text-neutral-500" />,
+    },
+    {
+      title: "The Joy of Creation",
+      description: "Experience the thrill of bringing ideas to life.",
+      header: <Skeleton />,
+      icon: <IconBoxAlignTopLeft className="h-4 w-4 text-neutral-500" />,
+    },
+    {
+      title: "The Spirit of Adventure",
+      description: "Embark on exciting journeys and thrilling discoveries.",
+      header: <Skeleton />,
+      icon: <IconBoxAlignRightFilled className="h-4 w-4 text-neutral-500" />,
+    },
+  ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-      {/* <AnimatedPinDemo /> */}
-      {projects.map((project) => (
-        <div key={project.id} className="border rounded-lg overflow-hidden bg-card">
-          {/* Image Container */}
-          <div className="relative aspect-[16/9] bg-muted">
-            <img
-              src={project.image || "/placeholder.svg"}
-              alt={project.title}
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-          </div>
-
-          {/* Content Container */}
-          <div className="p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">{project.title}</h3>
-              <Badge variant="secondary" className="bg-purple-100 text-purple-700 hover:bg-purple-100">
-                Pay-to-go
-              </Badge>
-            </div>
-
-            <div className="space-y-2">
-              <p className="text-sm text-muted-foreground">Team Size: {project.teamSize}</p>
-              <p className="text-sm text-muted-foreground">{project.description}</p>
-            </div>
-          </div>
-        </div>
-      ))}
+    <div className="h-210 overflow-auto p-4">
+      <BentoGridDemo items={items} />
     </div>
-  )
+  );
 }
 
 export default Project
