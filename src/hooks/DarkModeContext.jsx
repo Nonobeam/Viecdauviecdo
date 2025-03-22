@@ -31,3 +31,5 @@ export const DarkModeProvider = ({ children }) => {
 DarkModeProvider.propTypes = {
     children: PropTypes.node.isRequired,
 };
+
+export default useDarkMode;
