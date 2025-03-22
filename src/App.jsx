@@ -6,7 +6,7 @@ import Blog from "./pages/homepage/Blog";
 import AboutUs from "./pages/homepage/AboutUs";
 import MainLayout from "./pages/MainLayout";
 import CareerPathBuilder from "./pages/homepage/CareerPathBuilder";
-W
+
 function App() {
     return (
         <DarkModeProvider>
