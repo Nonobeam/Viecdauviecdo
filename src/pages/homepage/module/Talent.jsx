@@ -1,4 +1,4 @@
-import { TalentCard } from "@/components/ui/TalentCard";
+import { TalentCard } from "@/components/items/TalentCard";
 import SwipeView from "@/components/SwipeView";
 import { useState } from "react";
 import talents from "@/mock/data";

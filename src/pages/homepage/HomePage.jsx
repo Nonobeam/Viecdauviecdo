@@ -1,14 +1,15 @@
-import { useState } from "react";
+import { useState, Suspense, lazy } from "react";
 import TabList from "@/components/TabList";
-import Talent from "@/pages/homepage/module/Talent";
-import Company from "@/pages/homepage/module/Company";
-import Project from "@/pages/homepage/module/Project";
 import SearchFilter from "@/pages/homepage/module/SearchFilter";
 import Header from "@/components/Header";
 import { useDarkMode } from "@/hooks/DarkModeContext";
 import DarkModeToggle from "@/components/DarkModeToggle";
 import ChangeColorToggle from "@/components/ChangeColorToggle";
-import { FileUploadDemo } from "@/components/items/FileUpdloadBox"
+import { FileUploadDemo } from "@/components/items/FileUpdloadBox";
+
+const Talent = lazy(() => import("@/pages/homepage/module/Talent"));
+const Company = lazy(() => import("@/pages/homepage/module/Company"));
+const Project = lazy(() => import("@/pages/homepage/module/Project"));
 
 export default function Home() {
   const { isDarkMode } = useDarkMode();
@@ -22,16 +23,18 @@ export default function Home() {
       <ChangeColorToggle />
       <DarkModeToggle />
       <Header />
-      <FileUploadDemo />
+      {/* <FileUploadDemo /> */}
       <div className="container mx-auto px-4 py-8 h-screen">
         <div className="flex flex-col md:flex-row gap-8 min-h-screen">
           <SearchFilter />
           <main className="flex-1 flex flex-col">
             <TabList tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} labels={labels} />
             <div className="flex-1 overflow-y-auto">
-              {activeTab === "talents" && <Talent />}
-              {activeTab === "projects" && <Project />}
-              {activeTab === "companies" && <Company />}
+              <Suspense fallback={<div>Loading...</div>}>
+                {activeTab === "talents" && <Talent />}
+                {activeTab === "projects" && <Project />}
+                {activeTab === "companies" && <Company />}
+              </Suspense>
             </div>
           </main>
         </div>
