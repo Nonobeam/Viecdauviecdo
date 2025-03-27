@@ -13,7 +13,7 @@ const Talent = () => {
   };
 
   return (
-    <div className="h-210 overflow-auto p-4">
+    <div className="h-full overflow-auto p-4">
       {viewMode === "grid" ? (
         <TalentCard cards={talents} onCardClick={handleCardClick} />
       ) : (

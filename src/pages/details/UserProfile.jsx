@@ -33,18 +33,10 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="bg-indigo-600 text-white p-4">
-        <Button variant="ghost" className="text-white hover:text-white/80">
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Về Trang Chủ
-        </Button>
-      </div>
-
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Left Sidebar */}
-          <div className="space-y-8">
+          <div className="space-y-8 bg-blue-50 p-6 rounded-lg md:col-span-1">
             {/* Profile Info */}
             <div className="flex flex-col items-center md:items-start">
               <Avatar className="h-24 w-24 mb-4">

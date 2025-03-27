@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useDarkMode } from "@/hooks/DarkModeContext";
 import DarkModeToggle from "@/components/DarkModeToggle";
+import { Logo } from '@/components/icons/Logo';
 
 function Login() {
     const { isDarkMode } = useDarkMode();
@@ -22,8 +23,8 @@ function Login() {
                     </Link>
                 </h1>
                 <p className="text-lg opacity-90 italic">
-                    Kết nối, cộng tác và hiện thực hóa các dự án độc đáo của bạn — vượt qua ngoài công việc, vượt qua những giới
-                    hạn.
+                    "Kết nối, cộng tác và hiện thực hóa các dự án độc đáo của bạn — vượt qua ngoài công việc, vượt qua những giới
+                    hạn."
                 </p>
             </div>
 
@@ -85,13 +86,13 @@ function Login() {
 
                                     <div className="grid grid-cols-3 gap-3">
                                         <Button variant="outline" className="h-12">
-                                            Google
+                                            {Logo.google} Google
                                         </Button>
                                         <Button variant="outline" className="h-12">
-                                            LinkedIn
+                                            {Logo.linkedIn} LinkedIn
                                         </Button>
                                         <Button variant="outline" className="h-12">
-                                            GitHub
+                                            {Logo.github} GitHub
                                         </Button>
                                     </div>
                                 </div>
@@ -157,13 +158,13 @@ function Login() {
 
                                     <div className="grid grid-cols-3 gap-3">
                                         <Button variant="outline" className="h-12">
-                                            Google
+                                            {Logo.google} Google
                                         </Button>
                                         <Button variant="outline" className="h-12">
-                                            LinkedIn
+                                            {Logo.linkedIn} LinkedIn
                                         </Button>
                                         <Button variant="outline" className="h-12">
-                                            GitHub
+                                            {Logo.github} GitHub
                                         </Button>
                                     </div>
                                 </div>
@@ -172,7 +173,6 @@ function Login() {
                     </Tabs>
                 </div>
             </div>
-            
         </div>
     )
 }

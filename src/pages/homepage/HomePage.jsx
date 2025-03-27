@@ -12,8 +12,8 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState(tabs[0]);
 
   return (
-    <div className="container mx-auto px-4 py-8 h-screen">
-      <div className="flex flex-col md:flex-row gap-8 min-h-screen">
+    <div className="container mx-auto px-4 py-8 h-[90vh]">
+      <div className="flex flex-col md:flex-row gap-8 h-full">
         <SearchFilter />
         <main className="flex-1 flex flex-col">
           <TabList tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} labels={labels} />

@@ -10,7 +10,7 @@ const Company = () => {
     }))
 
     return (
-        <div className="h-210 overflow-auto p-4">
+        <div className="h-full overflow-auto p-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
                 {/* <AnimatedPinDemo /> */}
                 {projects.map((project) => (

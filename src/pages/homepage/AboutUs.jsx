@@ -1,3 +1,5 @@
+import { InfiniteMovingCardsDemo } from "@/components/ReviewMovingCard";
+
 const About = () => {
     const stats = [
         {
@@ -20,7 +22,7 @@ const About = () => {
             label: "Global Offices",
             textColor: "text-indigo-600",
         },
-    ]
+    ];
 
     const teamMembers = [
         {
@@ -33,10 +35,10 @@ const About = () => {
             role: "CTO",
             image: "/placeholder.svg",
         },
-    ]
+    ];
 
     return (
-        <main className="max-w-7xl mx-auto px-4 py-16">
+        <main className="w-full px-4 py-16 h-[90vh] overflow-y-auto">
             <div className="text-center max-w-3xl mx-auto mb-20">
                 <h1 className="text-4xl font-bold mb-6">About Us</h1>
                 <p className="text-lg text-muted-foreground">
@@ -74,8 +76,9 @@ const About = () => {
                     ))}
                 </div>
             </div>
+            <InfiniteMovingCardsDemo />
         </main>
-    )
-}
+    );
+};
 
-export default About
+export default About;

@@ -11,7 +11,7 @@ import {
 
 const Project = () => {
   const Skeleton = () => (
-    <div className="flex flex-1 w-full h-full min-h-[6rem] rounded-xl bg-gradient-to-br from-neutral-200 dark:from-neutral-900 dark:to-neutral-800 to-neutral-100"></div>
+    <div className="flex flex-1 w-full h-full rounded-xl bg-gradient-to-br from-neutral-200 dark:from-neutral-900 dark:to-neutral-800 to-neutral-100"></div>
   );
   const items = [
     {
@@ -60,7 +60,7 @@ const Project = () => {
   ];
 
   return (
-    <div className="h-210 overflow-auto p-4">
+    <div className="h-full overflow-auto p-4">
       <BentoGridDemo items={items} />
     </div>
   );
