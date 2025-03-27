@@ -1,6 +1,7 @@
 import { useState, Suspense, lazy } from "react";
 import TabList from "@/components/TabList";
 import SearchFilter from "@/pages/homepage/module/SearchFilter";
+import Loader from "@/components/Loader";
 
 const Talent = lazy(() => import("@/pages/homepage/module/Talent"));
 const Company = lazy(() => import("@/pages/homepage/module/Company"));
@@ -18,7 +19,7 @@ export default function Home() {
         <main className="flex-1 flex flex-col">
           <TabList tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} labels={labels} />
           <div className="flex-1 overflow-y-auto">
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<Loader />}>
               {activeTab === "talents" && <Talent />}
               {activeTab === "projects" && <Project />}
               {activeTab === "companies" && <Company />}

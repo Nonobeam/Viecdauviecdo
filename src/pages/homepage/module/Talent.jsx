@@ -14,11 +14,12 @@ const Talent = () => {
 
   return (
     <div className="h-full overflow-auto p-4">
-      {viewMode === "grid" ? (
+      <TalentCard cards={talents} onCardClick={handleCardClick} />
+      {/* {viewMode === "grid" ? (
         <TalentCard cards={talents} onCardClick={handleCardClick} />
       ) : (
         <SwipeView cards={talents} initialCard={selectedCard} />
-      )}
+      )} */}
     </div>
   );
 };

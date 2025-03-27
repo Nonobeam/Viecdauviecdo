@@ -5,7 +5,6 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 const ProjectDetails = () => {
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <div className="border-b">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-start justify-between">
@@ -25,7 +24,6 @@ const ProjectDetails = () => {
             </div>
           </div>
 
-          {/* Tabs */}
           <div className="mt-6">
             <Tabs defaultValue="overview" className="w-full">
               <TabsList>
@@ -38,12 +36,9 @@ const ProjectDetails = () => {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Left Content */}
           <div className="md:col-span-2 space-y-8">
-            {/* Overview Section */}
             <section className="space-y-6">
               <h2 className="text-xl font-semibold">Tổng quan về dự án</h2>
               <p className="text-muted-foreground">
@@ -51,7 +46,6 @@ const ProjectDetails = () => {
                 operational efficiency through innovative software solutions.
               </p>
 
-              {/* Project Details Grid */}
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <h3 className="font-medium">Project Value</h3>
@@ -73,9 +67,7 @@ const ProjectDetails = () => {
             </section>
           </div>
 
-          {/* Right Sidebar */}
           <div className="space-y-8">
-            {/* Company Details */}
             <section className="border rounded-lg p-6 space-y-4">
               <h2 className="text-lg font-semibold">Company Details</h2>
               <div className="space-y-4">
@@ -94,7 +86,6 @@ const ProjectDetails = () => {
               </div>
             </section>
 
-            {/* Contact Information */}
             <section className="border rounded-lg p-6 space-y-4">
               <h2 className="text-lg font-semibold">Contact Information</h2>
               <div className="space-y-4">

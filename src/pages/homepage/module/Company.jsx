@@ -1,30 +1,31 @@
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "@/components/ui/badge";
+import { companies } from "@/mock/data";
+import { useNavigate } from "react-router-dom";
 
 const Company = () => {
-    const projects = Array.from({ length: 4 }).map((_, i) => ({
-        id: i,
-        title: "DeFi Platform",
-        teamSize: "8 members",
-        description: "Developing a decentralized finance application with focus on security and scalability",
-        image: "/fake/meu.png",
-    }))
+    const navigate = useNavigate();
+
+    const handleCardClick = (id) => {
+        navigate(`/company/${id}`);
+    };
 
     return (
         <div className="h-full overflow-auto p-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                {/* <AnimatedPinDemo /> */}
-                {projects.map((project) => (
-                    <div key={project.id} className="border rounded-lg overflow-hidden bg-card">
-                        {/* Image Container */}
+                {companies.map((project) => (
+                    <button
+                        key={project.id}
+                        className="border rounded-lg overflow-hidden bg-card cursor-pointer"
+                        onClick={() => handleCardClick(project.id)}
+                    >
                         <div className="relative aspect-[16/9] bg-muted">
                             <img
-                                src={project.image || "/placeholder.svg"}
+                                src={project.image}
                                 alt={project.title}
                                 className="absolute inset-0 w-full h-full object-cover"
                             />
                         </div>
 
-                        {/* Content Container */}
                         <div className="p-6 space-y-4">
                             <div className="flex items-center justify-between">
                                 <h3 className="text-lg font-semibold">{project.title}</h3>
@@ -34,15 +35,15 @@ const Company = () => {
                             </div>
 
                             <div className="space-y-2">
-                                <p className="text-sm text-muted-foreground">Team Size: {project.teamSize}</p>
+                                <p className="text-sm text-muted-foreground">Company Size: {project.companySize}</p>
                                 <p className="text-sm text-muted-foreground">{project.description}</p>
                             </div>
                         </div>
-                    </div>
+                    </button>
                 ))}
             </div>
         </div>
-    )
+    );
 };
 
 export default Company;

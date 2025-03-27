@@ -173,5 +173,94 @@ export const blogs = [
     }
 ];
 
+export const projects = [
+    {
+        id: 0,
+        title: "DeFi Platform",
+        teamSize: "8 members",
+        description: "Developing a decentralized finance application with a focus on security and scalability. This platform integrates smart contracts to provide secure and transparent financial services.",
+        image: "/fake/defi-platform.png",
+    },
+    {
+        id: 1,
+        title: "AI-Powered Resume Screener",
+        teamSize: "5 members",
+        description: "Building an AI-driven tool that helps HR teams filter resumes based on skills, experience, and job descriptions. The model leverages NLP for smart candidate matching.",
+        image: "/fake/ai-resume.png",
+    },
+    {
+        id: 2,
+        title: "E-Commerce Analytics Dashboard",
+        teamSize: "6 members",
+        description: "Developing a real-time analytics dashboard for e-commerce businesses to track sales, customer behavior, and conversion rates using AI-driven insights.",
+        image: "/fake/ecommerce-dashboard.png",
+    },
+    {
+        id: 3,
+        title: "Healthcare Appointment System",
+        teamSize: "7 members",
+        description: "Creating a smart appointment scheduling system that optimizes doctor-patient availability and reduces waiting times using AI-powered scheduling algorithms.",
+        image: "/fake/healthcare-app.png",
+    }
+];
+
+export const companies = [
+    {
+        id: 0,
+        title: "TechSphere",
+        companySize: "150+ employees",
+        description: "A leading AI and cloud computing company specializing in data-driven solutions.",
+        image: "/fake/techsphere.png",
+    },
+    {
+        id: 1,
+        title: "FinNext",
+        companySize: "80+ employees",
+        description: "A fintech startup revolutionizing digital payments with blockchain technology.",
+        image: "/fake/finnext.png",
+    },
+    {
+        id: 2,
+        title: "HealthSync",
+        companySize: "120+ employees",
+        description: "A health-tech company providing AI-powered patient management systems.",
+        image: "/fake/healthsync.png",
+    },
+    {
+        id: 3,
+        title: "EduWave",
+        companySize: "60+ employees",
+        description: "An ed-tech firm developing AI-assisted learning platforms for students.",
+        image: "/fake/eduwave.png",
+    },
+    {
+        id: 4,
+        title: "CyberGuard",
+        companySize: "90+ employees",
+        description: "A cybersecurity firm offering advanced threat detection and data protection services.",
+        image: "/fake/cyberguard.png",
+    },
+    {
+        id: 5,
+        title: "GreenGen",
+        companySize: "50+ employees",
+        description: "A renewable energy startup focused on innovative solar and wind energy solutions.",
+        image: "/fake/greengen.png",
+    },
+    {
+        id: 6,
+        title: "AutoMinds",
+        companySize: "200+ employees",
+        description: "An AI-powered automotive company enhancing self-driving car technology.",
+        image: "/fake/autominds.png",
+    },
+    {
+        id: 7,
+        title: "RetailBoost",
+        companySize: "75+ employees",
+        description: "A retail analytics company providing AI-driven insights for customer engagement.",
+        image: "/fake/retailboost.png",
+    }
+];
 
 export default talents;

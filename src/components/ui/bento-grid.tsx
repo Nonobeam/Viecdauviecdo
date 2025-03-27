@@ -25,6 +25,7 @@ export const BentoGridItem = ({
   title,
   description,
   header,
+  teamSize,
   icon,
   imgSrc,
 }: {
@@ -32,6 +33,7 @@ export const BentoGridItem = ({
   title?: string | React.ReactNode;
   description?: string | React.ReactNode;
   header?: React.ReactNode;
+  teamSize?: string | React.ReactNode;
   icon?: React.ReactNode;
   imgSrc?: string;
 }) => {
@@ -44,7 +46,7 @@ export const BentoGridItem = ({
     >
       <div className="relative w-full h-48 overflow-hidden rounded-t-xl">
         <Avatar className="absolute inset-0 w-full h-full">
-          <AvatarImage src="/fake/project.jpg" className="object-cover w-full h-full" />
+          <AvatarImage src={imgSrc} className="object-cover w-full h-full" />
           <AvatarFallback>"source"</AvatarFallback>
         </Avatar>
       </div>
@@ -53,6 +55,9 @@ export const BentoGridItem = ({
         {icon}
         <div className="mt-2 mb-2 font-sans font-bold text-neutral-600 dark:text-neutral-200">
           {title}
+        </div>
+        <div className="text-sm text-neutral-500 dark:text-neutral-400">
+          {teamSize}
         </div>
         <div className="font-sans text-xs font-normal text-neutral-600 dark:text-neutral-300">
           {description}

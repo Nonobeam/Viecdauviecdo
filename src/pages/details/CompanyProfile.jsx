@@ -1,9 +1,12 @@
+import { useParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Globe, Linkedin, Twitter } from "lucide-react"
 
 const CompanyProfile = () => {
+  const { id } = useParams();
+  
   const jobTypes = ["All", "Full-time", "Remote"]
   const jobs = [
     {
