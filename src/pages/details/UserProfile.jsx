@@ -98,14 +98,24 @@ const Profile = () => {
 
           {/* Main Content - Projects */}
           <div className="md:col-span-2">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold">Projects</h2>
-              <Button>
-                <Link to="/insert-cv" className="flex items-center">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Thêm Dự Án
-                </Link>
-              </Button>
+            <div className="md:col-span-2">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold">Projects</h2>
+                <div className="flex gap-x-4"> {/* Added flex and gap-x-4 */}
+                  <Button>
+                    <Link to="/insert-cv" className="flex items-center">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add CV
+                    </Link>
+                  </Button>
+                  <Button>
+                    <Link to="/insert-project" className="flex items-center">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Thêm Dự Án
+                    </Link>
+                  </Button>
+                </div>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

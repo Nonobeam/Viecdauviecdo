@@ -13,10 +13,10 @@ const Project = () => {
   );
 
   const icons = [
-    <IconBuildingBank className="h-4 w-4 text-neutral-500" />,
-    <IconBrain className="h-4 w-4 text-neutral-500" />,
-    <IconChartBar className="h-4 w-4 text-neutral-500" />,
-    <IconHeartbeat className="h-4 w-4 text-neutral-500" />,
+    { key: "bank", element: <IconBuildingBank className="h-4 w-4 text-neutral-500" /> },
+    { key: "brain", element: <IconBrain className="h-4 w-4 text-neutral-500" /> },
+    { key: "chart", element: <IconChartBar className="h-4 w-4 text-neutral-500" /> },
+    { key: "heartbeat", element: <IconHeartbeat className="h-4 w-4 text-neutral-500" /> },
   ];
 
   const items = projects.map((project, index) => ({
@@ -25,7 +25,7 @@ const Project = () => {
     description: project.description,
     header: <Skeleton />,
     teamSize: project.teamSize,
-    icon: icons[index % icons.length],
+    icon: icons[index % icons.length].element,
     imgSrc: project.image,
   }));
 

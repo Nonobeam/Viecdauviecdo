@@ -1,8 +1,18 @@
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { 
+  Button, 
+  Avatar, 
+  AvatarFallback, 
+  AvatarImage, 
+  Tabs, 
+  TabsList, 
+  TabsTrigger 
+} from "@/components/ui";
+import ConfettiButton from "@/components/ConfettiButton"
+import { useParams } from "react-router-dom"
 
 const ProjectDetails = () => {
+  const { id } = useParams();
+
   return (
     <div className="min-h-screen bg-background">
       <div className="border-b">
@@ -20,7 +30,7 @@ const ProjectDetails = () => {
             </div>
             <div className="flex gap-3">
               <Button variant="outline">Contact Team</Button>
-              <Button className="bg-indigo-600 hover:bg-indigo-700">Apply to Join</Button>
+              <ConfettiButton name="Apply to Join" href="/" description="Apply successful, we will redirect you back to home page."/>
             </div>
           </div>
 

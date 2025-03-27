@@ -1,0 +1,13 @@
+export { Avatar, AvatarImage, AvatarFallback } from "./avatar";
+export { Badge } from "./badge";
+export { Button } from "./button";
+export { Card } from "./Card";
+export { Checkbox } from "./checkbox";
+export { FileUpload } from "./file-upload";
+export { Frame } from "./Frame";
+export { InfiniteMovingCards } from "./infinite-movign-card";
+export { Input } from "./input";
+export { Label } from "./label";
+export { Tabs, TabsList, TabsTrigger, TabsContent } from "./tabs";
+export { ButtonsCard } from "./tailwindcss-button";
+export { BentoGrid, BentoGridItem } from "./bento-grid";

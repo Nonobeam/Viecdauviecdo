@@ -1,3 +1,4 @@
+import React from "react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -28,6 +29,7 @@ export const BentoGridItem = ({
   teamSize,
   icon,
   imgSrc,
+  onClick,
 }: {
   className?: string;
   title?: string | React.ReactNode;
@@ -36,9 +38,12 @@ export const BentoGridItem = ({
   teamSize?: string | React.ReactNode;
   icon?: React.ReactNode;
   imgSrc?: string;
+  onClick?: () => void;
 }) => {
   return (
-    <div
+    <button
+      type="button"
+      onClick={onClick}
       className={cn(
         "group/bento shadow-input row-span-1 flex flex-col justify-between space-y-4 rounded-xl border border-neutral-200 bg-white p-4 transition duration-200 hover:shadow-xl dark:border-white/[0.2] dark:bg-black dark:shadow-none",
         className
@@ -63,6 +68,6 @@ export const BentoGridItem = ({
           {description}
         </div>
       </div>
-    </div>
+    </button>
   );
 };

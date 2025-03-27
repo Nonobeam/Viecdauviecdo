@@ -14,7 +14,7 @@ const ViecdauviecdoLogo = ({ className = "" }) => {
 
   return (
     <span className={`font-42dot text-3xl font-bold ${className}`} style={{ fontFamily: '42dot Sans', color: '#013DC4'}}>
-      Viecdauviecdo
+      Matchlent
     </span>
   );
 };

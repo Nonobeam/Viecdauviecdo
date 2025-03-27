@@ -7,9 +7,10 @@ export default function BentoGridDemo({ items }) {
   const navigate = useNavigate();
 
   const handleCardClick = (id) => {
-      navigate(`/project/${id}`);
+    console.log("Helllow World");
+    navigate(`/project/${id}`);
   };
-  
+
   return (
     <BentoGrid className="w-full mx-auto">
       {items.map((item) => (
@@ -22,6 +23,7 @@ export default function BentoGridDemo({ items }) {
           icon={item.icon}
           imgSrc={item.imgSrc}
           className={`${item.id === 3 || item.id === 6 ? "md:col-span-2" : ""} cursor-pointer`}
+          onClick={() => handleCardClick(item.id)}
         />
       ))}
     </BentoGrid>

@@ -69,25 +69,43 @@ export const Card = React.memo(
             hovered !== null && hovered !== index && "blur-sm",
             hovered === index && "z-10 shadow-xl cursor-pointer"
           )}
-          style={{
-            "--r-x": "0deg",
-            "--r-y": "0deg",
-            transform: (() => {
-              if (hovered === index) {
-            return "scale(1.05) rotateY(var(--r-y)) rotateX(var(--r-x))";
-              } else if (hovered !== null) {
-            return "scale(0.98)";
-              } else {
-            return "scale(1)";
-              }
-            })(),
-          } as React.CSSProperties}
+          style={
+            {
+              "--r-x": "0deg",
+              "--r-y": "0deg",
+              transform: (() => {
+                if (hovered === index) {
+                  return "scale(1.05) rotateY(var(--r-y)) rotateX(var(--r-x))";
+                } else if (hovered !== null) {
+                  return "scale(0.98)";
+                } else {
+                  return "scale(1)";
+                }
+              })(),
+            } as React.CSSProperties
+          }
           tabIndex={0}
         >
           <Avatar className="absolute inset-0 w-full h-full">
-            <AvatarImage src={card.avatar} className="object-cover w-full h-full" />
+            <AvatarImage
+              src={card.avatar}
+              className="object-cover w-full h-full"
+            />
             <AvatarFallback>{card.fallback}</AvatarFallback>
           </Avatar>
+          {/* Skills Box */}
+          <div className="absolute bottom-0 left-0 right-0 h-1/5 bg-black/50 flex flex-wrap justify-center gap-2 p-2 overflow-hidden">
+            {card.skills.map((skill) => (
+              <Badge
+                key={skill.id}
+                variant="secondary"
+                className={`px-2 h-10 text-xs rounded ${skill.color}`}
+              >
+                {skill.name}
+              </Badge>
+            ))}
+          </div>
+          {/* Hover Overlay */}
           <div
             className={cn(
               "absolute inset-0 bg-black/50 flex flex-col justify-center items-center text-white transition-opacity duration-300",
@@ -97,17 +115,6 @@ export const Card = React.memo(
             <h2 className="text-2xl font-bold mb-2">{card.name}</h2>
             <p className="text-lg mb-1">{card.location}</p>
             <p className="text-lg mb-4">{card.role}</p>
-            <div className="flex flex-wrap justify-center gap-2">
-              {card.skills.map((skill) => (
-                <Badge
-                  key={skill.id}
-                  variant="secondary"
-                  className={`px-2 py-1 rounded ${skill.color}`}
-                >
-                  {skill.name}
-                </Badge>
-              ))}
-            </div>
           </div>
         </button>
       </div>
