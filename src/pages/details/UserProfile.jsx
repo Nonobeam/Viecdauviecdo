@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ArrowLeft, Edit, Plus } from "lucide-react"
+import { Link } from "react-router-dom";
 
 const Profile = () => {
   const skills = [
@@ -100,8 +101,10 @@ const Profile = () => {
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">Projects</h2>
               <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                Thêm Dự Án
+                <Link to="/insert-cv" className="flex items-center">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Thêm Dự Án
+                </Link>
               </Button>
             </div>
 

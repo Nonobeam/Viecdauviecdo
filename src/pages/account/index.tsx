@@ -1,0 +1,1 @@
+export { default as InsertCV } from "./InsertCV";

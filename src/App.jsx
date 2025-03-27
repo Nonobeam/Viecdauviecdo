@@ -1,6 +1,6 @@
 import { DarkModeProvider } from "@/hooks/DarkModeContext";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Login, Home, Blog, AboutUs, MainLayout, CareerPathBuilder, Profile, CompanyProfile, ProjectDetails } from "./pages/index";
+import { Login, Home, Blog, AboutUs, MainLayout, CareerPathBuilder, Profile, CompanyProfile, ProjectDetails, InsertCV } from "./pages/index";
 
 function App() {
     return (
@@ -16,6 +16,7 @@ function App() {
                         <Route path="/profile" element={<Profile />} />
                         <Route path="/company/:id" element={<CompanyProfile />} />
                         <Route path="/project" element={<ProjectDetails />} />
+                        <Route path="/insert-cv" element={<InsertCV />} />
                         <Route path="*" element={<div>404 Not Found</div>} />
                     </Route>
                 </Routes>

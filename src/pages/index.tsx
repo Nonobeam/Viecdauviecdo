@@ -7,3 +7,4 @@ export { default as CareerPathBuilder } from "./homepage/CareerPathBuilder";
 export { default as Profile } from "./details/UserProfile";
 export { default as CompanyProfile } from "./details/CompanyProfile";
 export { default as ProjectDetails } from "./details/ProjectDetails";
+export * from "./account/index";
