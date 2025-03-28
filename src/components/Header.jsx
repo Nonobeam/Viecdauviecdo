@@ -1,10 +1,10 @@
 import ViecdauviecdoLogo from "@/components/Logo";
+import Cookies from "js-cookie";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button"
-import { useState } from "react";
 
-export default function Header() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+const Header = () => {
+    const user = Cookies.get("user") ? JSON.parse(Cookies.get("user")) : null;
 
     return (
         <header className="border-b">
@@ -16,32 +16,36 @@ export default function Header() {
                         </Link>
                         <nav className="hidden md:flex space-x-6">
                             <Link to="/" className="text-primary">
-                                Trang chủ
+                                Home page
                             </Link>
                             <Link to="/aboutus" className="text-muted-foreground hover:text-primary">
-                                Về chúng tôi
+                                About us
                             </Link>
                             <Link to="/career" className="text-muted-foreground hover:text-primary">
-                                Định hướng phát triển
+                                Career path builder
                             </Link>
                             <Link to="/job" className="text-muted-foreground hover:text-primary">
-                                Cơ hội nghề nghiệp
+                                Opportunity
                             </Link>
                         </nav>
                     </div>
                     <div className="flex items-center space-x-4">
-                        {isLoggedIn ? (
+                        {user ? (
                             <>
-                                <Button variant="ghost">Hồ sơ</Button>
-                                <Button>Dự án</Button>
+                                <Link to="/profile">
+                                    <Button className="cursor-pointer" variant="ghost">Profile</Button>
+                                </Link>
+                                <Link to="/seeking">
+                                    <Button className="cursor-pointer">Seeking</Button>
+                                </Link>
                             </>
                         ) : (
                             <>
                                 <Link to="/login">
-                                    <Button variant="ghost">Login</Button>
+                                    <Button className="cursor-pointer" variant="ghost">Login</Button>
                                 </Link>
                                 <Link to="/login">
-                                    <Button>Register</Button>
+                                    <Button className="cursor-pointer">Register</Button>
                                 </Link>
                             </>
                         )}
@@ -51,3 +55,5 @@ export default function Header() {
         </header>
     );
 }
+
+export default Header;

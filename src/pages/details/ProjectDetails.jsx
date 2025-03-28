@@ -9,9 +9,20 @@ import {
 } from "@/components/ui";
 import ConfettiButton from "@/components/ConfettiButton"
 import { useParams } from "react-router-dom"
+import { useEffect } from "react"
 
 const ProjectDetails = () => {
   const { id } = useParams();
+
+  const fetchCompanyData = async (companyId) => {
+    console.log(`Fetching data for company ID: ${companyId}`);
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchCompanyData(id);
+    }
+  }, [id]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -120,4 +131,4 @@ const ProjectDetails = () => {
   )
 }
 
-export default ProjectDetails
+export default ProjectDetails;

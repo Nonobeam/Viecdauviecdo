@@ -27,6 +27,14 @@ const CareerPathBuilder = () => {
   const [isDragging, setIsDragging] = useState(false)
   const [draggedNode, setDraggedNode] = useState(null)
 
+  const addSkill = (newSkill) => {
+    setSkills((prevSkills) => [...prevSkills, newSkill]);
+  };
+
+  const addPosition = (newPosition) => {
+    setPositions((prevPositions) => [...prevPositions, newPosition]);
+  };
+
   // Generate the curved path
   const generatePath = () => {
     // Sort nodes by x position to ensure path flows left to right
@@ -159,6 +167,23 @@ const CareerPathBuilder = () => {
                 </div>
               ))}
             </div>
+            <button
+              onClick={() => {
+                addSkill({
+                  id: `skill-${Date.now()}`,
+                  name: "New Skill",
+                  color: "bg-green-100 text-green-700",
+                });
+                addPosition({
+                  id: `position-${Date.now()}`,
+                  name: "New Position",
+                  color: "bg-green-600",
+                });
+              }}
+              className="mt-4 px-4 py-2 bg-green-600 text-white rounded"
+            >
+              Add Skill
+            </button>
           </div>
 
           {/* Positions Section */}
@@ -258,4 +283,4 @@ const CareerPathBuilder = () => {
   )
 }
 
-export default CareerPathBuilder
+export default CareerPathBuilder;

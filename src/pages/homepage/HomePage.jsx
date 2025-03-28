@@ -7,7 +7,7 @@ const Talent = lazy(() => import("@/pages/homepage/module/Talent"));
 const Company = lazy(() => import("@/pages/homepage/module/Company"));
 const Project = lazy(() => import("@/pages/homepage/module/Project"));
 
-export default function Home() {
+const Home = () => {
   const tabs = ["talents", "projects", "companies"];
   const labels = { talents: "Tài năng", projects: "Dự án", companies: "Công ty" };
   const [activeTab, setActiveTab] = useState(tabs[0]);
@@ -30,3 +30,5 @@ export default function Home() {
     </div>
   )
 }
+
+export default Home;

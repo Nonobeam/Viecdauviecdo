@@ -2,9 +2,9 @@ import { Outlet } from "react-router-dom";
 import ChangeColorToggle from "@/components/ChangeColorToggle";
 import DarkModeToggle from "@/components/DarkModeToggle";
 import Header from "@/components/Header";
-import { useDarkMode } from "@/hooks/DarkModeContext";
+import useDarkMode from "@/hooks/useDarkMode";
 
-export default function MainLayout() {
+const MainLayout = () => {
   const { isDarkMode } = useDarkMode();
 
   return (
@@ -16,3 +16,5 @@ export default function MainLayout() {
     </div>
   );
 }
+
+export default MainLayout;

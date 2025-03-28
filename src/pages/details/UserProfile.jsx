@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ArrowLeft, Edit, Plus } from "lucide-react"
+import { Edit, Plus } from "lucide-react"
 import { Link } from "react-router-dom";
 
 const Profile = () => {

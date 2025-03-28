@@ -1,30 +1,37 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
-import { useDarkMode } from "@/hooks/DarkModeContext";
+import useDarkMode from "@/hooks/useDarkMode";
 import DarkModeToggle from "@/components/DarkModeToggle";
 import { Logo } from '@/components/icons/Logo';
+import Cookies from "js-cookie";
 
-function Login() {
+const Login = () => {
+    const navigate = useNavigate();
     const { isDarkMode } = useDarkMode();
+
+    const handleFakeLogin = () => {
+        Cookies.set("user", JSON.stringify({ name: "John Doe", email: "john.doe@example.com" }), { expires: 7 });
+        console.log("Logged in successfully!");
+        navigate("/");
+    };
 
     return (
         <div className={`flex h-screen w-full ${isDarkMode ? "dark" : ""}`}>
             {/* Left side - Purple background with text */}
             <div className="hidden md:flex md:w-5/12 flex-col justify-center px-12 bg-indigo-600 text-white">
                 <h1 className="text-6xl font-bold mb-4">
-                    Chào mừng tới
+                    Welcome to
                     <br />
                     <Link to="/" className="hover:text-indigo-300 transition-colors duration-300">
-                        Viecdauviecdo
+                        Matchlent
                     </Link>
                 </h1>
                 <p className="text-lg opacity-90 italic">
-                    "Kết nối, cộng tác và hiện thực hóa các dự án độc đáo của bạn — vượt qua ngoài công việc, vượt qua những giới
-                    hạn."
+                    "Connect, collaborate, and bring your unique projects to life—beyond work, beyond limits."
                 </p>
             </div>
 
@@ -38,13 +45,13 @@ function Login() {
                                 value="login"
                                 className="text-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-primary-foreground"
                             >
-                                Đăng nhập
+                                Login
                             </TabsTrigger>
                             <TabsTrigger
                                 value="signup"
                                 className="text-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-primary-foreground"
                             >
-                                Đăng ký
+                                Register
                             </TabsTrigger>
                         </TabsList>
                         <TabsContent value="login" className="mt-6">
@@ -52,26 +59,28 @@ function Login() {
                                 <div className="space-y-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="email">Email</Label>
-                                        <Input id="email" type="email" placeholder="Email của bạn" className="h-12" />
+                                        <Input id="email" type="email" placeholder="Your Email" className="h-12" />
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="password">Mật khẩu</Label>
-                                        <Input id="password" type="password" placeholder="Mật khẩu" className="h-12" />
+                                        <Label htmlFor="password">Password</Label>
+                                        <Input id="password" type="password" placeholder="Password" className="h-12" />
                                     </div>
 
                                     <div className="text-right">
                                         <a href="#" className="text-primary hover:underline text-sm">
-                                            Quên mật khẩu?
+                                            Forget password?
                                         </a>
                                     </div>
 
                                     <div className="flex gap-4">
-                                        <Button className="flex-1 h-12 text-base bg-primary/10 hover:bg-primary/20 text-primary">
-                                            Đăng nhập
+                                        <Button 
+                                            className="flex-1 h-12 text-base bg-primary/10 hover:bg-primary/20 text-primary cursor-pointer"
+                                            onClick={handleFakeLogin}>
+                                            Login
                                         </Button>
-                                        <Button variant="outline" className="flex-1 h-12 text-base">
-                                            Đăng ký
+                                        <Button variant="outline" className="flex-1 h-12 text-base cursor-pointer">
+                                            Register
                                         </Button>
                                     </div>
 
@@ -80,7 +89,7 @@ function Login() {
                                             <span className="w-full border-t"></span>
                                         </div>
                                         <div className="relative flex justify-center text-xs uppercase">
-                                            <span className="bg-background px-2 text-muted-foreground">hoặc tiếp tục với</span>
+                                            <span className="bg-background px-2 text-muted-foreground">or continue with</span>
                                         </div>
                                     </div>
 
@@ -102,48 +111,51 @@ function Login() {
                             <div className="max-w-md mx-auto space-y-6">
                                 <div className="space-y-4">
                                     <div className="space-y-2">
-                                        <Label htmlFor="name">Họ và tên</Label>
-                                        <Input id="name" type="name" placeholder="Họ và tên" className="h-12" />
+                                        <Label htmlFor="name">Full name</Label>
+                                        <Input id="name" type="name" placeholder="Full name" className="h-12" />
                                     </div>
 
                                     <div className="space-y-2">
                                         <Label htmlFor="email">Email</Label>
-                                        <Input id="email" type="email" placeholder="Email của bạn" className="h-12" />
+                                        <Input id="email" type="email" placeholder="Your Email" className="h-12" />
                                     </div>
 
                                     {/* Password field */}
                                     <div className="space-y-2">
-                                        <Label htmlFor="signup-password">Mật khẩu</Label>
-                                        <Input id="signup-password" type="password" placeholder="Tạo mật khẩu" className="h-12" />
+                                        <Label htmlFor="signup-password">Password</Label>
+                                        <Input id="signup-password" type="password" placeholder="Password" className="h-12" />
                                     </div>
 
                                     {/* Confirm Password field */}
                                     <div className="space-y-2">
-                                        <Label htmlFor="confirm-password">Xác nhận mật khẩu</Label>
-                                        <Input id="confirm-password" type="password" placeholder="Xác nhận lại mật khẩu" className="h-12" />
+                                        <Label htmlFor="confirm-password">Confirm your password</Label>
+                                        <Input id="confirm-password" type="password" placeholder="Confirm your password" className="h-12" />
                                     </div>
 
                                     {/* Terms and Conditions */}
                                     <div className="flex items-center space-x-2">
                                         <Checkbox id="terms" />
                                         <label htmlFor="terms" className="text-sm text-muted-foreground">
-                                        Tôi đồng ý với{" "}
-                                        <a href="#" className="text-primary hover:underline">
-                                            Các điều khoản dịch vụ
-                                        </a>{" "}
-                                        và{" "}
-                                        <a href="#" className="text-primary hover:underline">
-                                            Chính sách bảo mật
-                                        </a>
+                                            I agree to the{" "}
+                                            <a href="#" className="text-primary hover:underline">
+                                                Terms of Service
+                                            </a>{" "}
+                                            and{" "}
+                                            <a href="#" className="text-primary hover:underline">
+                                                Privacy Policy
+                                            </a>
                                         </label>
                                     </div>
 
                                     <div className="flex gap-4">
-                                        <Button className="flex-1 h-12 text-base bg-primary/10 hover:bg-primary/20 text-primary">
-                                            Đăng nhập
+                                        <Button
+                                            className="flex-1 h-12 text-base bg-primary/10 hover:bg-primary/20 text-primary"
+                                            onClick={handleFakeLogin}
+                                        >
+                                            Login
                                         </Button>
                                         <Button variant="outline" className="flex-1 h-12 text-base">
-                                            Đăng ký
+                                            Register
                                         </Button>
                                     </div>
 
@@ -152,7 +164,7 @@ function Login() {
                                             <span className="w-full border-t"></span>
                                         </div>
                                         <div className="relative flex justify-center text-xs uppercase">
-                                            <span className="bg-background px-2 text-muted-foreground">hoặc tiếp tục với</span>
+                                            <span className="bg-background px-2 text-muted-foreground">or continue with</span>
                                         </div>
                                     </div>
 
@@ -176,5 +188,4 @@ function Login() {
         </div>
     )
 }
-
-export default Login
+export default Login;

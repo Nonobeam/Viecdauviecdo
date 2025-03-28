@@ -1,5 +1,4 @@
 const defaultTheme = require("tailwindcss/defaultTheme");
-
 const colors = require("tailwindcss/colors");
 const {
   default: flattenColorPalette,
@@ -85,7 +84,24 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), addVariablesForColors],
+  plugins: [
+    require("tailwindcss-animate"), 
+    addVariablesForColors,
+    "unused-imports"
+  ],
+  "rules": {
+    "no-unused-vars": "off",
+    "unused-imports/no-unused-imports": "error",
+    "unused-imports/no-unused-vars": [
+      "warn",
+      {
+        "vars": "all",
+        "varsIgnorePattern": "^_",
+        "args": "after-used",
+        "argsIgnorePattern": "^_"
+      }
+    ]
+  },
 };
 
 function addVariablesForColors({ addBase, theme }: any) {

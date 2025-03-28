@@ -3,7 +3,8 @@
   "compilerOptions": {
     "jsx": "react",
     "noEmit": true,
-    "allowJs": true
+    "allowJs": true,
+    "composite": true,
   },
   "include": ["src"]
 }

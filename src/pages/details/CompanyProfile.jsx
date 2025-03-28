@@ -1,11 +1,21 @@
 import { useParams } from "react-router-dom"
+import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Globe, Linkedin, Twitter } from "lucide-react"
 
 const CompanyProfile = () => {
   const { id } = useParams();
+
+  const fetchCompanyData = async (companyId) => {
+    console.log(`Fetching data for company ID: ${companyId}`);
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchCompanyData(id);
+    }
+  }, [id]);
   
   const jobTypes = ["All", "Full-time", "Remote"]
   const jobs = [
@@ -78,15 +88,12 @@ const CompanyProfile = () => {
           {/* Social Links */}
           <div className="flex gap-4">
             <Button variant="outline" size="sm">
-              <Globe className="h-4 w-4 mr-2" />
               Website
             </Button>
             <Button variant="outline" size="sm">
-              <Linkedin className="h-4 w-4 mr-2" />
               LinkedIn
             </Button>
             <Button variant="outline" size="sm">
-              <Twitter className="h-4 w-4 mr-2" />
               Twitter
             </Button>
           </div>
@@ -162,4 +169,4 @@ const CompanyProfile = () => {
   )
 }
 
-export default CompanyProfile
+export default CompanyProfile;

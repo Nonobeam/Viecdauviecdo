@@ -181,4 +181,4 @@ const AddProject = () => {
   )
 }
 
-export default AddProject
+export default AddProject;

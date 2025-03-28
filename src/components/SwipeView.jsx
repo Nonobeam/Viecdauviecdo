@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSwipeable } from "react-swipeable";
 import { Card } from "@/components/ui/Card";
 import { useMotionValue, useTransform, useAnimation } from "framer-motion";
@@ -22,13 +22,16 @@ const SwipeView = ({ cards, initialCard }) => {
   const previousIndex = (currentIndex - 1 + cards.length) % cards.length;
   const nextIndex = (currentIndex + 1) % cards.length;
 
-  const handleSwipe = (direction) => {
-    const newIndex =
-      direction === "left"
-        ? (currentIndex + 1) % cards.length
-        : (currentIndex - 1 + cards.length) % cards.length;
-    setCurrentIndex(newIndex);
-  };
+  const handleSwipe = useCallback(
+    (direction) => {
+      const newIndex =
+        direction === "left"
+          ? (currentIndex + 1) % cards.length
+          : (currentIndex - 1 + cards.length) % cards.length;
+      setCurrentIndex(newIndex);
+    },
+    [currentIndex, cards.length]
+  );
 
   const swipeHandlers = useSwipeable({
     onSwipedLeft: () => handleSwipe("left"),
@@ -43,7 +46,7 @@ const SwipeView = ({ cards, initialCard }) => {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentIndex]);
+  }, [handleSwipe]);
 
   if (cards.length === 0 || currentIndex >= cards.length) {
     return <div>Loading...</div>;
