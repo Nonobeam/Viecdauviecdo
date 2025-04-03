@@ -1,11 +1,17 @@
 import BentoGridDemo from "@/components/BentoGridLayout";
-import {
-  IconBuildingBank,
-  IconBrain,
-  IconChartBar,
-  IconHeartbeat,
-} from "@tabler/icons-react";
+import { 
+  Building, 
+  Brain, 
+  BarChart, 
+  Heart 
+} from "lucide-react"; // Using Lucide icons
 import { projects } from "@/mock/data";
+// import {
+//   IconBuildingBank,
+//   IconBrain,
+//   IconChartBar,
+//   IconHeartbeat,
+// } from "@tabler/icons-react";
 
 const Project = () => {
   const Skeleton = () => (
@@ -13,10 +19,10 @@ const Project = () => {
   );
 
   const icons = [
-    { key: "bank", element: <IconBuildingBank className="h-4 w-4 text-neutral-500" /> },
-    { key: "brain", element: <IconBrain className="h-4 w-4 text-neutral-500" /> },
-    { key: "chart", element: <IconChartBar className="h-4 w-4 text-neutral-500" /> },
-    { key: "heartbeat", element: <IconHeartbeat className="h-4 w-4 text-neutral-500" /> },
+    { key: "bank", element: <Building className="h-4 w-4 text-neutral-500" /> },
+    { key: "brain", element: <Brain className="h-4 w-4 text-neutral-500" /> },
+    { key: "chart", element: <BarChart className="h-4 w-4 text-neutral-500" /> },
+    { key: "heartbeat", element: <Heart className="h-4 w-4 text-neutral-500" /> },
   ];
 
   const items = projects.map((project, index) => ({
