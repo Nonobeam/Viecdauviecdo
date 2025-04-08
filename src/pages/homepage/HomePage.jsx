@@ -1,7 +1,8 @@
-import { useState, Suspense, lazy } from "react";
-import TabList from "@/components/TabList";
-import SearchFilter from "@/pages/homepage/module/SearchFilter";
 import Loader from "@/components/Loader";
+import TabList from "@/components/TabList";
+import ChatbotButton from "@/components/ui/ChatbotButton";
+import SearchFilter from "@/pages/homepage/module/SearchFilter";
+import { Suspense, lazy, useState } from "react";
 
 const Talent = lazy(() => import("@/pages/homepage/module/Talent"));
 const Company = lazy(() => import("@/pages/homepage/module/Company"));
@@ -27,6 +28,7 @@ const Home = () => {
           </div>
         </main>
       </div>
+      <ChatbotButton/>
     </div>
   )
 }

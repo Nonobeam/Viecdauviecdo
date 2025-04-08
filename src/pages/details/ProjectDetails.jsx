@@ -1,15 +1,16 @@
-import { 
-  Button, 
-  Avatar, 
-  AvatarFallback, 
-  AvatarImage, 
-  Tabs, 
-  TabsList, 
-  TabsTrigger 
+import ConfettiButton from "@/components/ConfettiButton";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Button,
+  Tabs,
+  TabsList,
+  TabsTrigger
 } from "@/components/ui";
-import ConfettiButton from "@/components/ConfettiButton"
-import { useParams } from "react-router-dom"
-import { useEffect } from "react"
+import ChatbotButton from "@/components/ui/ChatbotButton";
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 const ProjectDetails = () => {
   const { id } = useParams();
@@ -127,6 +128,7 @@ const ProjectDetails = () => {
           </div>
         </div>
       </div>
+      <ChatbotButton/>
     </div>
   )
 }

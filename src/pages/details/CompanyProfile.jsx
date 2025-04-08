@@ -1,8 +1,9 @@
-import { useParams } from "react-router-dom"
-import { useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import ChatbotButton from "@/components/ui/ChatbotButton";
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 const CompanyProfile = () => {
   const { id } = useParams();
@@ -165,6 +166,7 @@ const CompanyProfile = () => {
           </section>
         </div>
       </div>
+      <ChatbotButton/>
     </div>
   )
 }

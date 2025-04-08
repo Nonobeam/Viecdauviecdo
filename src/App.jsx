@@ -1,20 +1,20 @@
 import { DarkModeProvider } from "@/hooks/DarkModeContext";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import {
-    Login,
-    Home,
-    Blog,
     AboutUs,
-    MainLayout,
-    CareerPathBuilder,
-    Profile,
-    CompanyProfile,
-    ProjectDetails,
-    InsertCV,
     AddProject,
-    Seeking,
-    PostProject,
+    Blog,
+    CareerPathBuilder,
+    CompanyProfile,
+    Home,
+    InsertCV,
+    Login,
+    MainLayout,
     PostJob,
+    PostProject,
+    Profile,
+    ProjectDetails,
+    Seeking,
 } from "./pages";
 
 function App() {

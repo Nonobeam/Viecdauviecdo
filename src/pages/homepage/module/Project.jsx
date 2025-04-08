@@ -1,11 +1,12 @@
 import BentoGridDemo from "@/components/BentoGridLayout";
-import { 
-  Building, 
-  Brain, 
-  BarChart, 
-  Heart 
-} from "lucide-react"; // Using Lucide icons
+import ChatbotButton from "@/components/ui/ChatbotButton";
 import { projects } from "@/mock/data";
+import {
+  BarChart,
+  Brain,
+  Building,
+  Heart
+} from "lucide-react"; // Using Lucide icons
 // import {
 //   IconBuildingBank,
 //   IconBrain,
@@ -38,6 +39,7 @@ const Project = () => {
   return (
     <div className="h-full overflow-auto p-4">
       <BentoGridDemo items={items} />
+      <ChatbotButton/>
     </div>
   );
 };

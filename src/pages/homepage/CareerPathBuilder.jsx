@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from "react"
-
+import ChatbotButton from "@/components/ui/ChatbotButton";
+import { useEffect, useRef, useState } from "react";
 const CareerPathBuilder = () => {
   const [skills, setSkills] = useState([
     { id: "javascript", name: "JavaScript", color: "bg-purple-100 text-purple-700" },
@@ -279,6 +279,7 @@ const CareerPathBuilder = () => {
           </div>
         </div>
       </div>
+      <ChatbotButton/>
     </div>
   )
 }

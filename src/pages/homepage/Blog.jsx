@@ -1,7 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Share2 } from "lucide-react";
+import ChatbotButton from "@/components/ui/ChatbotButton";
 import { blogs } from "@/mock/data";
+import { Heart, MessageCircle, Share2 } from "lucide-react";
 
 const Post = () => {
   return (
@@ -44,6 +45,9 @@ const Post = () => {
           </div>
         </div>
       ))}
+      <ChatbotButton>
+
+      </ChatbotButton>
     </div>
   );
 };

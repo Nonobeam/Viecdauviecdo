@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import ChatbotButton from "@/components/ui/ChatbotButton";
 import { companies } from "@/mock/data";
 import { useNavigate } from "react-router-dom";
 
@@ -42,6 +43,7 @@ const Company = () => {
                     </button>
                 ))}
             </div>
+            <ChatbotButton/>
         </div>
     );
 };
