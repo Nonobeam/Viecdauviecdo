@@ -8,7 +8,7 @@ import {
   TabsList,
   TabsTrigger
 } from "@/components/ui";
-import ChatbotButton from "@/components/ui/ChatbotButton";
+import ChatWidget from "@/components/ui/chatWidget";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 
@@ -128,7 +128,7 @@ const ProjectDetails = () => {
           </div>
         </div>
       </div>
-      <ChatbotButton/>
+      <ChatWidget/>
     </div>
   )
 }

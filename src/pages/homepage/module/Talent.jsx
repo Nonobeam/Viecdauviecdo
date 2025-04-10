@@ -1,5 +1,5 @@
 import { TalentCard } from "@/components/items/TalentCard";
-import ChatbotButton from "@/components/ui/ChatbotButton";
+import ChatbotButton from "@/components/ui/chatbotButton";
 import talents from "@/mock/data";
 
 const Talent = () => {

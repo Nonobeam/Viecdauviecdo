@@ -1,9 +1,10 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 
-const ChatbotButton: React.FC = () => {
-  const navigate = useNavigate();
+interface ChatbotButtonProps {
+  onOpen: () => void;
+}
 
+const ChatbotButton: React.FC<ChatbotButtonProps> = ({ onOpen }) => {
   return (
     <div
       style={{
@@ -20,9 +21,7 @@ const ChatbotButton: React.FC = () => {
         zIndex: 1000,
         cursor: "pointer",
       }}
-      onClick={() => {
-        navigate("/");
-      }}
+      onClick={onOpen}
     >
       <img
         src="/logo/chat-bot-icon.png"

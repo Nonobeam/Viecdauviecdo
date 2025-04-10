@@ -1,6 +1,6 @@
 import Loader from "@/components/Loader";
 import TabList from "@/components/TabList";
-import ChatbotButton from "@/components/ui/ChatbotButton";
+import ChatWidget from "@/components/ui/chatWidget";
 import SearchFilter from "@/pages/homepage/module/SearchFilter";
 import { Suspense, lazy, useState } from "react";
 
@@ -28,7 +28,7 @@ const Home = () => {
           </div>
         </main>
       </div>
-      <ChatbotButton/>
+      <ChatWidget/>
     </div>
   )
 }

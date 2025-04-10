@@ -1,5 +1,5 @@
 import BentoGridDemo from "@/components/BentoGridLayout";
-import ChatbotButton from "@/components/ui/ChatbotButton";
+import ChatbotButton from "@/components/ui/chatbotButton";
 import { projects } from "@/mock/data";
 import {
   BarChart,
