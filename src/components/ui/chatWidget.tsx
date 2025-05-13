@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ChatbotButton from './ChatbotButton';
+import ChatbotButton from './chatbotButton';
 import ChatBotMessage from './chatBotMessage';
 
 const ChatWidget: React.FC = () => {
