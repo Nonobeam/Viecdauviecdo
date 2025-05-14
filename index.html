@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/logo/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/logo//favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/logo/site.webmanifest">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Viecdauviecdo</title>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <div id="circle-container">
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+    </div>
+
+    <script type="module" src="/src/main.jsx"></script>
+    <script>
+      const coords = { x: 0, y: 0 };
+      const circles = document.querySelectorAll(".circle");
+      let hoverTimer = null;
+
+      circles.forEach((circle, index) => {
+        circle.x = 0;
+        circle.y = 0;
+      });
+
+      window.addEventListener("mousemove", (e) => {
+        coords.x = e.clientX;
+        coords.y = e.clientY;
+      });
+
+      function animateCircles() {
+        let x = coords.x;
+        let y = coords.y;
+
+        circles.forEach((circle, index) => {
+          circle.style.left = `${x - 10}px`; 
+          circle.style.top = `${y - 10}px`; 
+          circle.style.scale = (circles.length - index) / circles.length;
+
+          circle.x = x;
+          circle.y = y;
+
+          const nextCircle = circles[index + 1] || circles[0];
+          x += (nextCircle.x - x) * 0.3;
+          y += (nextCircle.y - y) * 0.3;
+        });
+
+        requestAnimationFrame(animateCircles);
+      }
+
+      animateCircles();
+
+      document.body.addEventListener("mouseover", (e) => {
+        if (e.target !== document.body) {
+          clearTimeout(hoverTimer);
+          hoverTimer = setTimeout(() => {
+            circles[0].classList.add("hovered");
+          }, 500);
+        }
+      });
+
+      document.body.addEventListener("mouseout", (e) => {
+        clearTimeout(hoverTimer);
+        circles[0].classList.remove("hovered");
+      });
+    </script>
+  </body>
+</html>
