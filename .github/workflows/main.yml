@@ -21,7 +21,8 @@ jobs:
         uses: mathieudutour/github-tag-action@v6.2
         with:
           github_token: ${{ secrets.ACCESS_TOKEN }}
-          default_bump: patch
+          default_bump: minor
+          version: '1.0.0'
 
   build-and-push-image:
     needs: tag_docker
@@ -58,7 +59,7 @@ jobs:
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DH_REPO_NAME }}:latest
           cache-to: type=inline
 
-  deploy:
+  deploy: 
     needs: build-and-push-image
     runs-on: ubuntu-latest
     steps:
