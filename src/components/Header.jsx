@@ -1,11 +1,10 @@
 import ViecdauviecdoLogo from "@/components/Logo";
-import Cookies from "js-cookie";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/providers/AuthContext";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button"
 
 const Header = () => {
-    const user = Cookies.get("user") ? JSON.parse(Cookies.get("user")) : null;
-
+    const { user, logout } = useAuth();
     return (
         <header className="border-b">
             <div className="container mx-auto px-4">
@@ -37,6 +36,9 @@ const Header = () => {
                                 </Link>
                                 <Link to="/seeking">
                                     <Button className="cursor-pointer">Seeking</Button>
+                                </Link>
+                                <Link to="/">
+                                <Button className="cursor-pointer" onClick={logout} variant="ghost">Logout</Button>
                                 </Link>
                             </>
                         ) : (
