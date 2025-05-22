@@ -76,6 +76,7 @@ const Profile = () => {
 
   console.log("User from userData:", userData);
   return (
+    
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -135,7 +136,9 @@ const Profile = () => {
             {/* Contact */}
             <div>
               <h2 className="text-lg font-semibold mb-2">Contact</h2>
-              <p className="text-muted-foreground">{userData?.email}</p>
+              <p className="text-muted-foreground">
+                {userData?.email}
+              </p>
             </div>
 
             {/* Action Buttons */}
