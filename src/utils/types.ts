@@ -78,7 +78,7 @@ declare module 'types' {
   export interface CreateUserRequest {
     email: string;
     password: string;
-    roleName: string;
+    role_name: string;
     image?: string;
   }
 
