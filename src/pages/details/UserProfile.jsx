@@ -2,17 +2,57 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import ChatWidget from "@/components/ui/chatWidget";
+import { useAuth } from "@/providers/AuthContext";
+import { getUserById, uploadAvatar } from "@/utils/userApi";
 import { Edit, Plus } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 const Profile = () => {
+  const { user, loading } = useAuth(); // From AuthContext
+  const [userData, setUserData] = useState(null);
+  const fileInputRef = useRef(null);
+  const [fetched, setFetched] = useState(false);
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const fetchUser = async () => {
+    if (user?.user_id && !loading) {
+      try {
+        const fetchedUser = await getUserById(user.user_id);
+        setUserData(fetchedUser.data);
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+      }
+    }
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file || !user?.user_id) return;
+
+    try {
+      await uploadAvatar(user.user_id, file);
+      const updated = await getUserById(user.user_id);
+      setUserData(updated);
+      setFetched(true);
+    } catch (err) {
+      console.error("Avatar upload failed:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, [user, fetched]);
+
   const skills = [
     { name: "React", color: "bg-blue-100 text-blue-700" },
     { name: "Node.js", color: "bg-green-100 text-green-700" },
     { name: "Python", color: "bg-yellow-100 text-yellow-700" },
     { name: "TypeScript", color: "bg-blue-100 text-blue-700" },
     { name: "AWS", color: "bg-orange-100 text-orange-700" },
-  ]
+  ];
 
   const projects = [
     {
@@ -31,9 +71,11 @@ const Profile = () => {
       tech: ["Python", "React"],
       image: "/placeholder.svg",
     },
-  ]
+  ];
 
+  console.log("User from userData:", userData);
   return (
+    
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -41,12 +83,28 @@ const Profile = () => {
           <div className="space-y-8 bg-blue-50 p-6 rounded-lg md:col-span-1">
             {/* Profile Info */}
             <div className="flex flex-col items-center md:items-start">
-              <Avatar className="h-24 w-24 mb-4">
-                <AvatarImage src="/placeholder.svg" />
-                <AvatarFallback>JD</AvatarFallback>
-              </Avatar>
-              <h1 className="text-2xl font-bold">John Doe</h1>
-              <p className="text-muted-foreground">Senior Full-Stack Developer</p>
+              <div onClick={handleAvatarClick} className="cursor-pointer">
+                <Avatar className="h-24 w-24 mb-4">
+                  {userData?.image ? (
+                    <AvatarImage src={userData.image} />
+                  ) : (
+                    <AvatarFallback>JD</AvatarFallback>
+                  )}
+                </Avatar>
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                onChange={handleFileChange}
+              />
+              <h1 className="text-2xl font-bold">
+                {userData?.fullName || "Loading..."}
+              </h1>
+              <p className="text-muted-foreground">
+                Senior Full-Stack Developer
+              </p>
             </div>
 
             {/* About Section */}
@@ -59,8 +117,8 @@ const Profile = () => {
                 </Button>
               </div>
               <p className="text-muted-foreground">
-                Passionate developer with 5+ years of experience building scalable web applications and leading
-                development teams.
+                Passionate developer with 5+ years of experience building
+                scalable web applications and leading development teams.
               </p>
             </div>
 
@@ -73,7 +131,9 @@ const Profile = () => {
             {/* Contact */}
             <div>
               <h2 className="text-lg font-semibold mb-2">Contact</h2>
-              <p className="text-muted-foreground">john.doe@email.com</p>
+              <p className="text-muted-foreground">
+                {userData?.email}
+              </p>
             </div>
 
             {/* Action Buttons */}
@@ -89,7 +149,11 @@ const Profile = () => {
               <h2 className="text-lg font-semibold mb-4">Skills</h2>
               <div className="flex flex-wrap gap-2">
                 {skills.map((skill) => (
-                  <Badge key={skill.name} variant="secondary" className={skill.color}>
+                  <Badge
+                    key={skill.name}
+                    variant="secondary"
+                    className={skill.color}
+                  >
                     {skill.name}
                   </Badge>
                 ))}
@@ -102,7 +166,9 @@ const Profile = () => {
             <div className="md:col-span-2">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold">Projects</h2>
-                <div className="flex gap-x-4"> {/* Added flex and gap-x-4 */}
+                <div className="flex gap-x-4">
+                  {" "}
+                  {/* Added flex and gap-x-4 */}
                   <Button>
                     <Link to="/insert-cv" className="flex items-center">
                       <Plus className="h-4 w-4 mr-2" />
@@ -121,7 +187,10 @@ const Profile = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {projects.map((project) => (
-                <div key={project.id} className="border rounded-lg overflow-hidden">
+                <div
+                  key={project.id}
+                  className="border rounded-lg overflow-hidden"
+                >
                   <div className="aspect-video bg-muted">
                     <img
                       src={project.image || "/placeholder.svg"}
@@ -131,18 +200,30 @@ const Profile = () => {
                   </div>
                   <div className="p-4 space-y-4">
                     <h3 className="font-semibold">{project.title}</h3>
-                    <p className="text-sm text-muted-foreground">{project.description}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {project.description}
+                    </p>
                     <div className="flex justify-between items-center">
                       <div className="flex gap-2">
                         {project.tech.map((tech) => (
-                          <Badge key={tech} variant="secondary" className="bg-purple-100 text-purple-700">
+                          <Badge
+                            key={tech}
+                            variant="secondary"
+                            className="bg-purple-100 text-purple-700"
+                          >
                             {tech}
                           </Badge>
                         ))}
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground">{project.type}</span>
-                        <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-600">
+                        <span className="text-sm text-muted-foreground">
+                          {project.type}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-500 hover:text-red-600"
+                        >
                           Delete
                         </Button>
                       </div>
@@ -153,10 +234,10 @@ const Profile = () => {
             </div>
           </div>
         </div>
-        <ChatWidget/>
+        <ChatWidget />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Profile
+export default Profile;

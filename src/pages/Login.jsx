@@ -11,7 +11,7 @@ import { createUser as apiRegister } from "@/utils/userApi";
 import Cookies from "js-cookie";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
+import { useAuth } from "../providers/AuthContext";
 const LoginPage = () => {
   const navigate = useNavigate();
   const { isDarkMode } = useDarkMode();
@@ -22,11 +22,14 @@ const LoginPage = () => {
   const [name, setName] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [agreeTerms, setAgreeTerms] = useState(false);
+  const { login } = useAuth();
+  
 
   const handleLogin = async () => {
     try {
       const { token } = await apiLogin({ username: email, password });
       Cookies.set("token", token, { expires: 7 });
+      login(token);
       navigate("/");
     } catch (err) {
       console.error(err);
@@ -42,7 +45,7 @@ const LoginPage = () => {
       await apiRegister({
         email,
         password,
-        roleName: "USER",
+        role_name: "TALENT",
         image: undefined,
       });
       alert("Registration successful — please login");
