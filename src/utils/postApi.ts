@@ -1,8 +1,8 @@
 import {
-    Comment,
-    CreatePostRequest,
-    Post,
-    UpdatePostRequest,
+  Comment,
+  CreatePostRequest,
+  Post,
+  UpdatePostRequest,
 } from 'types';
 import { api, handleRequest } from './apiClient';
 import { ENDPOINTS } from './apiEndpoint';
