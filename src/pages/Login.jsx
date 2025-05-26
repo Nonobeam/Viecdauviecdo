@@ -19,7 +19,7 @@ const LoginPage = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  const [full_name, setName] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [agreeTerms, setAgreeTerms] = useState(false);
   const { login } = useAuth();
@@ -44,6 +44,7 @@ const LoginPage = () => {
     try {
       await apiRegister({
         email,
+        full_name,
         password,
         role_name: "TALENT",
         image: undefined,
@@ -168,7 +169,7 @@ const LoginPage = () => {
                 <Input
                   id="signup-name"
                   type="text"
-                  value={name}
+                  value={full_name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Full name"
                   className="h-12"
