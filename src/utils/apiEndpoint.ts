@@ -22,7 +22,7 @@ export const ENDPOINTS = {
   GET_USER_BY_ID: (id: string) => `/api/users/${id}`,
   CREATE_USER: '/api/users',
   UPLOAD_AVATAR: (id: string) => `/api/users/${id}/ava`,
-
+  CHANGE_INFORMATION: (id: string) => `/api/users/${id}/change-information`,
   // Auth
   LOGIN: '/api/auth/login',
 };

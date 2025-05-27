@@ -83,6 +83,14 @@ declare module 'types' {
     image?: string;
   }
 
+  export interface EditUserInformationRequest {
+    full_name?: string,
+    job_tittle?: string,
+    about_me?: string,
+    location?: string,
+    phone?: string
+  }
+
   export interface LoginRequest {
     username: string;
     password: string;
