@@ -23,7 +23,9 @@ export const getAllPosts = async (
   page = 0,
   size = 10
 ): Promise<Post[]> =>
-  handleRequest(() => api.get<Post[]>(ENDPOINTS.GET_ALL_POSTS, { params: { page, size } }));
+  handleRequest(() =>
+    api.get<{ data: { content: Post[] } }>(ENDPOINTS.GET_ALL_POSTS, { params: { page, size } })
+  ).then(responseData => responseData.data.content);
 
 export const createPost = async (
   data: CreatePostRequest
@@ -42,5 +44,7 @@ export const commentOnPost = async (
 ): Promise<Comment> =>
   handleRequest(() => api.post<Comment>(ENDPOINTS.COMMENT_ON_POST(postId), data));
 
-export const getUserPosts = async (userId: string): Promise<Post[]> =>
-  handleRequest(() => api.get<Post[]>(ENDPOINTS.GET_USER_POSTS(userId)));
+export const getUserPosts = (userId: string): Promise<Post[]> =>
+  handleRequest(() =>
+    api.get<{ data: { content: Post[] } }>(ENDPOINTS.GET_USER_POSTS(userId))
+  ).then(responseData => responseData.data.content);
