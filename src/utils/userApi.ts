@@ -1,4 +1,4 @@
-import { CreateUserRequest, User } from 'types';
+import { CreateUserRequest, EditUserInformationRequest, User } from 'types';
 import { api, handleRequest } from './apiClient';
 import { ENDPOINTS } from './apiEndpoint';
 
@@ -26,5 +26,14 @@ export const uploadAvatar = async (
     api.post(ENDPOINTS.UPLOAD_AVATAR(userId), formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
+  );
+};
+
+export const changeUserInformation = async (
+  userId: string,
+  data: EditUserInformationRequest
+): Promise<void> => {
+  return handleRequest(() =>
+    api.post<void>(ENDPOINTS.CHANGE_INFORMATION(userId), data)
   );
 };

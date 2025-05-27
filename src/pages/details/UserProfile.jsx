@@ -6,13 +6,14 @@ import { useAuth } from "@/providers/AuthContext";
 import { getUserById, uploadAvatar } from "@/utils/userApi";
 import { Edit, Plus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from 'react-router-dom';
 
 const Profile = () => {
   const { user, loading } = useAuth(); // From AuthContext
   const [userData, setUserData] = useState(null);
   const fileInputRef = useRef(null);
   const [fetched, setFetched] = useState(false);
+  const navigate = useNavigate();
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
   };
@@ -75,7 +76,6 @@ const Profile = () => {
 
   console.log("User from userData:", userData);
   return (
-    
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -111,7 +111,11 @@ const Profile = () => {
             <div>
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold">About Me</h2>
-                <Button variant="ghost" size="sm">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate("/edit-profile")}
+                >
                   <Edit className="h-4 w-4 mr-2" />
                   Edit Profile
                 </Button>
@@ -131,9 +135,7 @@ const Profile = () => {
             {/* Contact */}
             <div>
               <h2 className="text-lg font-semibold mb-2">Contact</h2>
-              <p className="text-muted-foreground">
-                {userData?.email}
-              </p>
+              <p className="text-muted-foreground">{userData?.email}</p>
             </div>
 
             {/* Action Buttons */}
