@@ -25,7 +25,8 @@ function App() {
                 <Router>
                     <Routes>
                         <Route element={<MainLayout />}>
-                            <Route path="/" element={<Blog />} />
+                            <Route path="/" element={<Home />} />
+                            <Route path="/blog" element={<Blog />} />
                             <Route path="/login" element={<Login />} />
                             <Route path="/job" element={<Home />} />
                             <Route path="/aboutus" element={<AboutUs />} />

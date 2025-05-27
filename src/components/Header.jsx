@@ -19,6 +19,12 @@ const Header = () => {
                 Home page
               </Link>
               <Link
+                to="/blog"
+                className="text-muted-foreground hover:text-primary"
+              >
+                Blog
+              </Link>
+              <Link
                 to="/aboutus"
                 className="text-muted-foreground hover:text-primary"
               >
