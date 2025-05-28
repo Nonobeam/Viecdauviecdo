@@ -13,6 +13,7 @@ const Profile = () => {
   const [userData, setUserData] = useState(null);
   const fileInputRef = useRef(null);
   const [fetched, setFetched] = useState(false);
+
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
   };
@@ -43,8 +44,10 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    fetchUser();
-  }, [user, fetched]);
+    if (!loading && user?.user_id) {
+      fetchUser();
+    }
+  }, [user, loading]);
 
   const skills = [
     { name: "React", color: "bg-blue-100 text-blue-700" },
@@ -75,7 +78,6 @@ const Profile = () => {
 
   console.log("User from userData:", userData);
   return (
-    
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -131,9 +133,7 @@ const Profile = () => {
             {/* Contact */}
             <div>
               <h2 className="text-lg font-semibold mb-2">Contact</h2>
-              <p className="text-muted-foreground">
-                {userData?.email}
-              </p>
+              <p className="text-muted-foreground">{userData?.email}</p>
             </div>
 
             {/* Action Buttons */}

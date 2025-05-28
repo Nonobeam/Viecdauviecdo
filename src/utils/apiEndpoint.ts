@@ -22,6 +22,7 @@ export const ENDPOINTS = {
   GET_USER_BY_ID: (id: string) => `/api/users/${id}`,
   CREATE_USER: '/api/users',
   UPLOAD_AVATAR: (id: string) => `/api/users/${id}/ava`,
+  UPLOAD_DOCUMENT: (userId: string) => `/api/users/${userId}/upload-document`,
 
   // Auth
   LOGIN: '/api/auth/login',

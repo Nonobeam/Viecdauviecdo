@@ -82,6 +82,10 @@ declare module 'types' {
     image?: string;
   }
 
+  export interface UploadDocumentRequest {
+  file: string;
+}
+
   export interface LoginRequest {
     username: string;
     password: string;
