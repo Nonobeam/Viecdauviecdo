@@ -91,6 +91,10 @@ declare module 'types' {
     phone?: string
   }
 
+  export interface UploadDocumentRequest {
+  file: string;
+}
+
   export interface LoginRequest {
     username: string;
     password: string;

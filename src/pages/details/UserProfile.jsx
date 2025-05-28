@@ -44,8 +44,10 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    fetchUser();
-  }, [user, fetched]);
+    if (!loading && user?.user_id) {
+      fetchUser();
+    }
+  }, [user, loading]);
 
   const skills = [
     { name: "React", color: "bg-blue-100 text-blue-700" },

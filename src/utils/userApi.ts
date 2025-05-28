@@ -37,3 +37,19 @@ export const changeUserInformation = async (
     api.post<void>(ENDPOINTS.CHANGE_INFORMATION(userId), data)
   );
 };
+
+export const uploadDocument = async (
+  userId: string,
+  file: File
+): Promise<void> => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  return handleRequest(() =>
+    api.post<void>(ENDPOINTS.UPLOAD_DOCUMENT(userId), formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+  );
+};
