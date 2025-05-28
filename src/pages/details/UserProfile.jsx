@@ -22,7 +22,7 @@ const Profile = () => {
     if (user?.user_id && !loading) {
       try {
         const fetchedUser = await getUserById(user.user_id);
-        setUserData(fetchedUser.data);
+        setUserData(fetchedUser);
       } catch (error) {
         console.error("Failed to fetch user:", error);
       }
