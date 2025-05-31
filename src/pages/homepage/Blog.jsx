@@ -12,7 +12,17 @@ import {
   sharePost,
   updatePost,
 } from "@/utils/postApi";
-import { Edit, Heart, Home, MessageCircle, MoreVertical, Plus, Share2, Trash2, User } from "lucide-react";
+import {
+  Edit,
+  Heart,
+  Home,
+  MessageCircle,
+  MoreVertical,
+  Plus,
+  Share2,
+  Trash2,
+  User,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 
 const Post = () => {
@@ -48,7 +58,7 @@ const Post = () => {
   const [commenting, setCommenting] = useState({}); // Track commenting state for each post
   const [showComments, setShowComments] = useState({}); // Track which posts show comment input
 
-   // Dropdown menu states
+  // Dropdown menu states
   const [showDropdown, setShowDropdown] = useState({});
 
   const fetchPosts = async (pageNum = 0, reset = false) => {
@@ -395,24 +405,19 @@ const Post = () => {
       {posts.length > 0 &&
         posts.map((post) => (
           <div key={post.id} className="border rounded-lg p-6 space-y-4 mb-4">
-            <div className="flex items-start space-x-4">
-              <Avatar className="h-12 w-12">
-                <AvatarImage
-                  src={post.author?.avatar || "/api/placeholder/40/40"}
-                />
-                <AvatarFallback>{post.author?.name?.[0] || "?"}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-semibold">
-                      {post.author?.name || "Unknown User"}
-                    </h3>
-                    <div className="text-sm text-muted-foreground">
-                      <p>{post.author?.role || "Unknown Role"}</p>
-                      <p>{post.createdAt || "Unknown Time"}</p>
+            <div className="flex-1">
+              <div className="flex items-start justify-between">
+                <div>
+
+                  {post.image && (
+                    <div className="mt-4">
+                      <img
+                        src={post.image}
+                        alt="Post image"
+                        className="w-full rounded-lg object-cover"
+                      />
                     </div>
-                  </div>
+                  )}
 
                   {/* Post Actions Dropdown - Only show for post owner */}
                   {viewMode === "user" && (
