@@ -78,9 +78,18 @@ declare module 'types' {
 
   export interface CreateUserRequest {
     email: string;
+    full_name: string;
     password: string;
     role_name: string;
     image?: string;
+  }
+
+  export interface EditUserInformationRequest {
+    full_name?: string,
+    job_tittle?: string,
+    about_me?: string,
+    location?: string,
+    phone?: string
   }
 
   export interface LoginRequest {
