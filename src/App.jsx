@@ -6,6 +6,7 @@ import {
     Blog,
     CareerPathBuilder,
     CompanyProfile,
+    EditProfile,
     Home,
     InsertCV,
     Login,
@@ -16,6 +17,15 @@ import {
     ProjectDetails,
     Seeking,
 } from "./pages";
+import CompanyLayout from "./company/layouts/CompanyLayout";
+import Dashboard from "./company/components/Dashboard";
+import JobList from "./company/components/JobList";
+import JobForm from "./company/components/JobForm";
+import CandidateList from "./company/components/CandidateList";
+import HRAccountManager from "./company/components/HRAccountManager";
+import CompanySettings from "./company/components/CompanySetting";
+import ServicePackageManager from "./company/components/ServicePackageManager";
+import HRDashboard from "./company/components/HRDashboard";
 
 function App() {
     return (
@@ -30,6 +40,7 @@ function App() {
                             <Route path="/aboutus" element={<AboutUs />} />
                             <Route path="/career" element={<CareerPathBuilder />} />
                             <Route path="/profile" element={<Profile />} />
+                            <Route path="/edit-profile" element={<EditProfile />} />
                             <Route path="/company/:id" element={<CompanyProfile />} />
                             <Route path="/project/:id" element={<ProjectDetails />} />
                             <Route path="/insert-cv" element={<InsertCV />} />
@@ -38,6 +49,16 @@ function App() {
                             <Route path="/post-project" element={<PostProject />} />
                             <Route path="/post-job" element={<PostJob />} />
                             <Route path="*" element={<div>404 Not Found</div>} />
+                        </Route>
+                        <Route path="/company" element={<CompanyLayout />}>
+                            <Route index element={<Dashboard />} />
+                            <Route path="jobs" element={<JobList />} />
+                            <Route path="jobs/new" element={<JobForm />} />
+                            <Route path="candidates" element={<CandidateList />} />
+                            <Route path="hr-accounts" element={<HRAccountManager />} />
+                            <Route path="settings" element={<CompanySettings />} />
+                            <Route path="packages" element={<ServicePackageManager />} />
+                            <Route path="hr-dashboard" element={<HRDashboard />} />
                         </Route>
                     </Routes>
                 </Router>
