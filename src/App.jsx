@@ -1,5 +1,15 @@
 import { DarkModeProvider } from "@/hooks/DarkModeContext";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import CandidateList from "./company/components/CandidateList";
+import CompanySettings from "./company/components/CompanySetting";
+import Dashboard from "./company/components/Dashboard";
+import HRAccountManager from "./company/components/HRAccountManager";
+import HRDashboard from "./company/components/HRDashboard";
+import JobForm from "./company/components/JobForm";
+import JobList from "./company/components/JobList";
+import ServicePackageManager from "./company/components/ServicePackageManager";
+import CompanyLayout from "./company/layouts/CompanyLayout";
+import PaymentLayout from "./layout/PaymentLayout";
 import {
     AboutUs,
     AddProject,
@@ -11,21 +21,13 @@ import {
     InsertCV,
     Login,
     MainLayout,
+    PaymentPage,
     PostJob,
     PostProject,
     Profile,
     ProjectDetails,
     Seeking,
 } from "./pages";
-import CompanyLayout from "./company/layouts/CompanyLayout";
-import Dashboard from "./company/components/Dashboard";
-import JobList from "./company/components/JobList";
-import JobForm from "./company/components/JobForm";
-import CandidateList from "./company/components/CandidateList";
-import HRAccountManager from "./company/components/HRAccountManager";
-import CompanySettings from "./company/components/CompanySetting";
-import ServicePackageManager from "./company/components/ServicePackageManager";
-import HRDashboard from "./company/components/HRDashboard";
 
 function App() {
     return (
@@ -59,6 +61,9 @@ function App() {
                             <Route path="settings" element={<CompanySettings />} />
                             <Route path="packages" element={<ServicePackageManager />} />
                             <Route path="hr-dashboard" element={<HRDashboard />} />
+                        </Route>
+                        <Route path="/payment" element={<PaymentLayout />}>
+                            <Route index element={<PaymentPage />} />
                         </Route>
                     </Routes>
                 </Router>

@@ -13,4 +13,5 @@ export { default as PostJob } from "./homepage/PostJob";
 export { default as PostProject } from "./homepage/PostProject";
 export { default as Seeking } from "./homepage/Seeking";
 export { default as Login } from "./Login";
+export { default as PaymentPage } from "./payment/PaymentPage";
 
