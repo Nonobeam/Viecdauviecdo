@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function CancelPage() {
+  const navigate = useNavigate();
   const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
     if (countdown <= 0) {
       // In a real app, you would redirect to homepage here
       console.log("Redirecting to homepage...");
+      navigate('/');
       return;
     }
 

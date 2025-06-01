@@ -1,31 +1,17 @@
 // PaymentPage.jsx
 import { QRCodeCanvas } from "qrcode.react";
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 function PaymentPage() {
-  // Store the VietQR payload in state
-  const [qrPayload] = useState(
-    "00020101021238570010A000000727012700069704220113VQRQACRFW72580208QRIBFTTA53037045405100005802VN62060802Hi630408CC"
-  );
+  const location = useLocation();
+  const transactionData = location.state;
+  console.log(transactionData.qrCode);
+  const [qrPayload] = useState(transactionData.qrCode);
 
-  // Countdown timer state (in seconds), starting at 5 minutes (300s)
-  const [timeLeft, setTimeLeft] = useState(300);
+  const [timeLeft, setTimeLeft] = useState(transactionData.expiredAt * 1000);
   // Page status: 'idle' (still counting), 'expired', 'canceled', or 'paid'
   const [status, setStatus] = useState("idle");
-
-  // Decrease timeLeft by 1 every second until it reaches 0 or status changes
-  useEffect(() => {
-    if (status !== "idle") return;
-    if (timeLeft <= 0) {
-      setStatus("expired");
-      return;
-    }
-    const timerId = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
-    }, 1000);
-
-    return () => clearInterval(timerId);
-  }, [timeLeft, status]);
 
   // Format seconds into "MM:SS"
   const formatTime = (sec) => {
@@ -49,6 +35,19 @@ function PaymentPage() {
       setStatus("canceled");
     }
   };
+
+    useEffect(() => {
+    if (status !== "idle") return;
+    if (timeLeft <= 0) {
+      setStatus("expired");
+      return;
+    }
+    const timerId = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timerId);
+  }, [timeLeft, status]);
 
   return (
     <div className="min-h-screen bg-background">

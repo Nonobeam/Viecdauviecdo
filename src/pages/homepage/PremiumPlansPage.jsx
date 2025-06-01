@@ -1,10 +1,13 @@
+import { useAuth } from "@/providers/AuthContext";
 import { createTransaction } from "@/utils/transactionAPI";
 import { Check, Crown, Eye, Star, Target, Zap } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function PremiumPlansPage() {
   const [selectedPlan, setSelectedPlan] = useState(null);
-
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
   const generateOrderCode = () => {
     return Math.floor(100000 + Math.random() * 900000); // Random 6-digit number
   };
@@ -24,51 +27,46 @@ function PremiumPlansPage() {
     const plan = plans.find((p) => p.id === planId);
     if (!plan) return;
 
-    setIsLoading(true);
-    setError(null);
 
     try {
-      const currentUserId = getCurrentUserId();
       const orderCode = generateOrderCode();
 
       // Create transaction payload with all required and optional fields
-      const transactionPayload = {
+      const transactionRequest = {
         order_code: orderCode,
-        amount: plan.amount,
-        holder_id: currentUserId,
+        amount: plan.price,
+        holder_id: user.user_id,
         description: plan.name,
-        buyer_name: undefined, // Add buyer name if available
-        buyer_email: undefined, // Add buyer email if available
-        buyer_phone: undefined, // Add buyer phone if available
-        buyer_address: undefined, // Add buyer address if available
+        buyer_name: undefined,
+        buyer_email: undefined,
+        buyer_phone: undefined,
+        buyer_address: undefined,
         items: [
           {
-            name: currentUserId,
+            name: user.user_id,
             quantity: 1,
-            price: plan.amount,
+            price: plan.price,
           },
         ],
-        cancel_url: `${window.location.origin}/payment/cancel`,
-        return_url: `${window.location.origin}/payment/success`, // URL to redirect on success
-        expired_at: Math.floor(Date.now() / 1000) + 5 * 60, // Expire in 30 minutes
-        signature: undefined, // Add signature if required
+        cancel_url: undefined,
+        return_url: undefined,
+        expired_at: Math.floor(Date.now() / 1000) + 5 * 60,
+        signature: undefined,
       };
 
-      console.log("Creating transaction with payload:", transactionPayload);
+      console.log("Creating transaction with payload:", transactionRequest);
 
       const transactionData = await createTransactionPayload(
-        transactionPayload
+        transactionRequest
       );
+      
 
       console.log("Transaction created successfully:", transactionData);
 
       // Navigate to payment page with transaction data
-      navigateToPayment(transactionData);
+     navigate(`/payment`,{state: transactionData.data });
     } catch (err) {
       console.error("Error creating transaction:", err);
-      setError("Có lỗi xảy ra khi tạo giao dịch. Vui lòng thử lại.");
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -93,7 +91,7 @@ function PremiumPlansPage() {
     {
       id: "premium",
       name: "Premium",
-      price: "99,000",
+      price: "1000",
       period: "mỗi tháng",
       description: "Mở khóa tiềm năng nghề nghiệp",
       popular: true,
@@ -114,6 +112,15 @@ function PremiumPlansPage() {
     },
   ];
 
+useEffect(() => {
+  if (!loading) {
+    if (user) {
+      console.log('User fetched:', user.user_id);
+    } else {
+      console.log('No user');
+    }
+  }
+}, [loading]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">

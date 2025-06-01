@@ -22,7 +22,8 @@ const Profile = () => {
     if (user?.user_id && !loading) {
       try {
         const fetchedUser = await getUserById(user.user_id);
-        setUserData(fetchedUser.data);
+        setUserData(fetchedUser);
+        setFetched(true);
       } catch (error) {
         console.error("Failed to fetch user:", error);
       }
@@ -43,9 +44,15 @@ const Profile = () => {
     }
   };
 
-  useEffect(() => {
-    fetchUser();
-  }, [user, fetched]);
+useEffect(() => {
+  if (!loading) {
+    if (user) {
+      console.log('User fetched:', user.user_id);
+    } else {
+      console.log('No user');
+    }
+  }
+}, [loading]);
 
   const skills = [
     { name: "React", color: "bg-blue-100 text-blue-700" },

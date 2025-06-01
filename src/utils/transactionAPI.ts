@@ -16,10 +16,13 @@ export const getAllTransactions = async (
 // Create a new transaction
 export const createTransaction = async (
   payload: TransactionRequest
-): Promise<TransactionData> =>
-  handleRequest(() =>
-    api.post<TransactionData>(ENDPOINTS.POST_TRANSACTION, payload)
+): Promise<TransactionData> => {
+  const response = await handleRequest(() =>
+    api.post<{ data: TransactionData }>(ENDPOINTS.POST_TRANSACTION, payload)
   );
+
+  return response.data;
+};
 
 // Send webhook payload
 export const sendTransactionWebhook = async (

@@ -1,7 +1,7 @@
 import ViecdauviecdoLogo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/providers/AuthContext";
-import { ChevronDown, Crown, LogOut, Search, User } from "lucide-react";
+import { BadgeDollarSign, ChevronDown, History, LogOut, Search, User } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -49,13 +49,23 @@ const Header = () => {
                 </button>
               </Link>
 
-              <Link to="/buy-premium">
+              <Link to="/account-plan">
                 <button
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                   onClick={() => setIsOpen(false)}
                 >
-                  <Crown size={16} />
-                  Buy Premium
+                  <BadgeDollarSign size={16} />
+                  Account plan
+                </button>
+              </Link>
+
+              <Link to="/transaction-history">
+                <button
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <History size={16} />
+                  Transaction History
                 </button>
               </Link>
 

@@ -109,7 +109,7 @@ declare module 'types' {
   buyer_email?: string;
   buyer_phone?: string;
   buyer_address?: string;
-  items?: TransactionItem[];
+  items: TransactionItem[];
   cancel_url?: string;
   return_url?: string;
   expired_at?: number;

@@ -25,10 +25,12 @@ import {
     PaymentPage,
     PostJob,
     PostProject,
+    PremiumPlansPage,
     Profile,
     ProjectDetails,
     Seeking,
     SuccessPage,
+    TransactionHistory,
 } from "./pages";
 
 function App() {
@@ -40,6 +42,8 @@ function App() {
                         <Route element={<MainLayout />}>
                             <Route path="/" element={<Blog />} />
                             <Route path="/login" element={<Login />} />
+                            <Route path="/account-plan" element={<PremiumPlansPage />} />
+                            <Route path="/transaction-history" element={<TransactionHistory />} />
                             <Route path="/job" element={<Home />} />
                             <Route path="/aboutus" element={<AboutUs />} />
                             <Route path="/career" element={<CareerPathBuilder />} />
