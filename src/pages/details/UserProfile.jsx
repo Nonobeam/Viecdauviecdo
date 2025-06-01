@@ -22,7 +22,7 @@ const Profile = () => {
     if (user?.user_id && !loading) {
       try {
         const fetchedUser = await getUserById(user.user_id);
-        setUserData(fetchedUser.data);
+        setUserData(fetchedUser);
       } catch (error) {
         console.error("Failed to fetch user:", error);
       }
@@ -44,10 +44,8 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    if (!loading && user?.user_id) {
-      fetchUser();
-    }
-  }, [user, loading]);
+    fetchUser();
+  }, [user, fetched]);
 
   const skills = [
     { name: "React", color: "bg-blue-100 text-blue-700" },
