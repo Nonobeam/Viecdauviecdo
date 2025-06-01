@@ -14,6 +14,7 @@ import {
     AboutUs,
     AddProject,
     Blog,
+    CancelPage,
     CareerPathBuilder,
     CompanyProfile,
     EditProfile,
@@ -27,6 +28,7 @@ import {
     Profile,
     ProjectDetails,
     Seeking,
+    SuccessPage,
 } from "./pages";
 
 function App() {
@@ -64,6 +66,8 @@ function App() {
                         </Route>
                         <Route path="/payment" element={<PaymentLayout />}>
                             <Route index element={<PaymentPage />} />
+                            <Route path="success" element={<SuccessPage />} />
+                            <Route path="cancel" element={<CancelPage />} />
                         </Route>
                     </Routes>
                 </Router>

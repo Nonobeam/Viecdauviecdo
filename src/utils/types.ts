@@ -109,16 +109,17 @@ declare module 'types' {
   buyer_email?: string;
   buyer_phone?: string;
   buyer_address?: string;
-  items?: Item[];
+  items?: TransactionItem[];
   cancel_url?: string;
   return_url?: string;
   expired_at?: number;
   signature?: string;
 }
 
-export interface Item {
-  // Define fields based on your schema
-  [key: string]: any;
+export interface TransactionItem {
+  name: string;
+  quantity: number;
+  price: number;
 }
 
 export interface TransactionData {

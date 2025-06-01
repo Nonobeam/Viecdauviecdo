@@ -72,7 +72,7 @@ function PaymentPage() {
           <div className="text-center mb-6">
             {status === "idle" && timeLeft > 0 && (
               <span className="text-lg font-medium text-red-500">
-                Time remaining: {formatTime(timeLeft)}
+                Thời gian còn lại: {formatTime(timeLeft)}
               </span>
             )}
             {status === "expired" && (
