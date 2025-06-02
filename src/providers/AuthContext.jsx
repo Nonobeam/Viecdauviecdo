@@ -8,9 +8,8 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const token = Cookies.get("token");
   useEffect(() => {
-    const token = Cookies.get("token");
     if (token) {
       try {
         const decoded = jwtDecode(token);
