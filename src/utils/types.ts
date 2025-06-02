@@ -100,4 +100,51 @@ declare module 'types' {
   export interface TokenResponse {
     token: string;
   }
+
+  export interface TransactionRequest {
+  order_code: number;
+  amount: number;
+  holder_id: string;
+  description?: string;
+  buyer_name?: string;
+  buyer_email?: string;
+  buyer_phone?: string;
+  buyer_address?: string;
+  items: TransactionItem[];
+  cancel_url?: string;
+  return_url?: string;
+  expired_at?: number;
+  signature?: string;
+}
+
+export interface TransactionItem {
+  name: string;
+  quantity: number;
+  price: number;
+}
+
+export interface TransactionData {
+  amount: number;
+  description: string;
+  reference: string;
+  currency: string;
+  orderCode: number;
+  accountNumber: string;
+  transactionDateTime: string;
+  paymentLinkId: string;
+  counterAccountBankId: string;
+  counterAccountBankName: string;
+  counterAccountName: string;
+  counterAccountNumber: string;
+  virtualAccountName: string;
+  virtualAccountNumber: string;
+}
+
+export interface PayOSWebhook {
+  code: string;
+  desc: string;
+  success: boolean;
+  data: TransactionData;
+}
+
 }
