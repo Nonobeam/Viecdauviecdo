@@ -29,7 +29,7 @@ const TransactionHistory = () => {
         console.log("No user");
       }
     }
-  }, [loading]);
+  }, []);
 
   // Filter transactions when filters change
   useEffect(() => {

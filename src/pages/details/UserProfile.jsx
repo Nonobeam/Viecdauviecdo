@@ -9,8 +9,9 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 
 const Profile = () => {
-  const { user, loading } = useAuth(); // From AuthContext
+  const { user } = useAuth(); // From AuthContext
   const [userData, setUserData] = useState(null);
+
   const fileInputRef = useRef(null);
   const [fetched, setFetched] = useState(false);
   const navigate = useNavigate();
@@ -19,11 +20,10 @@ const Profile = () => {
   };
 
   const fetchUser = async () => {
-    if (user?.user_id && !loading) {
+    if (user?.user_id) {
       try {
         const fetchedUser = await getUserById(user.user_id);
         setUserData(fetchedUser);
-        setFetched(true);
       } catch (error) {
         console.error("Failed to fetch user:", error);
       }
@@ -44,15 +44,9 @@ const Profile = () => {
     }
   };
 
-useEffect(() => {
-  if (!loading) {
-    if (user) {
-      console.log('User fetched:', user.user_id);
-    } else {
-      console.log('No user');
-    }
-  }
-}, [loading]);
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
   const skills = [
     { name: "React", color: "bg-blue-100 text-blue-700" },
