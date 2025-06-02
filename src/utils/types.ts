@@ -10,9 +10,10 @@ declare module 'types' {
   }
 
   export interface CreatePostRequest {
-    userId: string;
+    user_id: string;
+    title: string;
     content: string;
-    imageUrl?: string;
+    image_url?: string;
     tags?: string[];
   }
 
