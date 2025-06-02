@@ -13,7 +13,6 @@ const Profile = () => {
   const [userData, setUserData] = useState(null);
 
   const fileInputRef = useRef(null);
-  const [fetched, setFetched] = useState(false);
   const navigate = useNavigate();
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
