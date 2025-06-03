@@ -1,12 +1,48 @@
-import { CreateUserRequest, EditUserInformationRequest, User } from 'types';
+import { CreateUserRequest, EditUserInformationRequest, GetAllUsersParams, User } from 'types';
 import { api, handleRequest } from './apiClient';
 import { ENDPOINTS } from './apiEndpoint';
 
-export const getAllUsers = async (
+export const getAllUsers = async ({
   page = 0,
-  size = 10
-): Promise<User[]> =>
-  handleRequest(() => api.get<User[]>(ENDPOINTS.GET_ALL_USERS, { params: { page, size } }));
+  size = 10,
+  city,
+  state,
+  country,
+  dateOfBirth,
+  skill,
+  certification,
+}: GetAllUsersParams = {}): Promise<User[]> =>
+  handleRequest(() =>
+    api.get<User[]>(ENDPOINTS.GET_ALL_USERS, {
+      params: {
+        page,
+        size,
+        city,
+        state,
+        country,
+        dateOfBirth,
+        skill,
+        certification,
+      },
+      paramsSerializer: params => {
+        const searchParams = new URLSearchParams();
+        Object.entries(params).forEach(([key, value]) => {
+          if (Array.isArray(value)) {
+            if (value.length > 0) {
+              value.forEach(val => searchParams.append(key, val));
+            } else {
+              searchParams.append(key, '');
+            }
+          } else if (value !== undefined && value !== null) {
+            searchParams.append(key, value.toString());
+          } else {
+            searchParams.append(key, '');
+          }
+        });
+        return searchParams.toString();
+      },
+    })
+  );
 
 export const getUserById = async (userId: string): Promise<User> =>
   handleRequest(() => api.get<User>(ENDPOINTS.GET_USER_BY_ID(userId)));
