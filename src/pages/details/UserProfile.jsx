@@ -11,8 +11,9 @@ import { Link, useNavigate } from 'react-router-dom';
 const Profile = () => {
   const { user } = useAuth(); // From AuthContext
   const [userData, setUserData] = useState(null);
-
+  const [userInformation, setUserInformation] = useState(null);
   const fileInputRef = useRef(null);
+  const [updated, setUpdated] = useState(false);
   const navigate = useNavigate();
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
@@ -22,7 +23,8 @@ const Profile = () => {
     if (user?.user_id) {
       try {
         const fetchedUser = await getUserById(user.user_id);
-        setUserData(fetchedUser);
+        setUserData(fetchedUser.data);
+        setUserInformation(fetchedUser.data.user_information)
       } catch (error) {
         console.error("Failed to fetch user:", error);
       }
@@ -37,7 +39,7 @@ const Profile = () => {
       await uploadAvatar(user.user_id, file);
       const updated = await getUserById(user.user_id);
       setUserData(updated);
-      setFetched(true);
+      setUpdated(prev => !prev);
     } catch (err) {
       console.error("Avatar upload failed:", err);
     }
@@ -45,7 +47,7 @@ const Profile = () => {
 
   useEffect(() => {
     fetchUser();
-  }, []);
+  }, [updated]);
 
   const skills = [
     { name: "React", color: "bg-blue-100 text-blue-700" },
@@ -74,7 +76,6 @@ const Profile = () => {
     },
   ];
 
-  console.log("User from userData:", userData);
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
@@ -100,10 +101,10 @@ const Profile = () => {
                 onChange={handleFileChange}
               />
               <h1 className="text-2xl font-bold">
-                {userData?.fullName || "Loading..."}
+                {userInformation?.full_name || "N/A"}
               </h1>
               <p className="text-muted-foreground">
-                Senior Full-Stack Developer
+                {userInformation?.job_title || "N/A"}
               </p>
             </div>
 
@@ -121,21 +122,20 @@ const Profile = () => {
                 </Button>
               </div>
               <p className="text-muted-foreground">
-                Passionate developer with 5+ years of experience building
-                scalable web applications and leading development teams.
+                {userInformation?.summary || "N/A"}
               </p>
             </div>
 
             {/* Location */}
             <div>
               <h2 className="text-lg font-semibold mb-2">Location</h2>
-              <p className="text-muted-foreground">San Francisco, CA</p>
+              <p className="text-muted-foreground">{userInformation?.location || "N/A"}</p>
             </div>
 
             {/* Contact */}
             <div>
               <h2 className="text-lg font-semibold mb-2">Contact</h2>
-              <p className="text-muted-foreground">{userData?.email}</p>
+              <p className="text-muted-foreground">{userData?.email || "N/A"}</p>
             </div>
 
             {/* Action Buttons */}

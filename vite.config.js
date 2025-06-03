@@ -1,11 +1,11 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
 import tailwindcss from "@tailwindcss/vite";
+import react from '@vitejs/plugin-react';
 import path from "node:path";
-import { fileURLToPath } from "url";
-import { nodePolyfills } from 'vite-plugin-node-polyfills';
-import EnvironmentPlugin from 'vite-plugin-environment';
 import { visualizer } from 'rollup-plugin-visualizer';
+import { fileURLToPath } from "url";
+import { defineConfig } from 'vite';
+import EnvironmentPlugin from 'vite-plugin-environment';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -29,7 +29,8 @@ export default defineConfig({
     },
     allowedHosts: [
       "localhost",
-      "exe.threemusketeer.click"
+      "exe.threemusketeer.click",
+      "matchlent.xyz"
     ]
   },
   resolve: {
