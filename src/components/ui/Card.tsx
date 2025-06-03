@@ -1,19 +1,29 @@
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import React, { useRef } from "react";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import React, { useRef } from "react";
 
-type TalentCard = {
-  id: string;
-  name: string;
-  location: string;
-  role: string;
-  avatar: string;
-  fallback: string;
-  skills: { id: string; name: string; color: string }[];
+type UserInformation = {
+  // If your backend eventually returns these, keep them here.
+  location?: string;
+  job_title?: string;
+  full_name: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  skills?: string[];
+  certifications?: string[];
 };
 
+  type Talent  = {
+    email: string;
+    image: string;
+    fallback: string;
+    user_information?: UserInformation;
+  };
+
 export const Card = React.memo(
+  
   ({
     card,
     index,
@@ -21,7 +31,7 @@ export const Card = React.memo(
     setHovered,
     onClick,
   }: {
-    card: TalentCard;
+    card: Talent;
     index: number;
     hovered: number | null;
     setHovered: React.Dispatch<React.SetStateAction<number | null>>;
@@ -87,20 +97,20 @@ export const Card = React.memo(
         >
           <Avatar className="absolute inset-0 w-full h-full">
             <AvatarImage
-              src={card.avatar}
+              src={card.image || "https://www.shutterstock.com/image-vector/default-gray-man-avatar-template-260nw-662278102.jpg"}
               className="object-cover w-full h-full"
             />
             <AvatarFallback>{card.fallback}</AvatarFallback>
           </Avatar>
           {/* Skills Box */}
           <div className="absolute bottom-0 left-0 right-0 h-1/5 bg-black/50 flex flex-wrap justify-center gap-2 p-2 overflow-hidden">
-            {card.skills.map((skill) => (
+            {card.user_information.skills?.map((skill, index) => (
               <Badge
-                key={skill.id}
+                key={index}
                 variant="secondary"
-                className={`px-2 h-10 text-xs rounded ${skill.color}`}
+                className="px-2 h-10 text-xs rounded bg-gray-700 text-white"
               >
-                {skill.name}
+                {skill}
               </Badge>
             ))}
           </div>
@@ -111,9 +121,9 @@ export const Card = React.memo(
               hovered === index ? "opacity-100" : "opacity-0"
             )}
           >
-            <h2 className="text-2xl font-bold mb-2">{card.name}</h2>
-            <p className="text-lg mb-1">{card.location}</p>
-            <p className="text-lg mb-4">{card.role}</p>
+            <h2 className="text-2xl font-bold mb-2">{card.user_information.full_name}</h2>
+            <p className="text-lg mb-1">{card.user_information.location}</p>
+            <p className="text-lg mb-4">{card.user_information.job_title}</p>
           </div>
         </button>
       </div>

@@ -11,9 +11,9 @@ import { Link, useNavigate } from 'react-router-dom';
 const Profile = () => {
   const { user } = useAuth(); // From AuthContext
   const [userData, setUserData] = useState(null);
-
+  const [userInformation, setUserInformation] = useState(null);
   const fileInputRef = useRef(null);
-  const [fetched, setFetched] = useState(false);
+  const [updated, setUpdated] = useState(false);
   const navigate = useNavigate();
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
@@ -23,7 +23,8 @@ const Profile = () => {
     if (user?.user_id) {
       try {
         const fetchedUser = await getUserById(user.user_id);
-        setUserData(fetchedUser);
+        setUserData(fetchedUser.data);
+        setUserInformation(fetchedUser.data.user_information)
       } catch (error) {
         console.error("Failed to fetch user:", error);
       }
@@ -38,7 +39,7 @@ const Profile = () => {
       await uploadAvatar(user.user_id, file);
       const updated = await getUserById(user.user_id);
       setUserData(updated);
-      setFetched(true);
+      setUpdated(prev => !prev);
     } catch (err) {
       console.error("Avatar upload failed:", err);
     }
@@ -46,7 +47,7 @@ const Profile = () => {
 
   useEffect(() => {
     fetchUser();
-  }, []);
+  }, [updated]);
 
   const skills = [
     { name: "React", color: "bg-blue-100 text-blue-700" },
@@ -75,7 +76,6 @@ const Profile = () => {
     },
   ];
 
-  console.log("User from userData:", userData);
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
