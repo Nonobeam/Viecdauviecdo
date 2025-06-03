@@ -21,8 +21,9 @@ jobs:
         uses: mathieudutour/github-tag-action@v6.2
         with:
           github_token: ${{ secrets.ACCESS_TOKEN }}
-          default_bump: minor
-          version: '1.0.0'
+          default_bump: patch
+          tag_prefix: ''
+          release_branches: deploy/develop
 
   build-and-push-image:
     needs: tag_docker
@@ -81,6 +82,6 @@ jobs:
           ssh admin@pog.threemusketeer.click << EOF
             set -e
             cd /home/admin/Documents/viecdauviecday
-            echo "${{ secrets.SSH_PASS }}" | sudo -S docker compose pull ${{ secrets.DH_REPO_NAME }}
+            echo "${{ secrets.SSH_PASS }}" | sudo -S docker compose pull exe-frontend
             echo "${{ secrets.SSH_PASS }}" | sudo -S docker compose up -d
           EOF

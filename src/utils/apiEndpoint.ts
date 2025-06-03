@@ -27,4 +27,10 @@ export const ENDPOINTS = {
 
   // Auth
   LOGIN: '/api/auth/login',
+
+  //transactions
+  GET_TRANSACTION: `/api/transactions`,
+  POST_TRANSACTION: `/api/transactions`,
+  SEND_WEBHOOK_TRANSACTION: `/api/transactions/webhook`,
+  GET_TRANSACTION_BY_ID: (id: string) => `/api/transactions/${id}`
 };
