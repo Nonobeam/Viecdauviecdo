@@ -100,7 +100,7 @@ const Project = () => {
       )}
 
       {/* Error message for load more */}
-      {error && talents.length > 0 && (
+      {error && projects.length > 0 && (
         <div className="text-center mt-4">
           <p className="text-red-600 text-sm">{error}</p>
         </div>
