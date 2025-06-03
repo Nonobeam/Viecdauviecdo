@@ -91,12 +91,17 @@ declare module 'types' {
     title?: string;
   };
 
-    export type ProjectRequest = {
+  export type ProjectRequest = {
     name: string;
     description?: string;
     tags?: string[];
   };
 
+  export type AddProjectMemRequest = {
+    user_id: string;
+    project_id: string;
+    project_role: string;
+  }
 
   export interface User {
     id: string;

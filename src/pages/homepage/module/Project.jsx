@@ -1,6 +1,7 @@
 import BentoGridDemo from "@/components/BentoGridLayout";
 import ChatbotButton from "@/components/ui/chatbotButton";
-import { BarChart, Brain, Building, Heart } from "lucide-react"; // Using Lucide icons
+import { getAllProjects } from "@/utils/projectAPI";
+import { useEffect, useState } from "react";
 // import {
 //   IconBuildingBank,
 //   IconBrain,
@@ -16,13 +17,14 @@ const Project = () => {
   const [hasMore, setHasMore] = useState(true);
   const pageSize = 10;
 
-   const fetchProjects = async (pageNum = 0, reset = false) => {
+  const fetchProjects = async (pageNum = 0, reset = false) => {
     try {
       setLoading(true);
       const data = await getAllProjects(pageNum, pageSize);
+      console.log(data.data.content);
       
       if (reset) {
-        setProjects(data);
+        setProjects(data.data.content);
       } else {
         setProjects(prev => [...prev, ...data]);
       }
@@ -45,36 +47,39 @@ const Project = () => {
       fetchProjects(nextPage, false);
     }
   };
-  const Skeleton = () => (
-    <div className="flex flex-1 w-full h-full rounded-xl bg-gradient-to-br from-neutral-200 dark:from-neutral-900 dark:to-neutral-800 to-neutral-100"></div>
-  );
-  const icons = [
-    { key: "bank", element: <Building className="h-4 w-4 text-neutral-500" /> },
-    { key: "brain", element: <Brain className="h-4 w-4 text-neutral-500" /> },
-    {
-      key: "chart",
-      element: <BarChart className="h-4 w-4 text-neutral-500" />,
-    },
-    {
-      key: "heartbeat",
-      element: <Heart className="h-4 w-4 text-neutral-500" />,
-    },
-  ];
-  const items = projects.map((project, index) => ({
-    id: project.id,
-    title: project.title,
-    description: project.description,
-    header: <Skeleton />,
-    teamSize: project.teamSize,
-    icon: icons[index % icons.length].element,
-    imgSrc: project.image,
-  }));
+  // const Skeleton = () => (
+  //   <div className="flex flex-1 w-full h-full rounded-xl bg-gradient-to-br from-neutral-200 dark:from-neutral-900 dark:to-neutral-800 to-neutral-100"></div>
+  // );
+  // const icons = [
+  //   { key: "bank", element: <Building className="h-4 w-4 text-neutral-500" /> },
+  //   { key: "brain", element: <Brain className="h-4 w-4 text-neutral-500" /> },
+  //   {
+  //     key: "chart",
+  //     element: <BarChart className="h-4 w-4 text-neutral-500" />,
+  //   },
+  //   {
+  //     key: "heartbeat",
+  //     element: <Heart className="h-4 w-4 text-neutral-500" />,
+  //   },
+  // ];
+  // const items = projects.map((project, index) => ({
+  //   id: project.id,
+  //   title: project.title,
+  //   description: project.description,
+  //   header: <Skeleton />,
+  //   teamSize: project.teamSize,
+  //   icon: icons[index % icons.length].element,
+  //   imgSrc: project.image,
+  // }));
 
-  
+  useEffect(() => {
+    fetchProjects(0, true);
+    setPage(0);
+  }, []);
 
   return (
     <div className="h-full overflow-auto p-4">
-      <BentoGridDemo items={items} />
+      <BentoGridDemo items={projects} />
       {/* Load More Button */}
       {hasMore && (
         <div className="flex justify-center mt-6">

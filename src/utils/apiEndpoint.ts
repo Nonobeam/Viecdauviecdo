@@ -24,7 +24,7 @@ export const ENDPOINTS = {
   UPLOAD_PROJECT_IMAGE: (id: string) => `/api/projects/${id}/image`,
   UPDATE_PROJECT: '/api/projects',
   DELETE_PROJECT: (id: string) => `/api/projects/${id}`,
-  ADD_PROJECT_MEMBER: (id: string) => `/api/projects/mem`,
+  ADD_PROJECT_MEMBER: `/api/projects/mem`,
 
   // Users
   GET_ALL_USERS: '/api/users',
