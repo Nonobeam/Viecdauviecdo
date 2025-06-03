@@ -21,7 +21,6 @@ const Project = () => {
     try {
       setLoading(true);
       const data = await getAllProjects(pageNum, pageSize);
-      console.log(data.data.content);
       
       if (reset) {
         setProjects(data.data.content);
