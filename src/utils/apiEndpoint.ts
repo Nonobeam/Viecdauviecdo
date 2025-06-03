@@ -15,14 +15,25 @@ export const ENDPOINTS = {
   GET_COMPANY_BY_ID: (id: string) => `/api/companies/${id}`,
   CREATE_COMPANY: '/api/companies',
   UPDATE_COMPANY: '/api/companies',
-  DELETE_COMPANY: (id: string) => `/api/companies/${id}`,
+  DELETE_COMPANY: (id: string) => `/api/projects/${id}`,
+
+    // Projects
+  GET_ALL_PROJECTS: '/api/projects',
+  GET_PROJECT_BY_ID: (id: string) => `/api/projects/${id}`,
+  CREATE_PROJECT: '/api/projects',
+  UPLOAD_PROJECT_IMAGE: (id: string) => `/api/projects/${id}/image`,
+  UPDATE_PROJECT: '/api/projects',
+  DELETE_PROJECT: (id: string) => `/api/projects/${id}`,
+  ADD_PROJECT_MEMBER: `/api/projects/mem`,
 
   // Users
   GET_ALL_USERS: '/api/users',
   GET_USER_BY_ID: (id: string) => `/api/users/${id}`,
   CREATE_USER: '/api/users',
   UPLOAD_AVATAR: (id: string) => `/api/users/${id}/ava`,
-  CHANGE_INFORMATION: (id: string) => `/api/users/${id}/change-information`,
+  CHANGE_INFORMATION: (id: string) => `/api/users/${id}/change-information`, 
+  UPLOAD_DOCUMENT: (userId: string) => `/api/users/${userId}/upload-document`,
+
   // Auth
   LOGIN: '/api/auth/login',
 

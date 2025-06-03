@@ -1,4 +1,16 @@
 declare module 'types' {
+
+  export interface GetAllUsersParams {
+  page?: number;
+  size?: number;
+  city?: string[];
+  state?: string[];
+  country?: string[];
+  dateOfBirth?: string; // Format: 'YYYY-MM-DD'
+  skill?: string[];
+  certification?: string[];
+}
+
   export interface Post {
     id: string;
     userId: string;
@@ -68,6 +80,29 @@ declare module 'types' {
     twitterUrl?: string;
   }
 
+  export type Project = {
+    id: string;
+    name: string;
+    description?: string;
+    tags?: string[];
+    image_url?: string;
+    created_at: string;
+    system_status: string;
+    title?: string;
+  };
+
+  export type ProjectRequest = {
+    name: string;
+    description?: string;
+    tags?: string[];
+  };
+
+  export type AddProjectMemRequest = {
+    user_id: string;
+    project_id: string;
+    project_role: string;
+  }
+
   export interface User {
     id: string;
     email: string;
@@ -91,6 +126,10 @@ declare module 'types' {
     location?: string,
     phone?: string
   }
+
+  export interface UploadDocumentRequest {
+  file: string;
+}
 
   export interface LoginRequest {
     username: string;
