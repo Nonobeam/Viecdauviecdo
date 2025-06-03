@@ -4,7 +4,6 @@ import React, { useState } from "react";
 
 export function TalentCard({ cards, onCardClick }) {
   const [hovered, setHovered] = useState<number | null>(null);
-  console.log("what is cards?", cards);
   if (cards.length === 0) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -14,7 +13,6 @@ export function TalentCard({ cards, onCardClick }) {
   }
   
   const log = (msg: any) => {
-  console.log(msg);
   return null;
 };
 
@@ -23,7 +21,6 @@ export function TalentCard({ cards, onCardClick }) {
       {cards.map((card, index) => (
         
         <div key={card.id || index} className="h-96">
-           {log(card)}
           <Card
             card={card}
             index={index}

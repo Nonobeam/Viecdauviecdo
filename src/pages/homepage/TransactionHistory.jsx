@@ -48,68 +48,11 @@ const TransactionHistory = () => {
 
       // Use your existing API function to get all user transactions
       const response = await getTransactionById(userId);
-        console.log(response);
-      const transactions = response.data
-
+      const transactions = response.data.content
       setAllTransactions(Array.isArray(transactions) ? transactions : []);
     } catch (err) {
       setError(err.message || "Có lỗi xảy ra khi tải dữ liệu");
       console.error("Error fetching user transactions:", err);
-
-    //   // Fallback to mock data for development
-    //   setAllTransactions([
-    //     {
-    //       id: "1",
-    //       order_code: "ORD-2024-001",
-    //       name: "Premium Subscription",
-    //       description:
-    //         "Monthly premium plan subscription for advanced features",
-    //       amount: 299000,
-    //       status: "completed",
-    //       date: "2024-05-28",
-    //       payment_method: "Credit Card",
-    //     },
-    //     {
-    //       id: "2",
-    //       order_code: "ORD-2024-002",
-    //       name: "Project Consultation",
-    //       description: "Technical consultation for React development project",
-    //       amount: 150000,
-    //       status: "pending",
-    //       date: "2024-05-29",
-    //       payment_method: "Bank Transfer",
-    //     },
-    //     {
-    //       id: "3",
-    //       order_code: "ORD-2024-003",
-    //       name: "Design Package",
-    //       description: "UI/UX design package for mobile application",
-    //       amount: 500000,
-    //       status: "failed",
-    //       date: "2024-05-30",
-    //       payment_method: "E-wallet",
-    //     },
-    //     {
-    //       id: "4",
-    //       order_code: "ORD-2024-004",
-    //       name: "Code Review Service",
-    //       description: "Professional code review and optimization service",
-    //       amount: 200000,
-    //       status: "completed",
-    //       date: "2024-05-31",
-    //       payment_method: "Credit Card",
-    //     },
-    //     {
-    //       id: "5",
-    //       order_code: "ORD-2024-005",
-    //       name: "Training Workshop",
-    //       description: "Full-stack development workshop - 3 days intensive",
-    //       amount: 750000,
-    //       status: "cancelled",
-    //       date: "2024-06-01",
-    //       payment_method: "Bank Transfer",
-    //     },
-    //   ]);
     } finally {
       setProcessing(false);
     }

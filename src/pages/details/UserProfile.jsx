@@ -101,10 +101,10 @@ const Profile = () => {
                 onChange={handleFileChange}
               />
               <h1 className="text-2xl font-bold">
-                {userData?.fullName || "Loading..."}
+                {userInformation?.full_name || "N/A"}
               </h1>
               <p className="text-muted-foreground">
-                Senior Full-Stack Developer
+                {userInformation?.job_title || "N/A"}
               </p>
             </div>
 
@@ -122,21 +122,20 @@ const Profile = () => {
                 </Button>
               </div>
               <p className="text-muted-foreground">
-                Passionate developer with 5+ years of experience building
-                scalable web applications and leading development teams.
+                {userInformation?.summary || "N/A"}
               </p>
             </div>
 
             {/* Location */}
             <div>
               <h2 className="text-lg font-semibold mb-2">Location</h2>
-              <p className="text-muted-foreground">San Francisco, CA</p>
+              <p className="text-muted-foreground">{userInformation?.location || "N/A"}</p>
             </div>
 
             {/* Contact */}
             <div>
               <h2 className="text-lg font-semibold mb-2">Contact</h2>
-              <p className="text-muted-foreground">{userData?.email}</p>
+              <p className="text-muted-foreground">{userData?.email || "N/A"}</p>
             </div>
 
             {/* Action Buttons */}
