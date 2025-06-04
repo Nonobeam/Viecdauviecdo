@@ -121,9 +121,11 @@ declare module 'types' {
 
   export interface EditUserInformationRequest {
     full_name?: string,
-    job_tittle?: string,
+    job_title?: string,
     about_me?: string,
-    location?: string,
+    country?: string,
+    state?: string,
+    city?: string,
     phone?: string
   }
 
