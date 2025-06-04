@@ -1,7 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import ChatWidget from "@/components/ui/chatWidget";
 import { useAuth } from "@/providers/AuthContext";
 import { getUserById, uploadAvatar } from "@/utils/userApi";
 import { Edit, Plus } from "lucide-react";
@@ -259,7 +258,6 @@ const Profile = () => {
             </div>
           </div>
         </div>
-        <ChatWidget />
       </div>
     </div>
   );

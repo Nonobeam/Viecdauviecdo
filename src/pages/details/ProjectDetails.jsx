@@ -8,7 +8,6 @@ import {
   TabsList,
   TabsTrigger
 } from "@/components/ui";
-import ChatWidget from "@/components/ui/chatWidget";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 
@@ -128,7 +127,6 @@ const ProjectDetails = () => {
           </div>
         </div>
       </div>
-      <ChatWidget/>
     </div>
   )
 }

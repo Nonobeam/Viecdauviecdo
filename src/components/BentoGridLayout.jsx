@@ -7,8 +7,7 @@ export default function BentoGridDemo({ items }) {
   const navigate = useNavigate();
 
   const handleCardClick = (id) => {
-    console.log("Helllow World");
-    navigate(`/project/${id}`);
+    navigate(`/project/${id}`, );
   };
 
   return (
