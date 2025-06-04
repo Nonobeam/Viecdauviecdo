@@ -89,3 +89,26 @@ export const uploadDocument = async (
     })
   );
 };
+
+// Get CVs by user ID with pagination
+export const getCVs = async (
+  userId: string,
+  page = 0,
+  size = 10
+): Promise<any> =>
+  handleRequest(() =>
+    api.get(ENDPOINTS.GET_CVS, {
+      params: { userId, page, size },
+    })
+  );
+
+// Delete a CV by linkId and userId
+export const deleteCV = async (
+  userId: string,
+  linkId: string
+): Promise<any> =>
+  handleRequest(() =>
+    api.delete(ENDPOINTS.DELETE_CV(linkId), {
+      params: { userId },
+    })
+  );
