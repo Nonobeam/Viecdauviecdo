@@ -35,8 +35,12 @@ const Talent = () => {
           : undefined,
       });
 
+      const filteredData = data.data.content.filter(
+        (user) => user.role === "TALENT"
+      );
+
       if (reset) {
-        setTalents(data.data.content);
+        setTalents(filteredData);
       } else {
         setTalents((prev) => [...prev, ...data]);
       }
