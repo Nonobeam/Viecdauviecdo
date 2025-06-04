@@ -293,8 +293,21 @@ const Post = () => {
     setShowDropdown((prev) => ({ ...prev, [postId]: !prev[postId] }));
   };
 
-  const isPostOwner = (post) => {
-    return currentUserId && post.user_id === currentUserId;
+  const formatTime = (isoString) => {
+    const date = new Date(isoString);
+
+    if (isNaN(date)) return "Invalid date";
+
+    const options = {
+      year: "numeric",
+      month: "short", // e.g., "Jun"
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    };
+
+    return date.toLocaleString(undefined, options);
   };
 
   // Load more posts
@@ -322,6 +335,14 @@ const Post = () => {
     // Always switch to "all" mode on mount or redirect back
     switchViewMode("all");
   }, [loading, user]);
+
+  useEffect(() => {
+    if (posts.length > 0) {
+      posts.forEach((post) => {
+        fetchUser(post.user_id);
+      });
+    }
+  }, [posts]);
 
   if (waitLoading && posts && posts.length === 0) {
     return (
@@ -436,11 +457,12 @@ const Post = () => {
                     <Avatar className="h-12 w-12">
                       <AvatarImage
                         src={
-                          user?.image || "https://www.shutterstock.com/image-vector/default-gray-man-avatar-template-260nw-662278102.jpg"
+                          user?.image ||
+                          "https://www.shutterstock.com/image-vector/default-gray-man-avatar-template-260nw-662278102.jpg"
                         }
                       />
                       <AvatarFallback>
-                        {(userInfo?.full_name)?.[0] || "?"}
+                        {userInfo?.full_name?.[0] || "?"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
@@ -448,11 +470,8 @@ const Post = () => {
                         {userInfo?.full_name || "Unknown User"}
                       </h3>
                       <div className="text-sm text-muted-foreground">
-                        <p>
-                          { userInfo?.job_title ||
-                            "N/A"}
-                        </p>
-                        <p>{post.created_at || "Unknown Time"}</p>
+                        <p>{userInfo?.job_title || "N/A"}</p>
+                        <p>{formatTime(post.created_at) || "Unknown Time"}</p>
                       </div>
                     </div>
                   </div>
