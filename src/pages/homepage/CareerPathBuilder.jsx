@@ -1,4 +1,3 @@
-import ChatbotButton from "@/components/ui/chatbotButton";
 import { useEffect, useRef, useState } from "react";
 const CareerPathBuilder = () => {
   const [skills, setSkills] = useState([
@@ -279,7 +278,6 @@ const CareerPathBuilder = () => {
           </div>
         </div>
       </div>
-      <ChatbotButton/>
     </div>
   )
 }

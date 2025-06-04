@@ -33,6 +33,8 @@ export const ENDPOINTS = {
   UPLOAD_AVATAR: (id: string) => `/api/users/${id}/ava`,
   CHANGE_INFORMATION: (id: string) => `/api/users/${id}/change-information`, 
   UPLOAD_DOCUMENT: (userId: string) => `/api/users/${userId}/upload-document`,
+  GET_CVS: `/api/users/cv`,
+  DELETE_CV: (linkId: string) => `/api/users/cv/${linkId}`,
 
   // Auth
   LOGIN: '/api/auth/login',
