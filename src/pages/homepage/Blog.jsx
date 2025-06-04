@@ -12,6 +12,7 @@ import {
   sharePost,
   updatePost,
 } from "@/utils/postApi";
+import { getUserById } from "@/utils/userApi";
 import {
   Edit,
   Heart,
@@ -33,6 +34,9 @@ const Post = () => {
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const { user, loading } = useAuth();
+
+  const [userData, setUserData] = useState({});
+  const [userInformation, setUserInformation] = useState({});
 
   // Create post states
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -60,6 +64,24 @@ const Post = () => {
 
   // Dropdown menu states
   const [showDropdown, setShowDropdown] = useState({});
+
+  const fetchUser = async (userId) => {
+    if (userId != null && !userData[userId]) {
+      try {
+        const fetchedUser = await getUserById(userId);
+        setUserData((prev) => ({
+          ...prev,
+          [userId]: fetchedUser.data,
+        }));
+        setUserInformation((prev) => ({
+          ...prev,
+          [userId]: fetchedUser.data.user_information,
+        }));
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+      }
+    }
+  };
 
   const fetchPosts = async (pageNum = 0, reset = false) => {
     try {
@@ -271,8 +293,21 @@ const Post = () => {
     setShowDropdown((prev) => ({ ...prev, [postId]: !prev[postId] }));
   };
 
-  const isPostOwner = (post) => {
-    return currentUserId && post.user_id === currentUserId;
+  const formatTime = (isoString) => {
+    const date = new Date(isoString);
+
+    if (isNaN(date)) return "Invalid date";
+
+    const options = {
+      year: "numeric",
+      month: "short", // e.g., "Jun"
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    };
+
+    return date.toLocaleString(undefined, options);
   };
 
   // Load more posts
@@ -300,6 +335,14 @@ const Post = () => {
     // Always switch to "all" mode on mount or redirect back
     switchViewMode("all");
   }, [loading, user]);
+
+  useEffect(() => {
+    if (posts.length > 0) {
+      posts.forEach((post) => {
+        fetchUser(post.user_id);
+      });
+    }
+  }, [posts]);
 
   if (waitLoading && posts && posts.length === 0) {
     return (
@@ -403,174 +446,199 @@ const Post = () => {
       )}
       {/* Posts list */}
       {posts.length > 0 &&
-        posts.map((post) => (
-          <div key={post.id} className="border rounded-lg p-6 space-y-4 mb-4">
-            <div className="flex-1">
-              <div className="flex items-start justify-between">
-                <div>
-
-                  {post.image && (
-                    <div className="mt-4">
-                      <img
-                        src={post.image}
-                        alt="Post image"
-                        className="w-full rounded-lg object-cover"
+        posts.map((post) => {
+          const user = userData[post.user_id];
+          const userInfo = userInformation[post.user_id];
+          return (
+            <div key={post.id} className="border rounded-lg p-6 space-y-4 mb-4">
+              <div className="flex-1">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start space-x-4">
+                    <Avatar className="h-12 w-12">
+                      <AvatarImage
+                        src={
+                          user?.image ||
+                          "https://www.shutterstock.com/image-vector/default-gray-man-avatar-template-260nw-662278102.jpg"
+                        }
                       />
+                      <AvatarFallback>
+                        {userInfo?.full_name?.[0] || "?"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <h3 className="font-semibold">
+                        {userInfo?.full_name || "Unknown User"}
+                      </h3>
+                      <div className="text-sm text-muted-foreground">
+                        <p>{userInfo?.job_title || "N/A"}</p>
+                        <p>{formatTime(post.created_at) || "Unknown Time"}</p>
+                      </div>
                     </div>
-                  )}
+                  </div>
+                  <div>
+                    {post.image && (
+                      <div className="mt-4">
+                        <img
+                          src={post.image}
+                          alt="Post image"
+                          className="w-full rounded-lg object-cover"
+                        />
+                      </div>
+                    )}
 
-                  {/* Post Actions Dropdown - Only show for post owner */}
-                  {viewMode === "user" && (
-                    <div className="relative">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleDropdown(post.id);
-                        }}
-                        className="h-8 w-8 p-0"
-                      >
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
+                    {/* Post Actions Dropdown - Only show for post owner */}
+                    {viewMode === "user" && (
+                      <div className="relative">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleDropdown(post.id);
+                          }}
+                          className="h-8 w-8 p-0"
+                        >
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
 
-                      {showDropdown[post.id] && (
-                        <div className="absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg z-10 w-32">
-                          <button
-                            onClick={() => handleEditPost(post)}
-                            className="flex items-center space-x-2 w-full px-3 py-2 text-sm hover:bg-gray-50 rounded-t-lg"
-                          >
-                            <Edit className="h-4 w-4" />
-                            <span>Edit</span>
-                          </button>
-                          <button
-                            onClick={() => handleDeletePost(post.id)}
-                            disabled={deleting[post.id]}
-                            className="flex items-center space-x-2 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-b-lg"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                            <span>
-                              {deleting[post.id] ? "Deleting..." : "Delete"}
-                            </span>
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                        {showDropdown[post.id] && (
+                          <div className="absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg z-10 w-32">
+                            <button
+                              onClick={() => handleEditPost(post)}
+                              className="flex items-center space-x-2 w-full px-3 py-2 text-sm hover:bg-gray-50 rounded-t-lg"
+                            >
+                              <Edit className="h-4 w-4" />
+                              <span>Edit</span>
+                            </button>
+                            <button
+                              onClick={() => handleDeletePost(post.id)}
+                              disabled={deleting[post.id]}
+                              className="flex items-center space-x-2 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-b-lg"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              <span>
+                                {deleting[post.id] ? "Deleting..." : "Delete"}
+                              </span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Edit Mode */}
-            {editingPost === post.id ? (
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  value={editTitle}
-                  onChange={(e) => setEditTitle(e.target.value)}
-                  className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-xl font-semibold"
-                />
-                <Textarea
-                  value={editContent}
-                  onChange={(e) => setEditContent(e.target.value)}
-                  rows={4}
-                  className="resize-none"
-                />
-                <div className="flex space-x-2">
-                  <Button
-                    onClick={() => handleUpdatePost(post.id)}
-                    disabled={updating || !editContent.trim()}
-                  >
-                    {updating ? "Updating..." : "Update Post"}
-                  </Button>
-                  <Button variant="outline" onClick={handleCancelEdit}>
-                    Cancel
-                  </Button>
+              {/* Edit Mode */}
+              {editingPost === post.id ? (
+                <div className="space-y-4">
+                  <input
+                    type="text"
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-xl font-semibold"
+                  />
+                  <Textarea
+                    value={editContent}
+                    onChange={(e) => setEditContent(e.target.value)}
+                    rows={4}
+                    className="resize-none"
+                  />
+                  <div className="flex space-x-2">
+                    <Button
+                      onClick={() => handleUpdatePost(post.id)}
+                      disabled={updating || !editContent.trim()}
+                    >
+                      {updating ? "Updating..." : "Update Post"}
+                    </Button>
+                    <Button variant="outline" onClick={handleCancelEdit}>
+                      Cancel
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <>
-                <h2 className="text-xl font-semibold pt-2">{post.title}</h2>
-                <div className="text-muted-foreground space-y-4">
-                  <p>{post.content}</p>
-                </div>
-              </>
-            )}
+              ) : (
+                <>
+                  <h2 className="text-xl font-semibold pt-2">{post.title}</h2>
+                  <div className="text-muted-foreground space-y-4">
+                    <p>{post.content}</p>
+                  </div>
+                </>
+              )}
 
-            {/* <h2 className="text-xl font-semibold pt-2">{post.title}</h2>
+              {/* <h2 className="text-xl font-semibold pt-2">{post.title}</h2>
 
             <div className="text-muted-foreground space-y-4">
               <p>{post.content}</p>
             </div> */}
 
-            <div className="flex items-center space-x-6 pt-4">
-              <Button
-                variant="ghost"
-                className="space-x-2"
-                onClick={() => handleLikePost(post.id)}
-              >
-                <Heart className="h-5 w-5" />
-                <span>{post.like_count} likes</span>
-              </Button>
-              <Button
-                variant="ghost"
-                className="space-x-2"
-                onClick={() => toggleCommentInput(post.id)}
-              >
-                <MessageCircle className="h-5 w-5" />
-                <span>{post.comment_count} comments</span>
-              </Button>
-              <Button
-                variant="ghost"
-                className="space-x-2"
-                onClick={() => handleSharePost(post.id)}
-              >
-                <Share2 className="h-5 w-5" />
-                <span>{post.share_count} Share</span>
-              </Button>
-            </div>
+              <div className="flex items-center space-x-6 pt-4">
+                <Button
+                  variant="ghost"
+                  className="space-x-2"
+                  onClick={() => handleLikePost(post.id)}
+                >
+                  <Heart className="h-5 w-5" />
+                  <span>{post.like_count} likes</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="space-x-2"
+                  onClick={() => toggleCommentInput(post.id)}
+                >
+                  <MessageCircle className="h-5 w-5" />
+                  <span>{post.comment_count} comments</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="space-x-2"
+                  onClick={() => handleSharePost(post.id)}
+                >
+                  <Share2 className="h-5 w-5" />
+                  <span>{post.share_count} Share</span>
+                </Button>
+              </div>
 
-            {/* Comment Input Section */}
-            {showComments[post.id] && (
-              <div className="pt-4 border-t">
-                <div className="flex space-x-3">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src="/api/placeholder/32/32" />
-                    <AvatarFallback>You</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 flex space-x-2">
-                    <input
-                      type="text"
-                      placeholder="Write a comment..."
-                      value={commentInputs[post.id] || ""}
-                      onChange={(e) =>
-                        setCommentInputs((prev) => ({
-                          ...prev,
-                          [post.id]: e.target.value,
-                        }))
-                      }
-                      className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
-                      onKeyPress={(e) => {
-                        if (e.key === "Enter" && !commenting[post.id]) {
-                          handleCommentOnPost(post.id);
+              {/* Comment Input Section */}
+              {showComments[post.id] && (
+                <div className="pt-4 border-t">
+                  <div className="flex space-x-3">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src="/api/placeholder/32/32" />
+                      <AvatarFallback>You</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 flex space-x-2">
+                      <input
+                        type="text"
+                        placeholder="Write a comment..."
+                        value={commentInputs[post.id] || ""}
+                        onChange={(e) =>
+                          setCommentInputs((prev) => ({
+                            ...prev,
+                            [post.id]: e.target.value,
+                          }))
                         }
-                      }}
-                    />
-                    <Button
-                      size="sm"
-                      onClick={() => handleCommentOnPost(post.id)}
-                      disabled={
-                        commenting[post.id] || !commentInputs[post.id]?.trim()
-                      }
-                    >
-                      {commenting[post.id] ? "Posting..." : "Post"}
-                    </Button>
+                        className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                        onKeyPress={(e) => {
+                          if (e.key === "Enter" && !commenting[post.id]) {
+                            handleCommentOnPost(post.id);
+                          }
+                        }}
+                      />
+                      <Button
+                        size="sm"
+                        onClick={() => handleCommentOnPost(post.id)}
+                        disabled={
+                          commenting[post.id] || !commentInputs[post.id]?.trim()
+                        }
+                      >
+                        {commenting[post.id] ? "Posting..." : "Post"}
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-          </div>
-        ))}
+              )}
+            </div>
+          );
+        })}
       {/* Load more button */}
       {hasMore && viewMode === "all" && (
         <div className="text-center py-4">

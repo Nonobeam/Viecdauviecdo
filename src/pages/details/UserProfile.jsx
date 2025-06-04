@@ -6,7 +6,7 @@ import { useAuth } from "@/providers/AuthContext";
 import { getUserById, uploadAvatar } from "@/utils/userApi";
 import { Edit, Plus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const { user } = useAuth(); // From AuthContext
@@ -24,7 +24,7 @@ const Profile = () => {
       try {
         const fetchedUser = await getUserById(user.user_id);
         setUserData(fetchedUser.data);
-        setUserInformation(fetchedUser.data.user_information)
+        setUserInformation(fetchedUser.data.user_information);
       } catch (error) {
         console.error("Failed to fetch user:", error);
       }
@@ -39,7 +39,7 @@ const Profile = () => {
       await uploadAvatar(user.user_id, file);
       const updated = await getUserById(user.user_id);
       setUserData(updated);
-      setUpdated(prev => !prev);
+      setUpdated((prev) => !prev);
     } catch (err) {
       console.error("Avatar upload failed:", err);
     }
@@ -115,7 +115,9 @@ const Profile = () => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => navigate("/edit-profile")}
+                  onClick={() =>
+                    navigate("/edit-profile", { state: { userInformation } })
+                  }
                 >
                   <Edit className="h-4 w-4 mr-2" />
                   Edit Profile
@@ -126,16 +128,37 @@ const Profile = () => {
               </p>
             </div>
 
-            {/* Location */}
+            {/* Country */}
             <div>
-              <h2 className="text-lg font-semibold mb-2">Location</h2>
-              <p className="text-muted-foreground">{userInformation?.location || "N/A"}</p>
+              <h2 className="text-lg font-semibold mb-2">Đất nước</h2>
+              <p className="text-muted-foreground">
+                {userInformation?.country || "N/A"}
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-lg font-semibold mb-2">Tỉnh/Thành</h2>
+              <p className="text-muted-foreground">
+                {userInformation?.state || "N/A"}
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-lg font-semibold mb-2">Thành phố</h2>
+              <p className="text-muted-foreground">
+                {userInformation?.city || "N/A"}
+              </p>
             </div>
 
             {/* Contact */}
             <div>
               <h2 className="text-lg font-semibold mb-2">Contact</h2>
-              <p className="text-muted-foreground">{userData?.email || "N/A"}</p>
+              <p className="text-muted-foreground">
+                {userData?.email || "N/A"}
+              </p>
+              <p className="text-muted-foreground">
+                {userInformation?.phone_number || "N/A"}
+              </p>
             </div>
 
             {/* Action Buttons */}
