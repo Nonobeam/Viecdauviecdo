@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import ChatbotButton from "@/components/ui/chatbotButton";
 import { getAllCompanies } from "@/utils/companyApi";
 import { useEffect, useState } from "react";
@@ -12,32 +13,19 @@ const Company = () => {
   const pageSize = 10;
   const navigate = useNavigate();
 
-  const handleCardClick = (id) => {
-    navigate(`/company/${id}`);
-  };
-
   const fetchCompanies = async (pageNum = 0, reset = false) => {
     try {
       setLoading(true);
       const data = await getAllCompanies(pageNum, pageSize);
-      const content = data?.data?.content;
-
-      if (!content || content.length === 0) {
-        if (reset) {
-          setCompanies([]);
-        }
-        setHasMore(false);
-        setError("No companies found.");
-        return;
-      }
 
       if (reset) {
-        setCompanies(content);
+        setCompanies(data.data.content);
       } else {
-        setCompanies((prev) => [...prev, ...content]);
+        setCompanies((prev) => [...prev, ...data]);
       }
 
-      setHasMore(content.length === pageSize);
+      // Check if we have more data to load
+      setHasMore(data.length === pageSize);
       setError(null);
     } catch (err) {
       setError("Failed to fetch companies");
@@ -55,6 +43,10 @@ const Company = () => {
     }
   };
 
+  const handleCardClick = (id) => {
+    navigate(`/company/${id}`);
+  };
+
   useEffect(() => {
     fetchCompanies(0, true);
     setPage(0);
@@ -62,41 +54,52 @@ const Company = () => {
 
   return (
     <div className="h-full overflow-auto p-4">
-      {error && (
-        <p className="text-center text-muted-foreground mt-4">{error}</p>
+      {!loading && companies.length === 0 ? (
+        <div className="flex items-center justify-center h-64">
+          <p className="text-lg text-muted-foreground">
+            Hiện tại chưa có công ty
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+          {companies.map((company) => (
+            <button
+              key={company.id}
+              className="border rounded-lg overflow-hidden bg-card cursor-pointer"
+              onClick={() => handleCardClick(company.id)}
+            >
+              <div className="relative aspect-[16/9] bg-muted">
+                <img
+                  src={company.image}
+                  alt={company.name}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              </div>
+
+              <div className="p-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold">{company.name}</h3>
+                  <Badge
+                    variant="secondary"
+                    className="bg-purple-100 text-purple-700 hover:bg-purple-100"
+                  >
+                    Pay-to-go
+                  </Badge>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    Company Size: {company.company_size}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {company.about}
+                  </p>
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
       )}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-        {companies.map((company) => (
-          <button
-            key={company.id}
-            className="border rounded-lg overflow-hidden bg-card cursor-pointer"
-            onClick={() => handleCardClick(company.id)}
-          >
-            <div className="relative aspect-[16/9] bg-muted">
-              <img
-                src={company.image}
-                alt={company.name}
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-            </div>
-
-            <div className="p-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">{company.name}</h3>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">
-                  Company Size: {company.company_size}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {company.industry}
-                </p>
-              </div>
-            </div>
-          </button>
-        ))}
-      </div>
       <ChatbotButton />
     </div>
   );

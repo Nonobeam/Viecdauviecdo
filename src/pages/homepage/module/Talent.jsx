@@ -27,10 +27,12 @@ export default function Talent({ filters }) {
           : undefined,
       });
 
-      const items = Array.isArray(data) ? data : data.data.content;
+      const filteredData = data.data.content.filter(
+        (user) => user.role === "TALENT"
+      );
 
       if (reset) {
-        setTalents(items);
+        setTalents(filteredData);
       } else {
         setTalents((prev) => [...prev, ...items]);
       }
