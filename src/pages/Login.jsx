@@ -39,7 +39,7 @@ const LoginPage = () => {
 
   const handleRegister = async () => {
     if (password !== confirmPassword) return alert("Passwords do not match");
-    if (!agreeTerms) return alert("You must agree to the terms");
+    if (!agreeTerms)  return alert("You must agree to the terms");
 
     try {
       await apiRegister({
@@ -49,11 +49,11 @@ const LoginPage = () => {
         role_name: "TALENT",
         image: undefined,
       });
-      alert("Registration successful — please login");
+      alert("Registration successful — a confimation email has been sent to your inbox");
       setActiveTab("login");
     } catch (err) {
       console.error(err);
-      alert("Registration failed");
+      alert("Registration failed. Please try again.");
     }
   };
 
