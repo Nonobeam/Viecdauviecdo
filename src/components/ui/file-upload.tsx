@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
-import React, { useRef, useState } from "react";
-import { motion } from "motion/react";
 import { UploadCloud } from "lucide-react";
+import { motion } from "motion/react";
+import React, { useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 // import { IconUpload } from "@tabler/icons-react";
 const mainVariant = {
