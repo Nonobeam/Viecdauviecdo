@@ -1,5 +1,4 @@
 import { TalentCard } from "@/components/items/TalentCard";
-import ChatbotButton from "@/components/ui/chatbotButton";
 import { getAllUsers } from "@/utils/userApi";
 import { useEffect, useState } from "react";
 
@@ -98,7 +97,6 @@ export default function Talent({ filters }) {
         </div>
       )}
 
-      <ChatbotButton />
     </div>
   );
 }

@@ -19,13 +19,13 @@ const TeamMembersCarousel = () => {
         },
         {
             name: "Đặng Quang Huy",
-            role: "CEO bù nhìn",
+            role: "CEO",
             image: "/imgs/huy.jpg",
             icon: <Briefcase className="w-5 h-5 text-indigo-600" />,
         },
         {
             name: "Vĩ Thị Kiều Oanh",
-            role: "CEO đầu não",
+            role: "CBAO",
             image: "/imgs/oanh.jpg",
             icon: <Briefcase className="w-5 h-5 text-indigo-600" />,
         },

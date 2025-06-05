@@ -1,53 +1,39 @@
 // PaymentPage.jsx
+import { sendTransactionWebhook } from "@/utils/transactionAPI";
 import { QRCodeCanvas } from "qrcode.react";
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function PaymentPage() {
   const location = useLocation();
   const transactionData = location.state;
-  console.log(transactionData.qrCode);
   const [qrPayload] = useState(transactionData.qrCode);
-
-  const [timeLeft, setTimeLeft] = useState(transactionData.expiredAt * 1000);
-  // Page status: 'idle' (still counting), 'expired', 'canceled', or 'paid'
-  const [status, setStatus] = useState("idle");
-
-  // Format seconds into "MM:SS"
-  const formatTime = (sec) => {
-    const minutes = Math.floor(sec / 60)
-      .toString()
-      .padStart(2, "0");
-    const seconds = (sec % 60).toString().padStart(2, "0");
-    return `${minutes}:${seconds}`;
-  };
+  const navigate = useNavigate();
+  const intervalRef = useRef(null);
 
   // Handle "Make Payment" click
-  const handleMakePayment = () => {
-    if (status === "idle") {
-      setStatus("paid");
-    }
-  };
+const handleMakePayment = () => {
+  const intervalId = setInterval(() => {
+    sendTransactionWebhook();
+  }, 2000);
+};
 
-  // Handle "Cancel" click
   const handleCancel = () => {
-    if (status === "idle") {
-      setStatus("canceled");
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current); // ✅ Stop the polling
     }
+    navigate("/payment/cancel");
   };
 
-    useEffect(() => {
-    if (status !== "idle") return;
-    if (timeLeft <= 0) {
-      setStatus("expired");
-      return;
-    }
-    const timerId = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
-    }, 1000);
+  useEffect(() => {
+    handleMakePayment();
 
-    return () => clearInterval(timerId);
-  }, [timeLeft, status]);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current); // ✅ Clean up on unmount
+      }
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -67,49 +53,10 @@ function PaymentPage() {
             <p className="mt-2 text-gray-600 text-xs">Quét mã để thanh toán</p>
           </div>
 
-          {/* Countdown or status message */}
-          <div className="text-center mb-6">
-            {status === "idle" && timeLeft > 0 && (
-              <span className="text-lg font-medium text-red-500">
-                Thời gian còn lại: {formatTime(timeLeft)}
-              </span>
-            )}
-            {status === "expired" && (
-              <span className="text-lg font-medium text-gray-500">
-                QR code has expired.
-              </span>
-            )}
-            {status === "canceled" && (
-              <span className="text-lg font-medium text-gray-500">
-                Transaction canceled.
-              </span>
-            )}
-            {status === "paid" && (
-              <span className="text-lg font-medium text-green-600">
-                Payment successful! 🎉
-              </span>
-            )}
-          </div>
-
           {/* Buttons */}
           <div className="flex justify-between">
             <button
-              onClick={handleMakePayment}
-              disabled={status !== "idle" || timeLeft <= 0}
-              className={`
-              flex-1 mr-2 py-2 px-4 rounded-lg text-white font-medium
-              ${
-                status !== "idle" || timeLeft <= 0
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700"
-              }
-            `}
-            >
-              Thanh toán
-            </button>
-            <button
               onClick={handleCancel}
-              disabled={status !== "idle" || timeLeft <= 0}
               className={`
               flex-1 ml-2 py-2 px-4 rounded-lg text-white font-medium
               ${

@@ -1,5 +1,4 @@
 import BentoGridDemo from "@/components/BentoGridLayout";
-import ChatbotButton from "@/components/ui/chatbotButton";
 import { getAllProjects } from "@/utils/projectAPI";
 import { useEffect, useState } from "react";
 // import {
@@ -82,7 +81,6 @@ const Project = () => {
         </div>
       )}
 
-      <ChatbotButton />
     </div>
   );
 };
