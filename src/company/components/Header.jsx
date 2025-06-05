@@ -1,17 +1,23 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
+import { Bell, Building2, ChevronDown, User, Settings, FileText, HelpCircle, LogOut } from "lucide-react"
 import { companies } from "../mock/recruitment-data"
 
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false)
   const dropdownRef = useRef(null)
-  const company = companies[0] // Get the first company from centralized data
+  const notificationRef = useRef(null)
+  const company = companies[0]
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false)
+      }
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setIsNotificationOpen(false)
       }
     }
 
@@ -21,85 +27,135 @@ const Header = () => {
     }
   }, [])
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen)
-  }
+  const notifications = [
+    {
+      id: 1,
+      title: "Ứng viên mới ứng tuyển",
+      message: "5 ứng viên mới cho vị trí Frontend Developer",
+      time: "2 phút trước",
+      unread: true,
+    },
+    {
+      id: 2,
+      title: "Tin tuyển dụng sắp hết hạn",
+      message: "Backend Developer sẽ hết hạn trong 3 ngày",
+      time: "1 giờ trước",
+      unread: true,
+    },
+    {
+      id: 3,
+      title: "Phỏng vấn được lên lịch",
+      message: "Cuộc phỏng vấn với Nguyễn Văn A lúc 14:00",
+      time: "3 giờ trước",
+      unread: false,
+    },
+  ]
 
   return (
-    <header className="bg-gradient-to-r from-[#4318D1] to-[#013DC4] text-white shadow-lg">
-      <div className="container mx-auto px-6 py-4">
+    <header className="bg-white shadow-lg border-b border-gray-100 sticky top-0 z-50">
+      <div className="px-6 py-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                ></path>
-              </svg>
-            </div>
-            <h1 className="text-2xl font-bold tracking-tight">{company?.name || "Company Name"}</h1>
-          </div>
+          {/* Logo và tên công ty */}
           <div className="flex items-center space-x-4">
-            <button className="p-2 rounded-full hover:bg-white/10 relative transition-colors duration-200">
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
+            <div className="relative">
+              <div className="p-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl shadow-lg">
+                <Building2 className="w-7 h-7 text-white" />
+              </div>
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                {company?.name || "Company Name"}
+              </h1>
+              <p className="text-sm text-gray-500 font-medium">Hệ thống quản lý tuyển dụng</p>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center space-x-4">
+            {/* Notifications */}
+            <div className="relative" ref={notificationRef}>
+              <button
+                onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+                className="relative p-3 rounded-xl hover:bg-gray-50 transition-all duration-200 group"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                ></path>
-              </svg>
-              <span className="absolute top-0 right-0 w-3 h-3 bg-[#F9BE4A] rounded-full border-2 border-[#013DC4]"></span>
-            </button>
+                <Bell className="w-6 h-6 text-gray-600 group-hover:text-blue-600 transition-colors" />
+                <span className="absolute top-1 right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
+                <span className="absolute top-0 right-0 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-xs text-white font-bold">
+                  {notifications.filter((n) => n.unread).length}
+                </span>
+              </button>
+
+              {/* Notification Dropdown */}
+              {isNotificationOpen && (
+                <div className="absolute right-0 mt-2 w-96 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 animate-in slide-in-from-top-2 duration-200">
+                  <div className="px-4 py-3 border-b border-gray-100">
+                    <h3 className="text-lg font-semibold text-gray-900">Thông báo</h3>
+                    <p className="text-sm text-gray-500">
+                      {notifications.filter((n) => n.unread).length} thông báo chưa đọc
+                    </p>
+                  </div>
+                  <div className="max-h-96 overflow-y-auto">
+                    {notifications.map((notification) => (
+                      <div
+                        key={notification.id}
+                        className={`px-4 py-3 hover:bg-gray-50 transition-colors border-l-4 ${notification.unread ? "border-blue-500 bg-blue-50/30" : "border-transparent"}`}
+                      >
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <h4 className="text-sm font-semibold text-gray-900">{notification.title}</h4>
+                            <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
+                            <p className="text-xs text-gray-400 mt-2">{notification.time}</p>
+                          </div>
+                          {notification.unread && <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="px-4 py-3 border-t border-gray-100">
+                    <button className="w-full text-center text-sm text-blue-600 hover:text-blue-700 font-medium">
+                      Xem tất cả thông báo
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* User Dropdown */}
             <div className="relative" ref={dropdownRef}>
-              <div
-                className="flex items-center space-x-2 cursor-pointer group hover:bg-white/10 rounded-lg px-3 py-2 transition-colors duration-200"
-                onClick={toggleDropdown}
+              <button
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-50 transition-all duration-200 group"
               >
-                <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-lg font-semibold">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">
                   AD
                 </div>
-                <span className="font-medium hidden md:inline-block group-hover:text-white/80">Admin</span>
-                <svg
-                  className={`w-4 h-4 hidden md:inline-block transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
-              </div>
+                <div className="hidden md:block text-left">
+                  <p className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                    Admin User
+                  </p>
+                  <p className="text-xs text-gray-500">Quản trị viên</p>
+                </div>
+                <ChevronDown
+                  className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`}
+                />
+              </button>
 
               {/* Dropdown Menu */}
               {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 animate-in slide-in-from-top-2 duration-200">
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 animate-in slide-in-from-top-2 duration-200">
                   {/* User Info */}
                   <div className="px-4 py-3 border-b border-gray-100">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#4318D1] to-[#013DC4] flex items-center justify-center text-white font-semibold">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
                         AD
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-gray-900">Admin User</p>
                         <p className="text-xs text-gray-500">{company?.email || "admin@company.com"}</p>
+                        <span className="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full mt-1">
+                          Đang hoạt động
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -108,65 +164,31 @@ const Header = () => {
                   <div className="py-1">
                     <a
                       href="#"
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
+                      className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-150 group"
                     >
-                      <svg className="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                        ></path>
-                      </svg>
-                      My Profile
+                      <User className="w-4 h-4 mr-3 text-gray-400 group-hover:text-blue-600" />
+                      <span>Hồ sơ cá nhân</span>
                     </a>
                     <a
                       href="#"
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
+                      className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-150 group"
                     >
-                      <svg className="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                        ></path>
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        ></path>
-                      </svg>
-                      Account Settings
+                      <Settings className="w-4 h-4 mr-3 text-gray-400 group-hover:text-blue-600" />
+                      <span>Cài đặt tài khoản</span>
                     </a>
                     <a
                       href="#"
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
+                      className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-150 group"
                     >
-                      <svg className="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                        ></path>
-                      </svg>
-                      Documentation
+                      <FileText className="w-4 h-4 mr-3 text-gray-400 group-hover:text-blue-600" />
+                      <span>Tài liệu hướng dẫn</span>
                     </a>
                     <a
                       href="#"
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
+                      className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-150 group"
                     >
-                      <svg className="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"
-                        ></path>
-                      </svg>
-                      Help & Support
+                      <HelpCircle className="w-4 h-4 mr-3 text-gray-400 group-hover:text-blue-600" />
+                      <span>Hỗ trợ & Trợ giúp</span>
                     </a>
                   </div>
 
@@ -176,17 +198,10 @@ const Header = () => {
                   {/* Logout */}
                   <a
                     href="#"
-                    className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150"
+                    className="flex items-center px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-all duration-150 group"
                   >
-                    <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                      ></path>
-                    </svg>
-                    Sign Out
+                    <LogOut className="w-4 h-4 mr-3" />
+                    <span>Đăng xuất</span>
                   </a>
                 </div>
               )}
