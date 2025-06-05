@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import { ArrowLeft, Save, X, Plus, Trash2 } from "lucide-react"
 
