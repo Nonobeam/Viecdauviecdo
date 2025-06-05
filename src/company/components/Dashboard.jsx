@@ -16,36 +16,9 @@ import {
   Clock,
   CheckCircle,
 } from "lucide-react"
+import { dashboardMetrics } from "../mock/recruitment-data"
 
 const Dashboard = () => {
-  const dashboardData = {
-    companyName: "Công ty Giải pháp TechVision",
-    totalJobs: 15,
-    totalCandidates: 127,
-    activeJobs: 8,
-    pendingApplications: 43,
-    interviewsScheduled: 12,
-    hiredThisMonth: 5,
-    businessScope: "Tư vấn Công nghệ & Phát triển Phần mềm",
-    industry: "Công nghệ Thông tin",
-    foundedYear: "2018",
-    employeeCount: "150-200",
-    headquarters: "Hà Nội, Việt Nam",
-    phone: "+84 123 456 789",
-    email: "lienhe@techvisionsolutions.com",
-    website: "www.techvisionsolutions.com",
-    monthlyRevenue: "20 tỷ VNĐ",
-    clientSatisfaction: "98%",
-    projectsCompleted: 245,
-    teamMembers: 178,
-    departments: ["Kỹ thuật", "Thiết kế", "Marketing", "Bán hàng", "Nhân sự"],
-    recentAchievements: [
-      "Nhà tuyển dụng Công nghệ Xuất sắc 2024",
-      "Đạt chứng nhận ISO 27001",
-      "Top 100 Công ty Phát triển Nhanh nhất",
-    ],
-  }
-
   const cardStyle = {
     backgroundColor: "#FFFFFF",
     borderRadius: "12px",
@@ -93,7 +66,7 @@ const Dashboard = () => {
               <div>
                 <h1 className="text-4xl font-bold mb-2">Bảng Điều Khiển Công Ty</h1>
                 <p className="text-blue-100 text-lg">
-                  {dashboardData.companyName} - {dashboardData.businessScope}
+                  {dashboardMetrics.companyName} - {dashboardMetrics.businessScope}
                 </p>
               </div>
             </div>
@@ -114,7 +87,7 @@ const Dashboard = () => {
                 <Briefcase className="h-8 w-8 text-white" />
               </div>
             </div>
-            <h3 className="text-3xl font-bold text-black mb-2">{dashboardData.totalJobs}</h3>
+            <h3 className="text-3xl font-bold text-black mb-2">{dashboardMetrics.totalJobs}</h3>
             <p className="text-gray-600 font-medium">Tổng số Công việc</p>
           </div>
 
@@ -130,7 +103,7 @@ const Dashboard = () => {
                 <Users className="h-8 w-8 text-white" />
               </div>
             </div>
-            <h3 className="text-3xl font-bold text-black mb-2">{dashboardData.totalCandidates}</h3>
+            <h3 className="text-3xl font-bold text-black mb-2">{dashboardMetrics.totalCandidates}</h3>
             <p className="text-gray-600 font-medium">Tổng số Ứng viên</p>
           </div>
 
@@ -146,7 +119,7 @@ const Dashboard = () => {
                 <TrendingUp className="h-8 w-8 text-black" />
               </div>
             </div>
-            <h3 className="text-3xl font-bold text-black mb-2">{dashboardData.activeJobs}</h3>
+            <h3 className="text-3xl font-bold text-black mb-2">{dashboardMetrics.activeJobs}</h3>
             <p className="text-gray-600 font-medium">Công việc Đang hoạt động</p>
           </div>
 
@@ -162,7 +135,7 @@ const Dashboard = () => {
                 <CheckCircle className="h-8 w-8 text-white" />
               </div>
             </div>
-            <h3 className="text-3xl font-bold text-black mb-2">{dashboardData.hiredThisMonth}</h3>
+            <h3 className="text-3xl font-bold text-black mb-2">{dashboardMetrics.hiredThisMonth}</h3>
             <p className="text-gray-600 font-medium">Đã tuyển dụng tháng này</p>
           </div>
         </div>
@@ -181,7 +154,7 @@ const Dashboard = () => {
                 <Clock className="h-6 w-6 text-white" />
               </div>
             </div>
-            <h3 className="text-2xl font-bold text-black mb-2">{dashboardData.pendingApplications}</h3>
+            <h3 className="text-2xl font-bold text-black mb-2">{dashboardMetrics.pendingApplications}</h3>
             <p className="text-gray-600 font-medium">Đơn ứng tuyển đang chờ</p>
           </div>
 
@@ -197,7 +170,7 @@ const Dashboard = () => {
                 <Calendar className="h-6 w-6 text-black" />
               </div>
             </div>
-            <h3 className="text-2xl font-bold text-black mb-2">{dashboardData.interviewsScheduled}</h3>
+            <h3 className="text-2xl font-bold text-black mb-2">{dashboardMetrics.interviewsScheduled}</h3>
             <p className="text-gray-600 font-medium">Phỏng vấn đã lên lịch</p>
           </div>
 
@@ -213,7 +186,7 @@ const Dashboard = () => {
                 <Users className="h-6 w-6 text-white" />
               </div>
             </div>
-            <h3 className="text-2xl font-bold text-black mb-2">{dashboardData.teamMembers}</h3>
+            <h3 className="text-2xl font-bold text-black mb-2">{dashboardMetrics.teamMembers}</h3>
             <p className="text-gray-600 font-medium">Thành viên đội ngũ</p>
           </div>
         </div>
@@ -238,21 +211,21 @@ const Dashboard = () => {
               <div className="space-y-6">
                 <div>
                   <label className="text-black font-semibold block text-lg">Phạm vi Kinh doanh</label>
-                  <p className="text-gray-700 mt-2 text-base">{dashboardData.businessScope}</p>
+                  <p className="text-gray-700 mt-2 text-base">{dashboardMetrics.businessScope}</p>
                 </div>
                 <div className="grid grid-cols-2 gap-6">
                   <div>
                     <label className="text-black font-semibold block">Ngành</label>
-                    <p className="text-gray-700 mt-1">{dashboardData.industry}</p>
+                    <p className="text-gray-700 mt-1">{dashboardMetrics.industry}</p>
                   </div>
                   <div>
                     <label className="text-black font-semibold block">Thành lập</label>
-                    <p className="text-gray-700 mt-1">{dashboardData.foundedYear}</p>
+                    <p className="text-gray-700 mt-1">{dashboardMetrics.foundedYear}</p>
                   </div>
                 </div>
                 <div>
                   <label className="text-black font-semibold block">Số lượng Nhân viên</label>
-                  <p className="text-gray-700 mt-1">{dashboardData.employeeCount}</p>
+                  <p className="text-gray-700 mt-1">{dashboardMetrics.employeeCount}</p>
                 </div>
               </div>
             </div>
@@ -278,28 +251,28 @@ const Dashboard = () => {
                   <MapPin className="h-6 w-6 text-gray-500 mt-1" />
                   <div>
                     <label className="text-black font-semibold block">Trụ sở</label>
-                    <p className="text-gray-700 mt-1">{dashboardData.headquarters}</p>
+                    <p className="text-gray-700 mt-1">{dashboardMetrics.headquarters}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <Phone className="h-6 w-6 text-gray-500 mt-1" />
                   <div>
                     <label className="text-black font-semibold block">Điện thoại</label>
-                    <p className="text-gray-700 mt-1">{dashboardData.phone}</p>
+                    <p className="text-gray-700 mt-1">{dashboardMetrics.phone}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <Mail className="h-6 w-6 text-gray-500 mt-1" />
                   <div>
                     <label className="text-black font-semibold block">Email</label>
-                    <p className="text-gray-700 mt-1">{dashboardData.email}</p>
+                    <p className="text-gray-700 mt-1">{dashboardMetrics.email}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <Globe className="h-6 w-6 text-gray-500 mt-1" />
                   <div>
                     <label className="text-black font-semibold block">Website</label>
-                    <p className="text-gray-700 mt-1">{dashboardData.website}</p>
+                    <p className="text-gray-700 mt-1">{dashboardMetrics.website}</p>
                   </div>
                 </div>
               </div>
@@ -334,7 +307,7 @@ const Dashboard = () => {
                 >
                   <DollarSign className="h-8 w-8 text-black mx-auto" />
                 </div>
-                <h3 className="text-2xl font-bold text-black mb-2">{dashboardData.monthlyRevenue}</h3>
+                <h3 className="text-2xl font-bold text-black mb-2">{dashboardMetrics.monthlyRevenue}</h3>
                 <p className="text-gray-600 font-medium">Doanh thu Hàng tháng</p>
               </div>
               <div className="text-center">
@@ -348,7 +321,7 @@ const Dashboard = () => {
                 >
                   <TrendingUp className="h-8 w-8 text-black mx-auto" />
                 </div>
-                <h3 className="text-2xl font-bold text-black mb-2">{dashboardData.clientSatisfaction}</h3>
+                <h3 className="text-2xl font-bold text-black mb-2">{dashboardMetrics.clientSatisfaction}</h3>
                 <p className="text-gray-600 font-medium">Mức độ Hài lòng Khách hàng</p>
               </div>
               <div className="text-center">
@@ -362,7 +335,7 @@ const Dashboard = () => {
                 >
                   <Target className="h-8 w-8 text-black mx-auto" />
                 </div>
-                <h3 className="text-2xl font-bold text-black mb-2">{dashboardData.projectsCompleted}</h3>
+                <h3 className="text-2xl font-bold text-black mb-2">{dashboardMetrics.projectsCompleted}</h3>
                 <p className="text-gray-600 font-medium">Dự án Hoàn thành</p>
               </div>
               <div className="text-center">
@@ -376,7 +349,7 @@ const Dashboard = () => {
                 >
                   <Users className="h-8 w-8 text-black mx-auto" />
                 </div>
-                <h3 className="text-2xl font-bold text-black mb-2">{dashboardData.teamMembers}</h3>
+                <h3 className="text-2xl font-bold text-black mb-2">{dashboardMetrics.teamMembers}</h3>
                 <p className="text-gray-600 font-medium">Thành viên Đội ngũ</p>
               </div>
             </div>
@@ -398,7 +371,7 @@ const Dashboard = () => {
             </div>
             <div style={contentStyle}>
               <div className="flex flex-wrap gap-3">
-                {dashboardData.departments.map((dept, index) => (
+                {dashboardMetrics.departments.map((dept, index) => (
                   <span
                     key={index}
                     style={{
@@ -431,7 +404,7 @@ const Dashboard = () => {
             </div>
             <div style={contentStyle}>
               <div className="space-y-4">
-                {dashboardData.recentAchievements.map((achievement, index) => (
+                {dashboardMetrics.recentAchievements.map((achievement, index) => (
                   <div key={index} className="flex items-center gap-4">
                     <Award className="h-6 w-6 text-yellow-600 flex-shrink-0" />
                     <span className="text-gray-700 text-base font-medium">{achievement}</span>

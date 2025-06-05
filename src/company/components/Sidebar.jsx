@@ -3,7 +3,6 @@ import { NavLink } from "react-router-dom"
 const Sidebar = () => {
   return (
     <div className="w-72 bg-white h-screen shadow-xl sticky top-0 border-r border-gray-100">
-      {/* Header */}
       <div className="p-6 border-b border-gray-100">
         <div className="flex items-center space-x-3 mb-2">
           <div className="w-10 h-10 bg-gradient-to-r from-[#4318D1] to-[#013DC4] rounded-xl flex items-center justify-center">
@@ -101,8 +100,7 @@ const Sidebar = () => {
               <span className="font-medium text-sm">Ứng viên</span>
             </NavLink>
           </li>
-
-          <li>
+          {/* <li>
             <NavLink
               to="/company/hr-accounts"
               className={({ isActive }) =>
@@ -150,9 +148,9 @@ const Sidebar = () => {
               </div>
               <span className="font-medium text-sm">Bảng điều khiển HR</span>
             </NavLink>
-          </li>
+          </li> */}
 
-          <li>
+          {/* <li>
             <NavLink
               to="/company/packages"
               className={({ isActive }) =>
@@ -175,7 +173,7 @@ const Sidebar = () => {
               </div>
               <span className="font-medium text-sm">Gói dịch vụ</span>
             </NavLink>
-          </li>
+          </li> */}
 
           <li>
             <NavLink
