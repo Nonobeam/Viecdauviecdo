@@ -1,5 +1,4 @@
 import { InfiniteMovingCardsDemo } from "@/components/ReviewMovingCard";
-import ChatWidget from "@/components/ui/chatWidget";
 const About = () => {
     const stats = [
         {
@@ -77,7 +76,6 @@ const About = () => {
                 </div>
             </div>
             <InfiniteMovingCardsDemo />
-            <ChatWidget />
         </main>
     );
 };

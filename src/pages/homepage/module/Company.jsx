@@ -1,5 +1,4 @@
 import { Badge } from "@/components/ui/badge";
-import ChatbotButton from "@/components/ui/chatbotButton";
 import { getAllCompanies } from "@/utils/companyApi";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -100,7 +99,6 @@ const Company = () => {
           ))}
         </div>
       )}
-      <ChatbotButton />
     </div>
   );
 };

@@ -16,8 +16,9 @@ export const ENDPOINTS = {
   CREATE_COMPANY: '/api/companies',
   UPDATE_COMPANY: '/api/companies',
   DELETE_COMPANY: (id: string) => `/api/projects/${id}`,
+  UPLOAD_COMPANY_BACKGROUND: (id: string) => `/api/companies/${id}/bg`,
 
-    // Projects
+  // Projects
   GET_ALL_PROJECTS: '/api/projects',
   GET_PROJECT_BY_ID: (id: string) => `/api/projects/${id}`,
   CREATE_PROJECT: '/api/projects',
@@ -31,15 +32,40 @@ export const ENDPOINTS = {
   GET_USER_BY_ID: (id: string) => `/api/users/${id}`,
   CREATE_USER: '/api/users',
   UPLOAD_AVATAR: (id: string) => `/api/users/${id}/ava`,
-  CHANGE_INFORMATION: (id: string) => `/api/users/${id}/change-information`, 
+  CHANGE_INFORMATION: (id: string) => `/api/users/${id}/change-information`,
   UPLOAD_DOCUMENT: (userId: string) => `/api/users/${userId}/upload-document`,
+  GET_CVS: `/api/users/cv`,
+  DELETE_CV: (linkId: string) => `/api/users/cv/${linkId}`,
 
   // Auth
   LOGIN: '/api/auth/login',
+  RESET_PASSWORD: '/api/auth',
+  FORGOT_PASSWORD: '/api/auth/forgot-password',
 
   //transactions
   GET_TRANSACTION: `/api/transactions`,
   POST_TRANSACTION: `/api/transactions`,
   SEND_WEBHOOK_TRANSACTION: `/api/transactions/webhook`,
-  GET_TRANSACTION_BY_ID: (id: string) => `/api/transactions/${id}`
+  GET_TRANSACTION_BY_ID: (id: string) => `/api/transactions/${id}`,
+
+  // User Information Skills
+  GET_USER_SKILLS: (userInfoId: string) => `/api/user-info/${userInfoId}/skills`,
+  ADD_USER_SKILL: (userInfoId: string) => `/api/user-info/${userInfoId}/skills`,
+  UPDATE_USER_SKILL: (userInfoId: string) => `/api/user-info/${userInfoId}/skills`,
+  DELETE_USER_SKILL: (userInfoId: string) => `/api/user-info/${userInfoId}/skills`,
+
+  // Jobs
+  GET_ALL_JOBS: '/api/jobs',
+  GET_JOB_BY_ID: (id: string) => `/api/jobs/${id}`,
+  CREATE_JOB: '/api/jobs',
+  UPDATE_JOB: (id: string) => `/api/jobs/${id}`,
+  DELETE_JOB: (id: string) => `/api/jobs/${id}`,
+
+  // Applications
+  GET_ALL_APPLICATIONS: '/api/applications',
+  GET_APPLICATION_BY_ID: (id: string) => `/api/applications/${id}`,
+  CREATE_APPLICATION: '/api/applications',
+  UPDATE_APPLICATION: (id: string) => `/api/applications/${id}`,
+  DELETE_APPLICATION: (id: string) => `/api/applications/${id}`,
+  APPLY_TO_JOB: '/api/applications/apply',
 };
