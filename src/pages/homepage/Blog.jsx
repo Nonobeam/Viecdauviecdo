@@ -34,6 +34,7 @@ const Post = () => {
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const { user, loading } = useAuth();
+  const [fetch, setFetch] = useState(0);
 
   const [userData, setUserData] = useState({});
   const [userInformation, setUserInformation] = useState({});
@@ -137,6 +138,7 @@ const Post = () => {
         image_url: "",
         tags: [],
       });
+      setFetch((prev) => prev + 1);
       setPosts((prev) => [newPost, ...prev]);
       setNewPostTitle("");
       setNewPostContent("");
@@ -167,20 +169,19 @@ const Post = () => {
   const handleUpdatePost = async (postId) => {
     if (!editContent.trim()) return;
 
+    setUpdating(true);
     try {
-      setUpdating(true);
       const updatedPost = await updatePost(postId, {
         title: editTitle,
         content: editContent,
       });
-
       // Update the post in the local state
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
           post.id === postId ? { ...post, ...updatedPost } : post
         )
       );
-
+      setFetch((prev) => prev + 1);
       setEditingPost(null);
       setEditTitle("");
       setEditContent("");
@@ -332,7 +333,6 @@ const Post = () => {
     if (!loading && user?.user_id) {
       setCurrentUserId(user.user_id);
     }
-    // Always switch to "all" mode on mount or redirect back
     switchViewMode("all");
   }, [loading, user]);
 
@@ -343,6 +343,15 @@ const Post = () => {
       });
     }
   }, [posts]);
+
+  useEffect(() => {
+    if (viewMode === "all") {
+      fetchPosts(0, true);
+    }
+    else{
+      fetchUserPosts();
+    }
+  }, [fetch]);
 
   if (waitLoading && posts && posts.length === 0) {
     return (
