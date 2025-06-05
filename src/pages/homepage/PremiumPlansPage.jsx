@@ -61,10 +61,10 @@ function PremiumPlansPage() {
       );
       
 
-      console.log("Transaction created successfully:", transactionData);
+      console.log("Transaction created successfully:", transactionData.payos_response.data);
 
       // Navigate to payment page with transaction data
-     navigate(`/payment`,{state: transactionData.data });
+     navigate(`/payment`,{state: transactionData.payos_response.data });
     } catch (err) {
       console.error("Error creating transaction:", err);
     }
@@ -91,7 +91,7 @@ function PremiumPlansPage() {
     {
       id: "premium",
       name: "Premium",
-      price: "1000",
+      price: "99000",
       period: "mỗi tháng",
       description: "Mở khóa tiềm năng nghề nghiệp",
       popular: true,
