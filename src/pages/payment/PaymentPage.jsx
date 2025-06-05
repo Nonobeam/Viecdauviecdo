@@ -1,7 +1,7 @@
 // PaymentPage.jsx
 import { sendTransactionWebhook } from "@/utils/transactionAPI";
 import { QRCodeCanvas } from "qrcode.react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 function PaymentPage() {
@@ -12,11 +12,11 @@ function PaymentPage() {
   const intervalRef = useRef(null);
 
   // Handle "Make Payment" click
-const handleMakePayment = () => {
-  const intervalId = setInterval(() => {
-    sendTransactionWebhook();
-  }, 2000);
-};
+  const handleMakePayment = () => {
+    const intervalId = setInterval(() => {
+      sendTransactionWebhook();
+    }, 2000);
+  };
 
   const handleCancel = () => {
     if (intervalRef.current) {
@@ -57,20 +57,12 @@ const handleMakePayment = () => {
           <div className="flex justify-between">
             <button
               onClick={handleCancel}
-              className={`
-              flex-1 ml-2 py-2 px-4 rounded-lg text-white font-medium
-              ${
-                status !== "idle" || timeLeft <= 0
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-red-500 hover:bg-red-600"
-              }
-            `}
+              className="flex-1 py-2 px-4 rounded-lg text-white font-medium bg-red-500 hover:bg-red-600 ml-2"
             >
               Hủy
             </button>
           </div>
         </div>
-        
       </div>
     </div>
   );
