@@ -31,6 +31,7 @@ declare module 'types' {
 
   export interface UpdatePostRequest {
     content?: string;
+    title?: string;
     imageUrl?: string;
     tags?: string[];
   }

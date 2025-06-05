@@ -2,71 +2,10 @@
 
 import { useState } from "react"
 import { Search, Plus, Edit, Trash2, Shield, Mail, Phone, MapPin, Calendar, Users } from "lucide-react"
+import { hrAccounts as initialHrAccounts } from "../mock/recruitment-data"
 
 const HRAccountManager = () => {
-  const [hrAccounts, setHrAccounts] = useState([
-    {
-      id: 1,
-      name: "Nguyễn Thị Hoa",
-      email: "hoa.nguyen@company.com",
-      phone: "+84 901 234 567",
-      role: "Trưởng phòng HR",
-      department: "Tuyển dụng",
-      permissions: ["Tuyển dụng", "Onboarding", "Hồ sơ nhân viên", "Báo cáo"],
-      status: "Hoạt động",
-      lastActive: "2 giờ trước",
-      joinDate: "2022-03-15",
-      location: "Hồ Chí Minh",
-      assignedJobs: 8,
-      completedHires: 24,
-    },
-    {
-      id: 2,
-      name: "Trần Văn Minh",
-      email: "minh.tran@company.com",
-      phone: "+84 902 345 678",
-      role: "HR Business Partner",
-      department: "Quan hệ nhân viên",
-      permissions: ["Quản lý hiệu suất", "Tương tác nhân viên", "Chính sách"],
-      status: "Hoạt động",
-      lastActive: "Hôm qua",
-      joinDate: "2021-08-20",
-      location: "Hà Nội",
-      assignedJobs: 5,
-      completedHires: 18,
-    },
-    {
-      id: 3,
-      name: "Lê Thị Mai",
-      email: "mai.le@company.com",
-      phone: "+84 903 456 789",
-      role: "HR Coordinator",
-      department: "Phúc lợi",
-      permissions: ["Phúc lợi", "Quản lý nghỉ phép"],
-      status: "Không hoạt động",
-      lastActive: "1 tuần trước",
-      joinDate: "2023-01-10",
-      location: "Đà Nẵng",
-      assignedJobs: 2,
-      completedHires: 6,
-    },
-    {
-      id: 4,
-      name: "Phạm Văn Đức",
-      email: "duc.pham@company.com",
-      phone: "+84 904 567 890",
-      role: "HR Specialist",
-      department: "Đào tạo & Phát triển",
-      permissions: ["Đào tạo", "Phát triển nhân viên", "Đánh giá"],
-      status: "Hoạt động",
-      lastActive: "30 phút trước",
-      joinDate: "2022-11-05",
-      location: "Hồ Chí Minh",
-      assignedJobs: 3,
-      completedHires: 12,
-    },
-  ])
-
+  const [hrAccounts, setHrAccounts] = useState(initialHrAccounts)
   const [editingId, setEditingId] = useState(null)
   const [editedAccount, setEditedAccount] = useState({})
   const [showAddForm, setShowAddForm] = useState(false)
@@ -149,6 +88,8 @@ const HRAccountManager = () => {
       joinDate: new Date().toISOString().split("T")[0],
       assignedJobs: 0,
       completedHires: 0,
+      companyId: 1,
+      avatar: "/placeholder.svg?height=40&width=40",
     }
     setHrAccounts([...hrAccounts, accountToAdd])
     setShowAddForm(false)
