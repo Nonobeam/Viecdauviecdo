@@ -1,12 +1,13 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
+import { companies } from "../mock/recruitment-data"
 
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const dropdownRef = useRef(null)
+  const company = companies[0] // Get the first company from centralized data
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -45,7 +46,7 @@ const Header = () => {
                 ></path>
               </svg>
             </div>
-            <h1 className="text-2xl font-bold tracking-tight">FPT Software</h1>
+            <h1 className="text-2xl font-bold tracking-tight">{company?.name || "Company Name"}</h1>
           </div>
           <div className="flex items-center space-x-4">
             <button className="p-2 rounded-full hover:bg-white/10 relative transition-colors duration-200">
@@ -98,7 +99,7 @@ const Header = () => {
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-gray-900">Admin User</p>
-                        <p className="text-xs text-gray-500">admin@fptsoft.com</p>
+                        <p className="text-xs text-gray-500">{company?.email || "admin@company.com"}</p>
                       </div>
                     </div>
                   </div>

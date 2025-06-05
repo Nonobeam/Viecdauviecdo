@@ -1,7 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import ChatWidget from "@/components/ui/chatWidget";
 import { useAuth } from "@/providers/AuthContext";
 import { getUserById, uploadAvatar } from "@/utils/userApi";
 import { Edit, Plus } from "lucide-react";
@@ -60,19 +59,19 @@ const Profile = () => {
   const projects = [
     {
       id: 1,
-      title: "E-commerce Platform",
-      description: "Full-stack e-commerce solution with real-time inventory",
+      title: "Ứng dụng y tế",
+      description: "App y tế full-stack cho bác sĩ và y tá",
       type: "Freelance",
       tech: ["React", "Node.js"],
-      image: "/placeholder.svg",
+      image: "/fake/healthcare-app.png",
     },
     {
       id: 2,
-      title: "Social Media Dashboard",
-      description: "Analytics dashboard for social media management",
+      title: "Nền tảng mạng xã hội",
+      description: "Nền tảng cho những người đam mê trao đổi",
       type: "Open Source",
       tech: ["Python", "React"],
-      image: "/placeholder.svg",
+      image: "/fake/defi-platform.png",
     },
   ];
 
@@ -111,7 +110,7 @@ const Profile = () => {
             {/* About Section */}
             <div>
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold">About Me</h2>
+                <h2 className="text-lg font-semibold">Thông tin chung về tôi</h2>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -120,7 +119,7 @@ const Profile = () => {
                   }
                 >
                   <Edit className="h-4 w-4 mr-2" />
-                  Edit Profile
+                  Chỉnh sửa trang cá nhân
                 </Button>
               </div>
               <p className="text-muted-foreground">
@@ -163,9 +162,9 @@ const Profile = () => {
 
             {/* Action Buttons */}
             <div className="flex gap-4">
-              <Button className="flex-1">Hire Me</Button>
+              <Button className="flex-1">Thuê tôi</Button>
               <Button variant="outline" className="flex-1">
-                Analyze
+                Phân tích
               </Button>
             </div>
 
@@ -190,7 +189,7 @@ const Profile = () => {
           <div className="md:col-span-2">
             <div className="md:col-span-2">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">Projects</h2>
+                <h2 className="text-2xl font-bold">Các dự án</h2>
                 <div className="flex gap-x-4">
                   {" "}
                   {/* Added flex and gap-x-4 */}
@@ -259,7 +258,6 @@ const Profile = () => {
             </div>
           </div>
         </div>
-        <ChatWidget />
       </div>
     </div>
   );

@@ -2,7 +2,7 @@ import { TalentCard } from "@/components/items/TalentCard";
 import { getAllUsers } from "@/utils/userApi";
 import { useEffect, useState } from "react";
 
-const Talent = () => {
+export default function Talent({ filters }) {
   const [talents, setTalents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -10,27 +10,19 @@ const Talent = () => {
   const [hasMore, setHasMore] = useState(true);
   const pageSize = 10;
 
-  // Filter states
-  const [filterCity, setFilterCity] = useState([]);
-  const [filterState, setFilterState] = useState([]);
-  const [filterCountry, setFilterCountry] = useState([]);
-  const [filterDateOfBirth, setFilterDateOfBirth] = useState(null);
-  const [filterSkill, setFilterSkill] = useState([]);
-  const [filterCertification, setFilterCertification] = useState([]);
-
   const fetchTalents = async (pageNum = 0, reset = false) => {
     try {
       setLoading(true);
       const data = await getAllUsers({
         page: pageNum,
         size: pageSize,
-        city: filterCity.length ? filterCity : undefined,
-        state: filterState.length ? filterState : undefined,
-        country: filterCountry.length ? filterCountry : undefined,
-        dateOfBirth: filterDateOfBirth || undefined,
-        skill: filterSkill.length ? filterSkill : undefined,
-        certification: filterCertification.length
-          ? filterCertification
+        city: filters.city.length ? filters.city : undefined,
+        state: filters.state.length ? filters.state : undefined,
+        country: filters.country.length ? filters.country : undefined,
+        dateOfBirth: filters.dateOfBirth || undefined,
+        skill: filters.skill.length ? filters.skill : undefined,
+        certification: filters.certification.length
+          ? filters.certification
           : undefined,
       });
 
@@ -41,7 +33,7 @@ const Talent = () => {
       if (reset) {
         setTalents(filteredData);
       } else {
-        setTalents((prev) => [...prev, ...data]);
+        setTalents((prev) => [...prev, ...items]);
       }
 
       setHasMore(data.length === pageSize);
@@ -62,9 +54,17 @@ const Talent = () => {
   };
 
   useEffect(() => {
-    fetchTalents(0, true);
     setPage(0);
-  }, []);
+    fetchTalents(0, true);
+    // We join arrays into strings to avoid deep‐compare issues
+  }, [
+    filters.city.join(","),
+    filters.state.join(","),
+    filters.country.join(","),
+    filters.dateOfBirth,
+    filters.skill.join(","),
+    filters.certification.join(","),
+  ]);
 
   return (
     <div className="h-full overflow-auto p-4">
@@ -99,6 +99,4 @@ const Talent = () => {
 
     </div>
   );
-};
-
-export default Talent;
+}

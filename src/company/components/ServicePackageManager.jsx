@@ -15,8 +15,9 @@ import {
   Mail,
   CreditCard,
 } from "lucide-react"
+import { servicePackages, utils } from "../mock/recruitment-data"
 
-const ServicePackageManager = () => {
+const ServicePackageManager = ({ companyId = 1 }) => {
   const [activeTab, setActiveTab] = useState("packages")
   const [billingCycle, setBillingCycle] = useState("monthly")
   const [settings, setSettings] = useState({
@@ -26,142 +27,9 @@ const ServicePackageManager = () => {
     invoicePreference: "monthly",
   })
 
-  const packages = [
-    {
-      id: 1,
-      name: "Gói Khởi nghiệp",
-      price: { monthly: "Miễn phí", yearly: "Miễn phí" },
-      originalPrice: { monthly: 0, yearly: 0 },
-      features: [
-        "3 tin tuyển dụng đồng thời",
-        "Tìm kiếm ứng viên cơ bản",
-        "Hỗ trợ email (72h phản hồi)",
-        "Tối đa 50 hồ sơ ứng tuyển/tháng",
-        "Hiển thị tin tuyển dụng tiêu chuẩn",
-        "Báo cáo cơ bản",
-      ],
-      businessScope: "Dành cho startup hoặc doanh nghiệp nhỏ mới bắt đầu tuyển dụng",
-      recommended: false,
-      icon: <Users className="h-6 w-6" />,
-      color: "gray",
-    },
-    {
-      id: 2,
-      name: "Gói Cơ bản",
-      price: { monthly: "990,000 VNĐ", yearly: "9,900,000 VNĐ" },
-      originalPrice: { monthly: 990000, yearly: 9900000 },
-      features: [
-        "10 tin tuyển dụng đồng thời",
-        "Bộ lọc ứng viên nâng cao",
-        "Hỗ trợ email (48h phản hồi)",
-        "Không giới hạn hồ sơ ứng tuyển",
-        "Đẩy tin tuyển dụng (1 lần/tuần)",
-        "Thuật toán gợi ý ứng viên",
-        "Truy cập dashboard HR",
-        "Template email tự động",
-      ],
-      businessScope: "Phù hợp với doanh nghiệp vừa có nhu cầu tuyển dụng thường xuyên",
-      recommended: false,
-      icon: <Briefcase className="h-6 w-6" />,
-      color: "blue",
-    },
-    {
-      id: 3,
-      name: "Gói Chuyên nghiệp",
-      price: { monthly: "2,490,000 VNĐ", yearly: "24,900,000 VNĐ" },
-      originalPrice: { monthly: 2490000, yearly: 24900000 },
-      features: [
-        "25 tin tuyển dụng đồng thời",
-        "Ưu tiên hiển thị ứng viên",
-        "Hỗ trợ chat (24h phản hồi)",
-        "Không giới hạn hồ sơ ứng tuyển",
-        "Đẩy tin tuyển dụng (3 lần/tuần)",
-        "Gợi ý ứng viên thông minh AI",
-        "Bộ công cụ phân tích HR",
-        "Trang tuyển dụng có thương hiệu",
-        "Tích hợp ATS cơ bản",
-        "Lọc ứng viên theo kỹ năng",
-        "Báo cáo hiệu suất chi tiết",
-      ],
-      businessScope: "Dành cho công ty đang phát triển với hoạt động tuyển dụng tích cực",
-      recommended: true,
-      icon: <TrendingUp className="h-6 w-6" />,
-      color: "purple",
-    },
-    {
-      id: 4,
-      name: "Gói Doanh nghiệp",
-      price: { monthly: "4,990,000 VNĐ", yearly: "49,900,000 VNĐ" },
-      originalPrice: { monthly: 4990000, yearly: 49900000 },
-      features: [
-        "50 tin tuyển dụng đồng thời",
-        "Hiển thị công ty nổi bật",
-        "Hỗ trợ điện thoại & chat (12h phản hồi)",
-        "Credit quảng cáo tin tuyển dụng",
-        "Phân tích HR nâng cao",
-        "Công cụ lên lịch phỏng vấn",
-        "Tích hợp ATS đầy đủ",
-        "Công cụ xây dựng thương hiệu nhà tuyển dụng",
-        "Truy cập pool ứng viên chất lượng cao",
-        "API tích hợp hệ thống",
-        "Quản lý nhiều chi nhánh",
-        "Báo cáo tùy chỉnh",
-      ],
-      businessScope: "Phù hợp với doanh nghiệp lớn có khối lượng tuyển dụng cao",
-      recommended: false,
-      icon: <Shield className="h-6 w-6" />,
-      color: "green",
-    },
-    {
-      id: 5,
-      name: "Gói Tập đoàn",
-      price: { monthly: "9,990,000 VNĐ", yearly: "99,900,000 VNĐ" },
-      originalPrice: { monthly: 9990000, yearly: 99900000 },
-      features: [
-        "100+ tin tuyển dụng đồng thời",
-        "Hồ sơ công ty cao cấp",
-        "Account Manager riêng",
-        "Ưu tiên hiển thị tin tuyển dụng",
-        "Không giới hạn đẩy tin",
-        "CRM tuyển dụng nâng cao",
-        "AI sàng lọc ứng viên",
-        "Báo cáo tùy chỉnh hoàn toàn",
-        "Công cụ cộng tác nhóm",
-        "API access đầy đủ",
-        "Tích hợp hệ thống ERP/HRM",
-        "Đào tạo sử dụng platform",
-        "Hỗ trợ migration dữ liệu",
-      ],
-      businessScope: "Dành cho tập đoàn lớn với yêu cầu tuyển dụng phức tạp",
-      recommended: false,
-      icon: <Crown className="h-6 w-6" />,
-      color: "gold",
-    },
-    {
-      id: 6,
-      name: "Gói Tùy chỉnh",
-      price: { monthly: "Liên hệ", yearly: "Liên hệ" },
-      originalPrice: { monthly: 0, yearly: 0 },
-      features: [
-        "Không giới hạn tin tuyển dụng",
-        "Hỗ trợ tìm kiếm executive",
-        "Hỗ trợ VIP 24/7",
-        "Chuyên viên tuyển dụng riêng",
-        "Chiến dịch marketing tuyển dụng",
-        "Onboarding hỗ trợ toàn diện",
-        "Website tuyển dụng riêng",
-        "Benchmark lương thị trường",
-        "Công cụ tuyển dụng hàng loạt",
-        "Tích hợp tùy chỉnh",
-        "SLA cam kết chất lượng",
-        "Đào tạo HR team",
-      ],
-      businessScope: "Dành cho tập đoàn có yêu cầu tuyển dụng đặc biệt và phức tạp",
-      recommended: false,
-      icon: <Zap className="h-6 w-6" />,
-      color: "orange",
-    },
-  ]
+  // Get company data
+  const company = utils.getCompanyById(companyId)
+  const currentPackage = utils.getPackageById(company.currentPackageId)
 
   const getColorClasses = (color, recommended = false) => {
     if (recommended) {
@@ -225,6 +93,18 @@ const ServicePackageManager = () => {
   const getDiscountPercentage = (monthly, yearly) => {
     if (monthly === 0 || yearly === 0) return 0
     return Math.round(((monthly * 12 - yearly) / (monthly * 12)) * 100)
+  }
+
+  const getPackageIcon = (packageId) => {
+    const icons = {
+      1: <Users className="h-6 w-6" />,
+      2: <Briefcase className="h-6 w-6" />,
+      3: <TrendingUp className="h-6 w-6" />,
+      4: <Shield className="h-6 w-6" />,
+      5: <Crown className="h-6 w-6" />,
+      6: <Zap className="h-6 w-6" />,
+    }
+    return icons[packageId] || <Users className="h-6 w-6" />
   }
 
   return (
@@ -291,9 +171,10 @@ const ServicePackageManager = () => {
         {activeTab === "packages" ? (
           <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {packages.map((pkg) => {
+              {servicePackages.map((pkg) => {
                 const colorClasses = getColorClasses(pkg.color, pkg.recommended)
-                const discount = getDiscountPercentage(pkg.originalPrice.monthly, pkg.originalPrice.yearly)
+                const discount = getDiscountPercentage(pkg.price.monthly, pkg.price.yearly)
+                const isCurrentPackage = pkg.id === company.currentPackageId
 
                 return (
                   <div
@@ -309,12 +190,22 @@ const ServicePackageManager = () => {
                       </div>
                     )}
 
+                    {isCurrentPackage && (
+                      <div className="absolute -top-4 right-4">
+                        <div className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                          GÓI HIỆN TẠI
+                        </div>
+                      </div>
+                    )}
+
                     <div className="text-center mb-6">
-                      <div className={`inline-flex p-3 rounded-xl mb-4 ${colorClasses.icon}`}>{pkg.icon}</div>
+                      <div className={`inline-flex p-3 rounded-xl mb-4 ${colorClasses.icon}`}>
+                        {getPackageIcon(pkg.id)}
+                      </div>
                       <h3 className="text-2xl font-bold text-gray-900 mb-2">{pkg.name}</h3>
                       <div className="mb-4">
-                        <span className="text-3xl font-bold text-gray-900">{pkg.price[billingCycle]}</span>
-                        {pkg.originalPrice[billingCycle] > 0 && (
+                        <span className="text-3xl font-bold text-gray-900">{formatPrice(pkg.price[billingCycle])}</span>
+                        {typeof pkg.price[billingCycle] === "number" && pkg.price[billingCycle] > 0 && (
                           <span className="text-gray-500 text-sm">/{billingCycle === "monthly" ? "tháng" : "năm"}</span>
                         )}
                         {billingCycle === "yearly" && discount > 0 && (
@@ -339,10 +230,12 @@ const ServicePackageManager = () => {
                     </div>
 
                     <button
-                      className={`w-full py-3 rounded-lg font-bold text-sm transition-all duration-200 ${colorClasses.button}`}
-                      disabled={pkg.id === 1}
+                      className={`w-full py-3 rounded-lg font-bold text-sm transition-all duration-200 ${
+                        isCurrentPackage ? "bg-gray-100 text-gray-600 cursor-not-allowed" : colorClasses.button
+                      }`}
+                      disabled={isCurrentPackage}
                     >
-                      {pkg.id === 1 ? "Gói hiện tại" : pkg.id === 6 ? "Liên hệ tư vấn" : "Nâng cấp ngay"}
+                      {isCurrentPackage ? "Gói hiện tại" : pkg.id === 6 ? "Liên hệ tư vấn" : "Nâng cấp ngay"}
                     </button>
                   </div>
                 )
@@ -456,8 +349,10 @@ const ServicePackageManager = () => {
                   <h4 className="text-lg font-semibold text-blue-900 mb-3">Gói hiện tại</h4>
                   <div className="flex justify-between items-center">
                     <div>
-                      <p className="font-medium text-blue-900">Gói Khởi nghiệp</p>
-                      <p className="text-sm text-blue-700">Miễn phí • Gia hạn: Không giới hạn</p>
+                      <p className="font-medium text-blue-900">{currentPackage.name}</p>
+                      <p className="text-sm text-blue-700">
+                        {formatPrice(currentPackage.price.monthly)} • Gia hạn: {company.packageExpiry}
+                      </p>
                     </div>
                     <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                       Nâng cấp

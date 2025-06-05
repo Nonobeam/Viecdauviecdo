@@ -9,20 +9,20 @@ export const getAllProjects = async (
     handleRequest(() => api.get<Project[]>(ENDPOINTS.GET_ALL_PROJECTS, { params: { page, size } }));
 
 export const getProjectById = async (companyId: string): Promise<Project> =>
-    handleRequest(() => api.get<Project>(ENDPOINTS.GET_COMPANY_BY_ID(companyId)));
+    handleRequest(() => api.get<Project>(ENDPOINTS.GET_PROJECT_BY_ID(companyId)));
 
 export const createProject = async (
     data: ProjectRequest
 ): Promise<Project> =>
-    handleRequest(() => api.post<Project>(ENDPOINTS.CREATE_COMPANY, data));
+    handleRequest(() => api.post<Project>(ENDPOINTS.CREATE_PROJECT, data));
 
 export const updateProject = async (
     data: ProjectRequest
 ): Promise<Project> =>
-    handleRequest(() => api.put<Project>(ENDPOINTS.UPDATE_COMPANY, data));
+    handleRequest(() => api.put<Project>(ENDPOINTS.UPDATE_PROJECT, data));
 
 export const deleteProject = async (companyId: string): Promise<void> =>
-    handleRequest(() => api.delete<void>(ENDPOINTS.DELETE_COMPANY(companyId)));
+    handleRequest(() => api.delete<void>(ENDPOINTS.DELETE_PROJECT(companyId)));
 
 export const uploadProjectImage = async (
     projectId: string,

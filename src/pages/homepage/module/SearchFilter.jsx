@@ -1,25 +1,14 @@
 import { Input } from "@/components/ui";
 import { Button } from "@/components/ui/button";
 import { Plus, X } from "lucide-react";
-import { useState } from "react";
 
-export default function SearchFilter() {
-  const [filters, setFilters] = useState({
-    city: [],
-    state: [],
-    country: [],
-    dateOfBirth: "",
-    skill: [],
-    certification: [],
-  });
-
-  const [inputValues, setInputValues] = useState({
-    cityInput: "",
-    stateInput: "",
-    countryInput: "",
-    skillInput: "",
-    certificationInput: "",
-  });
+export default function SearchFilter({
+  filters,
+  setFilters,
+  inputValues,
+  setInputValues,
+  onSearch, // ← new prop
+}) {
 
   const addToArray = (field, value) => {
     if (value.trim() && !filters[field].includes(value.trim())) {
@@ -72,6 +61,10 @@ export default function SearchFilter() {
       skillInput: "",
       certificationInput: "",
     });
+  };
+
+  const handleSearch = () => {
+    onSearch();
   };
 
   return (
@@ -293,9 +286,9 @@ export default function SearchFilter() {
       </div>
 
       {/* Search Button */}
-      {/* <Button onClick={handleSearch} className="w-full">
+      <Button onClick={handleSearch} className="w-full">
         Apply Filters
-      </Button> */}
+      </Button>
 
     </aside>
   );

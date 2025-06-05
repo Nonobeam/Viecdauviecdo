@@ -1,116 +1,19 @@
-import { useState } from "react"
-import { Users, Calendar, Clock, TrendingUp, Eye, FileText, Video, UserPlus, BarChart3, CheckCircle, AlertCircle } from 'lucide-react'
+"use client"
+import {
+  Users,
+  Calendar,
+  Clock,
+  TrendingUp,
+  Eye,
+  FileText,
+  Video,
+  UserPlus,
+  BarChart3,
+  CheckCircle,
+} from "lucide-react"
+import { assignedJobs, upcomingInterviews } from "../mock/recruitment-data"
 
 const HRDashboard = () => {
-  const [assignedJobs] = useState([
-    {
-      id: 1,
-      title: "Senior Frontend Developer (React)",
-      department: "Engineering",
-      applicants: 24,
-      newApplicants: 5,
-      status: "Đang tuyển",
-      posted: "2024-01-15",
-      deadline: "2024-02-15",
-      priority: "Cao",
-      hiringManager: "Nguyễn Thị Hoa",
-      location: "Hồ Chí Minh",
-      salary: "25,000,000 - 35,000,000 VNĐ",
-    },
-    {
-      id: 2,
-      title: "Backend Engineer (Node.js)",
-      department: "Engineering",
-      applicants: 18,
-      newApplicants: 3,
-      status: "Đang tuyển",
-      posted: "2024-01-20",
-      deadline: "2024-02-10",
-      priority: "Trung bình",
-      hiringManager: "Trần Văn Minh",
-      location: "Hà Nội",
-      salary: "20,000,000 - 30,000,000 VNĐ",
-    },
-    {
-      id: 3,
-      title: "UI/UX Designer",
-      department: "Design",
-      applicants: 32,
-      newApplicants: 8,
-      status: "Đang tuyển",
-      posted: "2024-01-10",
-      deadline: "2024-02-05",
-      priority: "Cao",
-      hiringManager: "Lê Thị Mai",
-      location: "Đà Nẵng",
-      salary: "15,000,000 - 25,000,000 VNĐ",
-    },
-    {
-      id: 4,
-      title: "Data Scientist",
-      department: "Analytics",
-      applicants: 15,
-      newApplicants: 2,
-      status: "Tạm dừng",
-      posted: "2023-12-28",
-      deadline: "2024-02-01",
-      priority: "Thấp",
-      hiringManager: "Phạm Văn Đức",
-      location: "Remote",
-      salary: "30,000,000 - 45,000,000 VNĐ",
-    },
-    {
-      id: 5,
-      title: "HR Business Partner",
-      department: "HR",
-      applicants: 21,
-      newApplicants: 4,
-      status: "Đã đóng",
-      posted: "2023-12-15",
-      deadline: "2024-01-15",
-      priority: "Trung bình",
-      hiringManager: "Võ Thị Lan",
-      location: "Hồ Chí Minh",
-      salary: "18,000,000 - 28,000,000 VNĐ",
-    },
-  ])
-
-  const [upcomingInterviews] = useState([
-    {
-      id: 1,
-      candidate: "Nguyễn Văn An",
-      position: "Frontend Developer",
-      date: "2024-02-05",
-      time: "10:00",
-      interviewers: ["Nguyễn Thị Hoa", "Trần Văn Nam"],
-      stage: "Phỏng vấn kỹ thuật",
-      type: "Online",
-      notes: "Ứng viên có 4 năm kinh nghiệm React",
-    },
-    {
-      id: 2,
-      candidate: "Trần Thị Bình",
-      position: "Backend Engineer",
-      date: "2024-02-06",
-      time: "14:30",
-      interviewers: ["Trần Văn Minh", "Võ Thị Lan"],
-      stage: "Phỏng vấn cuối",
-      type: "Trực tiếp",
-      notes: "Ứng viên xuất sắc ở vòng kỹ thuật",
-    },
-    {
-      id: 3,
-      candidate: "Lê Văn Cường",
-      position: "UI/UX Designer",
-      date: "2024-02-07",
-      time: "09:00",
-      interviewers: ["Lê Thị Mai"],
-      stage: "Portfolio Review",
-      type: "Online",
-      notes: "Cần đánh giá portfolio design",
-    },
-  ])
-
   const recruitmentMetrics = {
     totalOpenPositions: 8,
     positionsFilled: 12,
@@ -264,7 +167,9 @@ const HRDashboard = () => {
                             <div className="text-sm text-gray-500">
                               Đăng: {new Date(job.posted).toLocaleDateString("vi-VN")}
                             </div>
-                            <div className="text-sm text-gray-500">Hạn: {new Date(job.deadline).toLocaleDateString("vi-VN")}</div>
+                            <div className="text-sm text-gray-500">
+                              Hạn: {new Date(job.deadline).toLocaleDateString("vi-VN")}
+                            </div>
                           </div>
                         </td>
                         <td className="px-6 py-4">
@@ -272,7 +177,9 @@ const HRDashboard = () => {
                             <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 w-fit">
                               {job.department}
                             </span>
-                            <span className={`px-2 py-1 text-xs font-medium rounded-full w-fit ${getPriorityColor(job.priority)}`}>
+                            <span
+                              className={`px-2 py-1 text-xs font-medium rounded-full w-fit ${getPriorityColor(job.priority)}`}
+                            >
                               {job.priority}
                             </span>
                           </div>
