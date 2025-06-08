@@ -62,7 +62,6 @@ const Profile = () => {
   const fileInputRef = useRef(null);
   const [updated, setUpdated] = useState(false);
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("cv");
 
   const handleAvatarClick = () => {
     fileInputRef.current?.click();

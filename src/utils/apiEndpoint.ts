@@ -26,6 +26,9 @@ export const ENDPOINTS = {
   UPDATE_PROJECT: '/api/projects',
   DELETE_PROJECT: (id: string) => `/api/projects/${id}`,
   ADD_PROJECT_MEMBER: `/api/projects/mem`,
+  GET_USER_PROJECTS: (id: string) => `/api/projects/users/${id}`,
+  GET_PROJECT_MEMBERS: (id: string) => `/api/projects/${id}/members`,
+
 
   // Users
   GET_ALL_USERS: '/api/users',

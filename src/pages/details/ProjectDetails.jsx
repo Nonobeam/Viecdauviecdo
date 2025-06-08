@@ -4,7 +4,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/providers/AuthContext";
-import { addProjectMember, getProjectById } from "@/utils/projectAPI";
+import {
+  addProjectMember,
+  getProjectById,
+  getProjectMembers,
+} from "@/utils/projectAPI";
 import { ArrowLeft, Github, Globe, Loader2, Mail, Tag } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -14,34 +18,38 @@ const Overview = ({ project }) => (
   <div className="space-y-8">
     <div className="bg-gradient-to-br from-white to-purple-50/50 rounded-2xl border border-purple-100 p-8 shadow-lg">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
-          Về dự án này
+        <h2 className="text-2xm font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
+          Tổng quan dự án
         </h2>
-        <p className="text-gray-600">Thông tin và chi tiết dự án</p>
       </div>
 
       <div className="space-y-6">
         <div>
-          <h3 className="font-bold text-xl text-gray-800 mb-3">
-            {project.name}
-          </h3>
           <p className="text-gray-700 leading-relaxed text-lg">
-            {project.description || "Không có mô tả chi tiết cho dự án này."}
+            {project.summary || "Không có mô tả cho dự án này."}
           </p>
         </div>
+      </div>
+    </div>
+  </div>
+);
 
-        {project.tags && (
-          <div>
-            <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-              <Tag className="h-5 w-5 text-purple-500" />
-              Công nghệ & Kỹ năng
-            </h4>
-            <div className="flex flex-wrap gap-3">
-              {renderTags(project.tags)}
-            </div>
-          </div>
-        )}
-
+const ProjectDetailsTab = ({ project }) => (
+  <div className="space-y-8">
+    <div className="bg-gradient-to-br from-white to-purple-50/50 rounded-2xl border border-purple-100 p-8 shadow-lg">
+      <h2 className="text-2xm font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-6">
+        Chi tiết dự án
+      </h2>
+      <div className="space-y-6">
+        <div>
+          <p className="text-gray-700 leading-relaxed">
+            {project.description || "Thông tin chi tiết sẽ được cập nhật sớm."}
+          </p>
+        </div>
+        <div>
+          <h3 className="font-semibold text-gray-800 mb-3">Yêu cầu kỹ năng</h3>
+          <div className="flex flex-wrap gap-2">{renderTags(project.tags)}</div>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
           <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl">
             <Globe className="h-8 w-8 text-purple-500 mx-auto mb-2" />
@@ -54,97 +62,46 @@ const Overview = ({ project }) => (
   </div>
 );
 
-const ProjectDetailsTab = ({ project }) => (
-  <div className="space-y-8">
-    <div className="bg-gradient-to-br from-white to-purple-50/50 rounded-2xl border border-purple-100 p-8 shadow-lg">
-      <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-6">
-        Chi tiết dự án
-      </h2>
-      <div className="space-y-6">
-        <div>
-          <h3 className="font-semibold text-gray-800 mb-3">Mô tả chi tiết</h3>
-          <p className="text-gray-700 leading-relaxed">
-            {project.description || "Thông tin chi tiết sẽ được cập nhật sớm."}
-          </p>
-        </div>
-        <div>
-          <h3 className="font-semibold text-gray-800 mb-3">Yêu cầu kỹ năng</h3>
-          <div className="flex flex-wrap gap-2">{renderTags(project.tags)}</div>
-        </div>
-        <div>
-          <h3 className="font-semibold text-gray-800 mb-3">Mục tiêu dự án</h3>
-          <ul className="list-disc list-inside text-gray-700 space-y-2">
-            <li>Phát triển ứng dụng web hiện đại và responsive</li>
-            <li>Tích hợp các công nghệ mới nhất</li>
-            <li>Tối ưu hóa hiệu suất và trải nghiệm người dùng</li>
-            <li>Đảm bảo bảo mật và khả năng mở rộng</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
 const Members = ({ project }) => {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const { id } = useParams();
+  const [hasMore, setHasMore] = useState(true);
+  const [error, setError] = useState(null);
+  const pageSize = 10;
+
+  // Fetch project members
+  const fetchMembers = async (pageNum = 0, reset = false) => {
+    try {
+      const memberData = await getProjectMembers(id, pageNum, pageSize);
+      if (reset) {
+        setMembers(memberData.data.content);
+      } else {
+        setMembers((prev) => [...prev, ...memberData.data.content]);
+      }
+
+      setHasMore(memberData.data.content.length === pageSize);
+      setError(null);
+      setLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch members:", error);
+      setLoading(false);
+    }
+  };
+
+  const loadMore = () => {
+    if (!loading && hasMore) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      fetchMembers(nextPage, false);
+    }
+  };
 
   useEffect(() => {
-    // Fetch project members
-    const fetchMembers = async () => {
-      try {
-        // Replace with actual API call
-        // const response = await getProjectMembers(project.id)
-        // setMembers(response.data)
-
-        // Mock data for demonstration
-        setMembers([
-          {
-            id: 1,
-            name: "Nguyễn Văn A",
-            role: "Project Manager",
-            avatar: "/placeholder.svg?height=40&width=40",
-            email: "nguyenvana@email.com",
-            joinedDate: "2024-01-15",
-            skills: ["Leadership", "Agile", "Scrum"],
-          },
-          {
-            id: 2,
-            name: "Trần Thị B",
-            role: "Frontend Developer",
-            avatar: "/placeholder.svg?height=40&width=40",
-            email: "tranthib@email.com",
-            joinedDate: "2024-01-20",
-            skills: ["React", "TypeScript", "Tailwind CSS"],
-          },
-          {
-            id: 3,
-            name: "Lê Văn C",
-            role: "Backend Developer",
-            avatar: "/placeholder.svg?height=40&width=40",
-            email: "levanc@email.com",
-            joinedDate: "2024-02-01",
-            skills: ["Node.js", "PostgreSQL", "Docker"],
-          },
-          {
-            id: 4,
-            name: "Phạm Thị D",
-            role: "UI/UX Designer",
-            avatar: "/placeholder.svg?height=40&width=40",
-            email: "phamthid@email.com",
-            joinedDate: "2024-02-10",
-            skills: ["Figma", "Adobe XD", "User Research"],
-          },
-        ]);
-        setLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch members:", error);
-        setLoading(false);
-      }
-    };
-
-    fetchMembers();
-  }, [project.id]);
+    fetchMembers(0, true);
+    setPage(0);
+  }, []);
 
   if (loading) {
     return (
@@ -169,49 +126,48 @@ const Members = ({ project }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {members.map((member) => (
             <div
-              key={member.id}
+              key={member.email}
               className="bg-white rounded-xl border border-gray-100 p-6 hover:shadow-lg transition-shadow duration-200"
             >
               <div className="flex items-start gap-4">
                 <Avatar className="h-12 w-12 border-2 border-purple-100">
-                  <AvatarImage src={member.avatar || "/placeholder.svg"} />
+                  <AvatarImage src={member.image || "/placeholder.svg"} />
                   <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white font-semibold">
-                    {member.name.charAt(0)}
+                    N/A
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
                   <h3 className="font-semibold text-gray-800 mb-1">
-                    {member.name}
+                    {member.user_information.full_name}
                   </h3>
-                  <p className="text-purple-600 font-medium mb-2">
-                    {member.role}
-                  </p>
                   <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
                     <Mail className="h-4 w-4" />
                     <span>{member.email}</span>
                   </div>
-                  <div className="flex flex-wrap gap-1">
-                    {member.skills.map((skill, index) => (
-                      <Badge
-                        key={index}
-                        variant="secondary"
-                        className="text-xs bg-gray-100 text-gray-700"
-                      >
-                        {skill}
-                      </Badge>
-                    ))}
-                  </div>
                 </div>
-              </div>
-              <div className="mt-4 pt-4 border-t border-gray-100">
-                <p className="text-sm text-gray-500">
-                  Tham gia từ:{" "}
-                  {new Date(member.joinedDate).toLocaleDateString("vi-VN")}
-                </p>
               </div>
             </div>
           ))}
         </div>
+        {/* Load More Button */}
+        {hasMore && members.length > 0 && (
+          <div className="flex justify-center mt-10">
+            <Button
+              onClick={loadMore}
+              disabled={loading}
+              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-2 h-auto rounded-full shadow-md hover:shadow-lg transition-all duration-300"
+            >
+              {loading ? (
+                <div className="flex items-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                  <span>Đang tải...</span>
+                </div>
+              ) : (
+                <span>Xem thêm thành viên</span>
+              )}
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -292,6 +248,9 @@ const ProjectDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { user } = useAuth();
+  //For getting Owner information
+  const [isUserMember, setIsUserMember] = useState(false);
+  const [checkingMembership, setCheckingMembership] = useState(true);
 
   // Tab configuration
   const tabs = ["overview", "details", "members", "contact"];
@@ -316,12 +275,6 @@ const ProjectDetails = () => {
     }
   };
 
-  useEffect(() => {
-    if (id) {
-      fetchProject(id);
-    }
-  }, [id]);
-
   const getInitials = (name) => {
     if (!name) return "P";
     return name
@@ -329,6 +282,29 @@ const ProjectDetails = () => {
       .map((word) => word[0])
       .join("")
       .toUpperCase();
+  };
+
+  const checkUserMembership = async (email) => {
+    console.log(email)
+    if (email ==null) {
+      setCheckingMembership(false);
+      return;
+    }
+
+    try {
+      // Fetch first page of members to check if user is already a member
+      const memberData = await getProjectMembers(id, 0, 100); // Get more members in first call
+      const members = memberData.data.content;
+
+      const isMember = members.some((member) => member.email === email);
+      console.log(isMember)
+
+      setIsUserMember(isMember);
+    } catch (error) {
+      console.error("Failed to check membership:", error);
+    } finally {
+      setCheckingMembership(false);
+    }
   };
 
   const applyProject = async () => {
@@ -342,7 +318,7 @@ const ProjectDetails = () => {
       if (user != null) {
         addProjectMember(payload);
         alert("Joined successfully");
-      } else {  
+      } else {
         console.log("User was not fetch");
       }
       console.log("Success");
@@ -350,6 +326,13 @@ const ProjectDetails = () => {
       console.error("Something is wrong with the applying process", error);
     }
   };
+
+    useEffect(() => {
+    if (id && user?.user_id) {
+      fetchProject(id);
+      checkUserMembership(user.sub);
+    }
+  }, [id,user]);
 
   if (loading) {
     return (
@@ -393,11 +376,11 @@ const ProjectDetails = () => {
         <div className="relative max-w-7xl mx-auto px-4 py-12">
           {/* Back Button */}
           <Link
-            to="/projects"
+            to="/"
             className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-6 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span>Quay lại danh sách dự án</span>
+            <span>Quay lại trang chủ</span>
           </Link>
 
           <div className="flex flex-col md:flex-row items-start gap-6">
@@ -447,12 +430,19 @@ const ProjectDetails = () => {
                 <Mail className="w-4 h-4" />
                 Liên hệ nhóm
               </Button>
-              <Button
-                onClick={applyProject}
-                className="flex items-center gap-2 bg-black border-black text-white hover:bg-black/80 backdrop-blur-sm"
-              >
-                Tham gia dự án
-              </Button>
+              {!isUserMember && user && (
+                <Button
+                  onClick={applyProject}
+                  className="flex items-center gap-2 bg-black border-black text-white hover:bg-black/80 backdrop-blur-sm"
+                >
+                  Tham gia dự án
+                </Button>
+              )}
+              {isUserMember && (
+                <Badge className="flex items-center gap-2 bg-green-500/20 text-green-100 border-green-400/30 px-4 py-2">
+                  Đã tham gia
+                </Badge>
+              )}
             </div>
           </div>
         </div>
