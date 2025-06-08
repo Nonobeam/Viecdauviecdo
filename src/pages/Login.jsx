@@ -8,12 +8,58 @@ import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { login as apiLogin } from "@/utils/authApi"
 import { createUser as apiRegister } from "@/utils/userApi"
+import { AnimatePresence, motion } from "framer-motion"
 import Cookies from "js-cookie"
+import { AlertCircle, ArrowRight, CheckCircle, Eye, EyeOff, Lock, Mail, Shield, Sparkles, User } from "lucide-react"
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "../providers/AuthContext"
-import { motion, AnimatePresence } from "framer-motion"
-import { Eye, EyeOff, Mail, Lock, User, Sparkles, ArrowRight, Shield, CheckCircle, AlertCircle } from "lucide-react"
+
+const InputField = ({ icon: Icon, error, type = "text", showPasswordToggle, onTogglePassword, ...props }) => (
+    <div className="space-y-2">
+      <Label htmlFor={props.id} className="text-sm font-medium text-gray-700">
+        {props.label}
+      </Label>
+      <div className="relative">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <Icon className="h-5 w-5 text-gray-400" />
+        </div>
+        <Input
+          {...props}
+          type={showPasswordToggle ? (type === "password" && !showPasswordToggle ? "password" : "text") : type}
+          className={`pl-10 h-12 border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 transition-all duration-300 ${
+            error ? "border-red-300 focus:border-red-500 focus:ring-red-500" : ""
+          }`}
+        />
+        {type === "password" && (
+          <button
+            type="button"
+            className="absolute inset-y-0 right-0 pr-3 flex items-center"
+            onClick={onTogglePassword}
+          >
+            {showPasswordToggle ? (
+              <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+            ) : (
+              <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+            )}
+          </button>
+        )}
+      </div>
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="flex items-center text-red-600 text-sm"
+          >
+            <AlertCircle className="h-4 w-4 mr-1" />
+            {error}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
 
 const LoginPage = () => {
   const navigate = useNavigate()
@@ -145,51 +191,7 @@ const LoginPage = () => {
     </motion.div>
   )
 
-  const InputField = ({ icon: Icon, error, type = "text", showPasswordToggle, onTogglePassword, ...props }) => (
-    <div className="space-y-2">
-      <Label htmlFor={props.id} className="text-sm font-medium text-gray-700">
-        {props.label}
-      </Label>
-      <div className="relative">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Icon className="h-5 w-5 text-gray-400" />
-        </div>
-        <Input
-          {...props}
-          type={showPasswordToggle ? (type === "password" && !showPasswordToggle ? "password" : "text") : type}
-          className={`pl-10 h-12 border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 transition-all duration-300 ${
-            error ? "border-red-300 focus:border-red-500 focus:ring-red-500" : ""
-          }`}
-        />
-        {type === "password" && (
-          <button
-            type="button"
-            className="absolute inset-y-0 right-0 pr-3 flex items-center"
-            onClick={onTogglePassword}
-          >
-            {showPasswordToggle ? (
-              <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-            ) : (
-              <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-            )}
-          </button>
-        )}
-      </div>
-      <AnimatePresence>
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="flex items-center text-red-600 text-sm"
-          >
-            <AlertCircle className="h-4 w-4 mr-1" />
-            {error}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  )
+ 
 
   return (
     <div className="flex min-h-screen w-full bg-gradient-to-br from-indigo-50 via-white to-purple-50">
