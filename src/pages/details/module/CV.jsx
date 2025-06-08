@@ -1,18 +1,25 @@
 import { Button } from "@/components/ui/button"
+import { useAuth } from "@/providers/AuthContext"
+import { getCVs } from "@/utils/userApi"
 import { Download, Eye, FileText } from "lucide-react"
 import { useEffect, useState } from "react"
 
 const CV = () => {
   const [cvData, setCvData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const { user } = useAuth();
+  const pageSize = 10;
 
   useEffect(() => {
     // Fetch CV data here
-    const fetchCV = async () => {
+    const fetchCV = async (pageNum = 0, reset = false) => {
       try {
-        // Replace with actual API call
-        // const response = await getUserCV(userId)
-        // setCvData(response.data)
+        const CVs = getCVs(
+          user.user_id,
+          pageNum,
+          pageSize
+        );
+        setCvData(CVs.data);
         setLoading(false)
       } catch (error) {
         console.error("Failed to fetch CV:", error)
@@ -72,7 +79,7 @@ const CV = () => {
           </div>
         </div>
         <div className="text-sm text-gray-600">
-          <p>Kích thước: 245 KB</p>
+          <p>Kích thước: 500 KB</p>
           <p>Định dạng: PDF</p>
         </div>
       </div>

@@ -8,8 +8,8 @@ export const getAllProjects = async (
 ): Promise<Project[]> =>
     handleRequest(() => api.get<Project[]>(ENDPOINTS.GET_ALL_PROJECTS, { params: { page, size } }));
 
-export const getProjectById = async (companyId: string): Promise<Project> =>
-    handleRequest(() => api.get<Project>(ENDPOINTS.GET_PROJECT_BY_ID(companyId)));
+export const getProjectById = async (projectId: string): Promise<Project> =>
+    handleRequest(() => api.get<Project>(ENDPOINTS.GET_PROJECT_BY_ID(projectId)));
 
 export const createProject = async (
     data: ProjectRequest
@@ -21,8 +21,8 @@ export const updateProject = async (
 ): Promise<Project> =>
     handleRequest(() => api.put<Project>(ENDPOINTS.UPDATE_PROJECT, data));
 
-export const deleteProject = async (companyId: string): Promise<void> =>
-    handleRequest(() => api.delete<void>(ENDPOINTS.DELETE_PROJECT(companyId)));
+export const deleteProject = async (projectId: string): Promise<void> =>
+    handleRequest(() => api.delete<void>(ENDPOINTS.DELETE_PROJECT(projectId)));
 
 export const uploadProjectImage = async (
     projectId: string,

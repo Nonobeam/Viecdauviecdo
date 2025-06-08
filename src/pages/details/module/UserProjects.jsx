@@ -1,21 +1,24 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { useAuth } from "@/providers/AuthContext"
+import { getProjectById } from "@/utils/projectAPI"
 import { ExternalLink, FolderOpen, Trash2 } from "lucide-react"
 import { useEffect, useState } from "react"
 
 const UserProjects = () => {
   const [projects, setProjects] = useState([])
   const [loading, setLoading] = useState(true)
+  const { user } = useAuth();
 
   useEffect(() => {
     // Fetch user's own projects here
     const fetchUserProjects = async () => {
       try {
-        // Replace with actual API call
-        // const response = await getUserProjects(userId)
-        // setProjects(response.data)
+        setLoading(true);
+        const userProjects = await getProjectById(user.user_id);
+        setProjects(userProjects.data);
+        setLoading(false)
 
-        // Mock data for demonstration
         setProjects([
           {
             id: 1,
