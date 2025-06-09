@@ -1,72 +1,69 @@
-"use client"
+"use client";
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { useAuth } from "@/providers/AuthContext"
-import { getProjectByUserId } from "@/utils/projectAPI"
-import { ExternalLink, Users } from "lucide-react"
-import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/providers/AuthContext";
+import { getProjectByUserId } from "@/utils/projectAPI";
+import { ExternalLink, Users } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const JoinedProjects = () => {
-  const [joinedProjects, setJoinedProjects] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [joinedProjects, setJoinedProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const pageSize = 10;
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Fetch projects user has joined
-    const fetchJoinedProjects = async () => {
-      try {
-        const data = await getProjectByUserId(user.user_id);
-        setJoinedProjects(data.data.content)
-        // setJoinedProjects([
-        //   {
-        //     id: 1,
-        //     title: "Open Source CMS",
-        //     description: "Hệ thống quản lý nội dung mã nguồn mở",
-        //     owner: "Nguyễn Văn B",
-        //     ownerAvatar: "/placeholder.svg?height=40&width=40",
-        //     role: "Frontend Developer",
-        //     tech: ["React", "TypeScript", "Tailwind"],
-        //     image: "/placeholder.svg?height=200&width=300",
-        //     status: "Đang hoạt động",
-        //     members: 5,
-        //   },
-        //   {
-        //     id: 2,
-        //     title: "AI Chatbot Platform",
-        //     description: "Nền tảng tạo chatbot AI cho doanh nghiệp",
-        //     owner: "Trần Thị C",
-        //     ownerAvatar: "/placeholder.svg?height=40&width=40",
-        //     role: "Backend Developer",
-        //     tech: ["Python", "FastAPI", "PostgreSQL"],
-        //     image: "/placeholder.svg?height=200&width=300",
-        //     status: "Hoàn thành",
-        //     members: 8,
-        //   },
-        // ])
-        setLoading(false)
-      } catch (error) {
-        console.error("Failed to fetch joined projects:", error)
-        setLoading(false)
+  const fetchJoinedProjects = async (pageNum = 0, reset = false) => {
+    try {
+      const data = await getProjectByUserId(user.user_id, "MEMBER", pageNum, pageSize);
+      setJoinedProjects(data.data.content);
+      setLoading(false);
+      setError(null)
+      if (reset) {
+        setJoinedProjects(data.data.content);
+      } else {
+        setJoinedProjects((prev) => [...prev, ...data.data.content]);
       }
-    }
 
-    fetchJoinedProjects()
-  }, [])
+      // Check if we have more data to load
+      setHasMore(data.data.content.length === pageSize);
+      setError(null);
+    } catch (err) {
+      setError("Không thể tải danh sách dự án");
+      console.error("Lỗi khi tải danh sách dự án:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadMore = () => {
+    if (!loading && hasMore) {
+      const nextPage = page + 1
+      setPage(nextPage)
+      fetchProjects(nextPage, false)
+    }
+  }
+
+  useEffect(() => {
+    fetchJoinedProjects(0, true);
+    setPage(0);
+  }, []);
 
   const handleCardClick = (id) => {
     navigate(`/project/${id}`);
   };
-
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
       </div>
-    )
+    );
   }
 
   if (joinedProjects.length === 0) {
@@ -75,13 +72,17 @@ const JoinedProjects = () => {
         <div className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-full p-4 w-16 h-16 mx-auto mb-4">
           <Users className="h-8 w-8 text-purple-600" />
         </div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">Chưa tham gia dự án nào</h3>
-        <p className="text-gray-500 mb-4">Tham gia các dự án để hợp tác với những người khác</p>
+        <h3 className="text-lg font-medium text-gray-900 mb-2">
+          Chưa tham gia dự án nào
+        </h3>
+        <p className="text-gray-500 mb-4">
+          Tham gia các dự án để hợp tác với những người khác
+        </p>
         <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white">
           Khám phá dự án
         </Button>
       </div>
-    )
+    );
   }
 
   return (
@@ -114,7 +115,9 @@ const JoinedProjects = () => {
               </Button>
             </div>
 
-            <p className="text-gray-600 leading-relaxed">{project.description}</p>
+            <p className="text-gray-600 leading-relaxed">
+              {project.description}
+            </p>
 
             <div className="flex justify-between items-center pt-2">
               <div className="flex gap-2 flex-wrap">
@@ -130,17 +133,41 @@ const JoinedProjects = () => {
               <Badge
                 variant="outline"
                 className={`border-green-200 text-green-700 bg-green-50 ${
-                  project.system_status === "ACT" ? "border-blue-200 text-blue-700 bg-blue-50" : ""
+                  project.system_status === "ACT"
+                    ? "border-blue-200 text-blue-700 bg-blue-50"
+                    : ""
                 }`}
               >
-                {project.system_status === "ACT" ? "Đang hoạt động" : project.system_status}
+                {project.system_status === "ACT"
+                  ? "Đang hoạt động"
+                  : project.system_status}
               </Badge>
             </div>
           </div>
         </div>
       ))}
-    </div>
-  )
-}
 
-export default JoinedProjects
+      {/* Load More Button */}
+      {hasMore && projects.length > 0 && (
+        <div className="flex justify-center mt-10">
+          <Button
+            onClick={loadMore}
+            disabled={loading}
+            className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-2 h-auto rounded-full shadow-md hover:shadow-lg transition-all duration-300"
+          >
+            {loading ? (
+              <div className="flex items-center">
+                <Loader className="h-4 w-4 mr-2 animate-spin" />
+                <span>Đang tải...</span>
+              </div>
+            ) : (
+              <span>Xem thêm dự án</span>
+            )}
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default JoinedProjects;

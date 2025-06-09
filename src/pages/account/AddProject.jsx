@@ -1,100 +1,134 @@
-"use client"
-
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { useAuth } from "@/providers/AuthContext"
-import { createProject, uploadProjectImage } from "@/utils/projectAPI"
-import { ArrowLeft, Calendar, FileText, ImageIcon, LinkIcon, Plus, X } from "lucide-react"
-import { useRef, useState } from "react"
-import { Link } from "react-router-dom"
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { addProjectMember, createProject, uploadProjectImage } from "@/utils/projectAPI";
+import {
+  ArrowLeft,
+  Calendar,
+  FileText,
+  ImageIcon,
+  LinkIcon,
+  Plus,
+  X,
+} from "lucide-react";
+import { useRef, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 const AddProject = () => {
-  const [projectName, setProjectName] = useState("")
-  const [overview, setOverview] = useState("")
-  const [details, setDetails] = useState("")
-  const [projectLink, setProjectLink] = useState("")
-  const [startTime, setStartTime] = useState("")
-  const [tagInput, setTagInput] = useState("")
-  const [tags, setTags] = useState([])
-  const [image, setImage] = useState(null)
-  const [isDragging, setIsDragging] = useState(false)
-  const fileInputRef = useRef(null)
-  const [imageFile, setImageFile] = useState(null)
-  const user = useAuth();
-
+  const [projectName, setProjectName] = useState("");
+  const [overview, setOverview] = useState("");
+  const [details, setDetails] = useState("");
+  const [projectLink, setProjectLink] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [tagInput, setTagInput] = useState("");
+  const [tags, setTags] = useState([]);
+  const [image, setImage] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef(null);
+  const [imageFile, setImageFile] = useState(null);
+  const location = useLocation();
+  const user = location.state?.user;
   const handleDragOver = (e) => {
-    e.preventDefault()
-    setIsDragging(true)
-  }
+    e.preventDefault();
+    setIsDragging(true);
+  };
 
   const handleDragLeave = () => {
-    setIsDragging(false)
-  }
+    setIsDragging(false);
+  };
 
   const handleDrop = (e) => {
-    e.preventDefault()
-    setIsDragging(false)
+    e.preventDefault();
+    setIsDragging(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleImageChange(e.dataTransfer.files[0])
+      handleImageChange(e.dataTransfer.files[0]);
     }
-  }
+  };
 
   const handleImageChange = (file) => {
     if (file) {
-      setImageFile(file)
-      const reader = new FileReader()
+      setImageFile(file);
+      const reader = new FileReader();
       reader.onload = (e) => {
-        setImage(e.target.result)
-      }
-      reader.readAsDataURL(file)
+        setImage(e.target.result);
+      };
+      reader.readAsDataURL(file);
     }
-  }
+  };
 
   const handleFileInputChange = (e) => {
     if (e.target.files && e.target.files[0]) {
-      handleImageChange(e.target.files[0])
+      handleImageChange(e.target.files[0]);
     }
-  }
+  };
 
   const handleAddTag = () => {
     if (tagInput.trim() !== "" && !tags.includes(tagInput.trim())) {
-      setTags([...tags, tagInput.trim()])
-      setTagInput("")
+      setTags([...tags, tagInput.trim()]);
+      setTagInput("");
     }
-  }
+  };
 
   const handleRemoveTag = (tagToRemove) => {
-    setTags(tags.filter((tag) => tag !== tagToRemove))
-  }
+    setTags(tags.filter((tag) => tag !== tagToRemove));
+  };
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      e.preventDefault()
-      handleAddTag()
+      e.preventDefault();
+      handleAddTag();
     }
-  }
+  };
+
+  const formatDateToISOString = (dateOnly) => {
+    return `${dateOnly}T00:00:00.000Z`;
+  };
+
+  const applyProjectOwner = async (project_id) => {
+    try {
+      const payload = {
+        user_id: user.user_id,
+        project_id: project_id,
+        project_role: "OWNER",
+      };
+
+      console.log(payload);
+      if (user != null) {
+        const response = addProjectMember(payload);
+        console.log(response);
+      } else {
+        console.log("User was not fetch");
+      }
+    } catch (error) {
+      console.error("Something is wrong with the applying process", error);
+    }
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    const IsoStartTime = formatDateToISOString(startTime);
     // Handle form submission here
     const projectData = {
       name: projectName,
       description: details,
       summary: overview,
       external_link: projectLink,
-      start_at: startTime,
+      start_at: IsoStartTime,
       user_id: user.user_id,
       tags,
-    }
-    const response = await createProject(projectData)
-    if(imageFile != null ){
-      await uploadProjectImage(imageFile)
-    }
+    };
+    const response = await createProject(projectData);
     console.log(response)
-  }
+    if (response.success) {
+      const responseOwner = await applyProjectOwner(response.data.id);
+    }
+    if (imageFile != null) {
+      const responsePicture = await uploadProjectImage(imageFile);
+      console.log(responsePicture)
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50">
@@ -124,14 +158,16 @@ const AddProject = () => {
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Image Upload */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">Ảnh dự án</label>
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              Ảnh dự án
+            </label>
             <div
               className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
                 isDragging
                   ? "border-purple-500 bg-purple-50"
                   : image
-                    ? "border-green-400 bg-green-50/30"
-                    : "border-purple-200 hover:border-purple-400 hover:bg-purple-50/50"
+                  ? "border-green-400 bg-green-50/30"
+                  : "border-purple-200 hover:border-purple-400 hover:bg-purple-50/50"
               }`}
               onClick={() => fileInputRef.current.click()}
               onDragOver={handleDragOver}
@@ -149,8 +185,8 @@ const AddProject = () => {
                     type="button"
                     className="absolute top-2 right-2 bg-white rounded-full p-1.5 shadow-md hover:bg-gray-50 transition-colors"
                     onClick={(e) => {
-                      e.stopPropagation()
-                      setImage(null)
+                      e.stopPropagation();
+                      setImage(null);
                     }}
                   >
                     <X className="h-4 w-4 text-gray-500" />
@@ -161,7 +197,9 @@ const AddProject = () => {
                   <div className="bg-gradient-to-r from-purple-400/30 to-blue-400/30 rounded-full p-4 mb-4">
                     <ImageIcon className="h-10 w-10 text-purple-500" />
                   </div>
-                  <p className="text-base text-gray-700 mb-2 font-medium">Kéo và thả ảnh thu nhỏ dự án vào đây</p>
+                  <p className="text-base text-gray-700 mb-2 font-medium">
+                    Kéo và thả ảnh thu nhỏ dự án vào đây
+                  </p>
                   <p className="text-sm text-gray-500">hoặc nhấp để chọn tệp</p>
                 </div>
               )}
@@ -177,7 +215,10 @@ const AddProject = () => {
 
           {/* Project Name */}
           <div>
-            <label htmlFor="projectName" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="projectName"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Tên Dự Án *
             </label>
             <Input
@@ -192,7 +233,10 @@ const AddProject = () => {
 
           {/* Project Overview */}
           <div>
-            <label htmlFor="overview" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="overview"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Tổng quan dự án *
             </label>
             <Textarea
@@ -208,7 +252,10 @@ const AddProject = () => {
 
           {/* Project Details */}
           <div>
-            <label htmlFor="details" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="details"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Chi tiết dự án *
             </label>
             <Textarea
@@ -225,7 +272,10 @@ const AddProject = () => {
           {/* Project Link and Start Time */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="projectLink" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="projectLink"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Link dự án
               </label>
               <div className="relative">
@@ -244,8 +294,11 @@ const AddProject = () => {
             </div>
 
             <div>
-              <label htmlFor="startTime" className="block text-sm font-medium text-gray-700 mb-2">
-                Thời gian dự kiến *
+              <label
+                htmlFor="startTime"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Thời gian bắt đầu *
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -253,9 +306,10 @@ const AddProject = () => {
                 </div>
                 <Input
                   id="startTime"
-                  placeholder="VD: 3-6 tháng, 2 tuần, 1 năm"
+                  type="date"
                   value={startTime}
                   onChange={(e) => setStartTime(e.target.value)}
+                  min={new Date().toISOString().split("T")[0]} // Prevents selecting past dates
                   className="pl-10 border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80"
                   required
                 />
@@ -265,7 +319,10 @@ const AddProject = () => {
 
           {/* Tags */}
           <div>
-            <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="tags"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Công nghệ & Kỹ năng
             </label>
             <div className="flex gap-2 mb-2">
@@ -299,8 +356,8 @@ const AddProject = () => {
                     <button
                       type="button"
                       onClick={(e) => {
-                        e.preventDefault()
-                        handleRemoveTag(tag)
+                        e.preventDefault();
+                        handleRemoveTag(tag);
                       }}
                       className="hover:bg-purple-200 rounded-full p-0.5"
                     >
@@ -325,11 +382,15 @@ const AddProject = () => {
               </li>
               <li className="flex items-start gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-purple-500 flex-shrink-0 mt-2"></div>
-                <span>Tổng quan nên mô tả ngắn gọn mục đích chính của dự án</span>
+                <span>
+                  Tổng quan nên mô tả ngắn gọn mục đích chính của dự án
+                </span>
               </li>
               <li className="flex items-start gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-purple-500 flex-shrink-0 mt-2"></div>
-                <span>Chi tiết dự án nên bao gồm tính năng, yêu cầu kỹ thuật</span>
+                <span>
+                  Chi tiết dự án nên bao gồm tính năng, yêu cầu kỹ thuật
+                </span>
               </li>
               <li className="flex items-start gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-purple-500 flex-shrink-0 mt-2"></div>
@@ -346,14 +407,18 @@ const AddProject = () => {
             >
               Tạo Dự Án
             </Button>
-            <Button type="button" variant="outline" className="border-purple-200 text-purple-700 hover:bg-purple-50">
+            <Button
+              type="button"
+              variant="outline"
+              className="border-purple-200 text-purple-700 hover:bg-purple-50"
+            >
               Hủy bỏ
             </Button>
           </div>
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AddProject
+export default AddProject;

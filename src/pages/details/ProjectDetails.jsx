@@ -140,6 +140,13 @@ const Members = ({ project }) => {
                   <h3 className="font-semibold text-gray-800 mb-1">
                     {member.user_information.full_name}
                   </h3>
+
+                  {/* <h4 className="font-semibold text-gray-600 mb-1">
+                    {member.user_information.user_id === project.owner_id
+                      ? "Chủ dự án"
+                      : "Thành viên"}
+                  </h4> */}
+                      
                   <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
                     <Mail className="h-4 w-4" />
                     <span>{member.email}</span>
@@ -285,8 +292,8 @@ const ProjectDetails = () => {
   };
 
   const checkUserMembership = async (email) => {
-    console.log(email)
-    if (email ==null) {
+    console.log(email);
+    if (email == null) {
       setCheckingMembership(false);
       return;
     }
@@ -297,7 +304,7 @@ const ProjectDetails = () => {
       const members = memberData.data.content;
 
       const isMember = members.some((member) => member.email === email);
-      console.log(isMember)
+      console.log(isMember);
 
       setIsUserMember(isMember);
     } catch (error) {
@@ -327,12 +334,12 @@ const ProjectDetails = () => {
     }
   };
 
-    useEffect(() => {
+  useEffect(() => {
     if (id && user?.user_id) {
       fetchProject(id);
       checkUserMembership(user.sub);
     }
-  }, [id,user]);
+  }, [id, user]);
 
   if (loading) {
     return (

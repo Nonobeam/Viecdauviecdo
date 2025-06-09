@@ -96,7 +96,8 @@ declare module 'types' {
     name: string,
     description: string,
     summary: string,
-    created_at: string,
+    start_at: string,
+    external_link: string,
     user_id: string,
     tags: string[]
   }

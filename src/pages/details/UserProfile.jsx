@@ -4,19 +4,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/providers/AuthContext";
 import { getUserById, uploadAvatar } from "@/utils/userApi";
-import {
-  Edit,
-  Loader,
-  Mail,
-  MapPin,
-  Phone,
-  Plus
-} from "lucide-react";
+import { Edit, Loader, Mail, MapPin, Phone, Plus } from "lucide-react";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 const CV = lazy(() => import("@/pages/details/module/CV"));
 const UserProjects = lazy(() => import("@/pages/details/module/UserProjects"));
-const JoinedProjects = lazy(() => import("@/pages/details/module/JoinedProjects"));
+const JoinedProjects = lazy(() =>
+  import("@/pages/details/module/JoinedProjects")
+);
 
 const ProjectTabs = () => {
   const tabs = ["cvs", "userProjects", "joinedProjects"];
@@ -27,7 +22,6 @@ const ProjectTabs = () => {
   };
   const [activeTab, setActiveTab] = useState(tabs[0]);
 
-
   return (
     <div className="p-8">
       {/* Tab Navigation */}
@@ -35,25 +29,24 @@ const ProjectTabs = () => {
         {activeTab === "talents"}
       </div>
       {/* Tab Content */}
-              <main className="flex-1 flex flex-col">
-          <TabList
-            tabs={tabs}
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            labels={labels}
-          />
-          <div className="flex-1 overflow-y-auto">
-            <Suspense fallback={<Loader />}>
-              {activeTab === "cvs" && <CV />}
-              {activeTab === "userProjects" && <UserProjects />}
-              {activeTab === "joinedProjects" && <JoinedProjects />}
-            </Suspense>
-          </div>
-        </main>
+      <main className="flex-1 flex flex-col">
+        <TabList
+          tabs={tabs}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          labels={labels}
+        />
+        <div className="flex-1 overflow-y-auto">
+          <Suspense fallback={<Loader />}>
+            {activeTab === "cvs" && <CV />}
+            {activeTab === "userProjects" && <UserProjects />}
+            {activeTab === "joinedProjects" && <JoinedProjects />}
+          </Suspense>
+        </div>
+      </main>
     </div>
-  )
-}
-
+  );
+};
 
 const Profile = () => {
   const { user } = useAuth(); // From AuthContext
@@ -117,25 +110,6 @@ const Profile = () => {
     {
       name: "AWS",
       color: "bg-gradient-to-r from-orange-500 to-red-500 text-white",
-    },
-  ];
-
-  const projects = [
-    {
-      id: 1,
-      title: "Ứng dụng y tế",
-      description: "App y tế full-stack cho bác sĩ và y tá",
-      type: "Freelance",
-      tech: ["React", "Node.js"],
-      image: "/fake/healthcare-app.png",
-    },
-    {
-      id: 2,
-      title: "Nền tảng mạng xã hội",
-      description: "Nền tảng cho những người đam mê trao đổi",
-      type: "Open Source",
-      tech: ["Python", "React"],
-      image: "/fake/defi-platform.png",
     },
   ];
 
@@ -289,7 +263,11 @@ const Profile = () => {
                       </Link>
                     </Button>
                     <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg">
-                      <Link to="/insert-project" className="flex items-center">
+                      <Link
+                        to="/insert-project"
+                        state={{ user }}
+                        className="flex items-center"
+                      >
                         <Plus className="h-4 w-4 mr-2" />
                         Thêm Dự Án
                       </Link>
