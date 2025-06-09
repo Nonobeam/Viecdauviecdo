@@ -18,19 +18,19 @@ import {
     CareerPathBuilder,
     CompanyProfile,
     EditProfile,
+    EditProject,
     Home,
     InsertCV,
     Login,
     MainLayout,
     PaymentPage,
     PostJob,
-    PostProject,
     PremiumPlansPage,
     Profile,
     ProjectDetails,
     Seeking,
     SuccessPage,
-    TransactionHistory,
+    TransactionHistory
 } from "./pages";
 
 function App() {
@@ -53,8 +53,8 @@ function App() {
                             <Route path="/project/:id" element={<ProjectDetails />} />
                             <Route path="/insert-cv" element={<InsertCV />} />
                             <Route path="/insert-project" element={<AddProject />} />
+                            <Route path="/edit-project/:id" element={<EditProject />} />
                             <Route path="/seeking" element={<Seeking />} />
-                            <Route path="/post-project" element={<PostProject />} />
                             <Route path="/post-job" element={<PostJob />} />
                             <Route path="*" element={<div>404 Not Found</div>} />
                         </Route>

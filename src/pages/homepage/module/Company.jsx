@@ -1,11 +1,9 @@
-import { Badge } from "@/components/ui/badge";
-import ChatbotButton from "@/components/ui/chatbotButton";
+import { Button } from "@/components/ui/button";
 import { getAllCompanies } from "@/utils/companyApi";
+import { motion } from "framer-motion";
+import { Briefcase, Building, MapPin, Search, Users } from 'lucide-react';
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Building, MapPin, Users, Search, Briefcase } from 'lucide-react';
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 
 const Company = () => {
   const [companies, setCompanies] = useState([]);
@@ -24,11 +22,11 @@ const Company = () => {
       if (reset) {
         setCompanies(data.data.content);
       } else {
-        setCompanies((prev) => [...prev, ...data]);
+        setCompanies((prev) => [...prev, ...data.data.content]);
       }
 
       // Check if we have more data to load
-      setHasMore(data.length === pageSize);
+      setHasMore(data.data.content.length === pageSize);
       setError(null);
     } catch (err) {
       setError("Không thể tải danh sách công ty");
@@ -125,14 +123,6 @@ const Company = () => {
                       <Building className="w-16 h-16 text-indigo-300" />
                     </div>
                   )}
-                  <div className="absolute top-4 right-4">
-                    <Badge
-                      variant="secondary"
-                      className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-600 hover:to-purple-600"
-                    >
-                      Premium
-                    </Badge>
-                  </div>
                 </div>
 
                 <div className="p-6 flex-grow">
@@ -144,13 +134,13 @@ const Company = () => {
                     <div className="flex items-center text-gray-600">
                       <MapPin className="h-4 w-4 text-indigo-500 mr-2 flex-shrink-0" />
                       <span className="text-sm truncate">
-                        {company.location || "Hà Nội, Việt Nam"}
+                        {company.location}
                       </span>
                     </div>
                     <div className="flex items-center text-gray-600">
                       <Users className="h-4 w-4 text-indigo-500 mr-2 flex-shrink-0" />
                       <span className="text-sm">
-                        Quy mô: {company.company_size || "50-200 nhân viên"}
+                        Quy mô: {company.company_size}
                       </span>
                     </div>
                     <div className="flex items-center text-gray-600">
@@ -208,8 +198,6 @@ const Company = () => {
             <p>{error}</p>
           </div>
         )}
-
-        <ChatbotButton />
       </div>
     </div>
   );

@@ -2,7 +2,6 @@
 
 import BentoGridDemo from "@/components/BentoGridLayout"
 import { Button } from "@/components/ui/button"
-import ChatbotButton from "@/components/ui/chatbotButton"
 import { getAllProjects } from "@/utils/projectAPI"
 import { motion } from "framer-motion"
 import { FileText, Loader } from "lucide-react"
@@ -26,11 +25,11 @@ const Project = () => {
       if (reset) {
         setProjects(data.data.content)
       } else {
-        setProjects((prev) => [...prev, ...data])
+        setProjects((prev) => [...prev, ...data.data.content])
       }
 
       // Check if we have more data to load
-      setHasMore(data.length === pageSize)
+      setHasMore(data.data.content.length === pageSize)
       setError(null)
     } catch (err) {
       setError("Không thể tải danh sách dự án")
@@ -108,8 +107,6 @@ const Project = () => {
             <p>{error}</p>
           </div>
         )}
-
-        <ChatbotButton />
       </div>
     </div>
   )
