@@ -1,6 +1,7 @@
 export { default as MainLayout } from "../layout/MainLayout";
 export { default as AddProject } from "./account/AddProject";
 export { default as EditProfile } from "./account/EditProfile";
+export { default as EditProject } from "./account/EditProject";
 export { default as InsertCV } from "./account/InsertCV";
 export { default as CompanyProfile } from "./details/CompanyProfile";
 export { default as ProjectDetails } from "./details/ProjectDetails";

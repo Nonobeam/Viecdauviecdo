@@ -23,7 +23,7 @@ export const ENDPOINTS = {
   GET_PROJECT_BY_ID: (id: string) => `/api/projects/${id}`,
   CREATE_PROJECT: '/api/projects',
   UPLOAD_PROJECT_IMAGE: (id: string) => `/api/projects/${id}/image`,
-  UPDATE_PROJECT: '/api/projects',
+  UPDATE_PROJECT: (id: string) => `/api/projects/${id}`,
   DELETE_PROJECT: (id: string) => `/api/projects/${id}`,
   ADD_PROJECT_MEMBER: `/api/projects/mem`,
   GET_USER_PROJECTS: (id: string) => `/api/projects/users/${id}`,
