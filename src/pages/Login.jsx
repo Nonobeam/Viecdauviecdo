@@ -1,89 +1,170 @@
-"use client"
+"use client";
 
-import { Logo } from "@/components/icons/Logo"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { login as apiLogin } from "@/utils/authApi"
-import { createUser as apiRegister } from "@/utils/userApi"
-import Cookies from "js-cookie"
-import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
-import { useAuth } from "../providers/AuthContext"
-import { motion, AnimatePresence } from "framer-motion"
-import { Eye, EyeOff, Mail, Lock, User, Sparkles, ArrowRight, Shield, CheckCircle, AlertCircle } from "lucide-react"
+import { Logo } from "@/components/icons/Logo";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { login as apiLogin } from "@/utils/authApi";
+import { createUser as apiRegister } from "@/utils/userApi";
+import { AnimatePresence, motion } from "framer-motion";
+import Cookies from "js-cookie";
+import {
+  AlertCircle,
+  ArrowRight,
+  CheckCircle,
+  Eye,
+  EyeOff,
+  Lock,
+  Mail,
+  Shield,
+  Sparkles,
+  User,
+} from "lucide-react";
+import { useCallback, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../providers/AuthContext";
+
+const InputField = ({
+  icon: Icon,
+  error,
+  type = "text",
+  showPasswordToggle,
+  onTogglePassword,
+  ...props
+}) => (
+  <div className="space-y-2">
+    <Label htmlFor={props.id} className="text-sm font-medium text-gray-700">
+      {props.label}
+    </Label>
+    <div className="relative">
+      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <Icon className="h-5 w-5 text-gray-400" />
+      </div>
+      <Input
+        {...props}
+        type={
+          showPasswordToggle
+            ? type === "password" && !showPasswordToggle
+              ? "password"
+              : "text"
+            : type
+        }
+        className={`pl-10 h-12 border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 transition-all duration-300 ${
+          error ? "border-red-300 focus:border-red-500 focus:ring-red-500" : ""
+        }`}
+      />
+      {type === "password" && (
+        <button
+          type="button"
+          className="absolute inset-y-0 right-0 pr-3 flex items-center"
+          onClick={onTogglePassword}
+        >
+          {showPasswordToggle ? (
+            <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+          ) : (
+            <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+          )}
+        </button>
+      )}
+    </div>
+    <AnimatePresence>
+      {error && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          className="flex items-center text-red-600 text-sm"
+        >
+          <AlertCircle className="h-4 w-4 mr-1" />
+          {error}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  </div>
+);
 
 const LoginPage = () => {
-  const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState("login")
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [errors, setErrors] = useState({})
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("login");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [full_name, setName] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [agreeTerms, setAgreeTerms] = useState(false)
-  const { login } = useAuth()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [full_name, setName] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [agreeTerms, setAgreeTerms] = useState(false);
+  const { login } = useAuth();
 
   const validateForm = () => {
-    const newErrors = {}
+    const newErrors = {};
 
     if (!email) {
-      newErrors.email = "Email là bắt buộc"
+      newErrors.email = "Email là bắt buộc";
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = "Email không hợp lệ"
+      newErrors.email = "Email không hợp lệ";
     }
 
     if (!password) {
-      newErrors.password = "Mật khẩu là bắt buộc"
+      newErrors.password = "Mật khẩu là bắt buộc";
     } else if (password.length < 6) {
-      newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự"
+      newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự";
     }
 
     if (activeTab === "signup") {
       if (!full_name) {
-        newErrors.full_name = "Họ tên là bắt buộc"
+        newErrors.full_name = "Họ tên là bắt buộc";
       }
 
       if (password !== confirmPassword) {
-        newErrors.confirmPassword = "Mật khẩu xác nhận không khớp"
+        newErrors.confirmPassword = "Mật khẩu xác nhận không khớp";
       }
 
       if (!agreeTerms) {
-        newErrors.terms = "Bạn phải đồng ý với điều khoản"
+        newErrors.terms = "Bạn phải đồng ý với điều khoản";
       }
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleLogin = async () => {
-    if (!validateForm()) return
+    if (!validateForm()) return;
 
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const { token } = await apiLogin({ username: email, password })
-      Cookies.set("token", token, { expires: 7 })
-      login(token)
-      navigate("/")
+      const { token } = await apiLogin({ username: email, password });
+      Cookies.set("token", token, { expires: 7 });
+      login(token);
+      navigate("/");
     } catch (err) {
-      console.error(err)
-      setErrors({ general: "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin." })
+      console.error(err);
+      setErrors({
+        general: "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.",
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
+
+  const handleGoogle = useCallback(async () => {
+    try {
+      window.location.href = 'https://backend.matchlent.xyz/oauth2/authorization/google';
+    } catch (err) {
+      console.error(err);
+    } finally {
+    }
+  }, []);
 
   const handleRegister = async () => {
-    if (!validateForm()) return
+    if (!validateForm()) return;
 
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       await apiRegister({
         email,
@@ -91,36 +172,47 @@ const LoginPage = () => {
         password,
         role_name: "TALENT",
         image: undefined,
-      })
-      setErrors({})
-      alert("Đăng ký thành công — email xác nhận đã được gửi đến hộp thư của bạn")
-      setActiveTab("login")
+      });
+      setErrors({});
+      alert(
+        "Đăng ký thành công — email xác nhận đã được gửi đến hộp thư của bạn"
+      );
+      setActiveTab("login");
     } catch (err) {
-      console.error(err)
-      setErrors({ general: "Đăng ký thất bại. Vui lòng thử lại." })
+      console.error(err);
+      setErrors({ general: "Đăng ký thất bại. Vui lòng thử lại." });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const renderSocialLogins = () => (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.3 }}
+    >
       <div className="relative my-8">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t border-gray-200"></span>
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="bg-white px-4 text-gray-500 font-medium">Hoặc tiếp tục với</span>
+          <span className="bg-white px-4 text-gray-500 font-medium">
+            Hoặc tiếp tục với
+          </span>
         </div>
       </div>
       <div className="grid grid-cols-3 gap-3">
         <Button
           variant="outline"
           className="h-12 border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-300 group"
+          onClick={handleGoogle}
         >
           <div className="flex items-center justify-center">
             {Logo.google}
-            <span className="ml-2 text-sm font-medium group-hover:text-indigo-600">Google</span>
+            <span className="ml-2 text-sm font-medium group-hover:text-indigo-600">
+              Google
+            </span>
           </div>
         </Button>
         <Button
@@ -129,7 +221,9 @@ const LoginPage = () => {
         >
           <div className="flex items-center justify-center">
             {Logo.linkedIn}
-            <span className="ml-2 text-sm font-medium group-hover:text-indigo-600">LinkedIn</span>
+            <span className="ml-2 text-sm font-medium group-hover:text-indigo-600">
+              LinkedIn
+            </span>
           </div>
         </Button>
         <Button
@@ -138,58 +232,14 @@ const LoginPage = () => {
         >
           <div className="flex items-center justify-center">
             {Logo.github}
-            <span className="ml-2 text-sm font-medium group-hover:text-indigo-600">GitHub</span>
+            <span className="ml-2 text-sm font-medium group-hover:text-indigo-600">
+              GitHub
+            </span>
           </div>
         </Button>
       </div>
     </motion.div>
-  )
-
-  const InputField = ({ icon: Icon, error, type = "text", showPasswordToggle, onTogglePassword, ...props }) => (
-    <div className="space-y-2">
-      <Label htmlFor={props.id} className="text-sm font-medium text-gray-700">
-        {props.label}
-      </Label>
-      <div className="relative">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Icon className="h-5 w-5 text-gray-400" />
-        </div>
-        <Input
-          {...props}
-          type={showPasswordToggle ? (type === "password" && !showPasswordToggle ? "password" : "text") : type}
-          className={`pl-10 h-12 border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 transition-all duration-300 ${
-            error ? "border-red-300 focus:border-red-500 focus:ring-red-500" : ""
-          }`}
-        />
-        {type === "password" && (
-          <button
-            type="button"
-            className="absolute inset-y-0 right-0 pr-3 flex items-center"
-            onClick={onTogglePassword}
-          >
-            {showPasswordToggle ? (
-              <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-            ) : (
-              <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-            )}
-          </button>
-        )}
-      </div>
-      <AnimatePresence>
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="flex items-center text-red-600 text-sm"
-          >
-            <AlertCircle className="h-4 w-4 mr-1" />
-            {error}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  )
+  );
 
   return (
     <div className="flex min-h-screen w-full bg-gradient-to-br from-indigo-50 via-white to-purple-50">
@@ -203,7 +253,7 @@ const LoginPage = () => {
       {/* Left Side - Welcome Section */}
       <div className="hidden lg:flex lg:w-5/12 flex-col justify-center px-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-700"></div>
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fillRule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23FFFFFF&quot; fillOpacity=&quot;0.05&quot;%3E%3Ccircle cx=&quot;30&quot; cy=&quot;30&quot; r=&quot;2&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
+        <div className='absolute inset-0 bg-[url(&apos;data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fillRule="evenodd"%3E%3Cg fill="%23FFFFFF" fillOpacity="0.05"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E&apos;)] opacity-40'></div>
 
         <motion.div
           initial={{ opacity: 0, x: -50 }}
@@ -216,14 +266,17 @@ const LoginPage = () => {
             <h1 className="text-5xl font-bold mb-6 leading-tight">
               Chào Mừng Đến Với
               <br />
-              <Link to="/" className="hover:text-indigo-200 transition-colors duration-300 inline-flex items-center">
+              <Link
+                to="/"
+                className="hover:text-indigo-200 transition-colors duration-300 inline-flex items-center"
+              >
                 Matchlent
                 <ArrowRight className="ml-2 h-8 w-8" />
               </Link>
             </h1>
             <p className="text-xl opacity-90 leading-relaxed mb-8">
-              "Kết nối, hợp tác và hiện thực hóa những dự án độc đáo của bạn—vượt ra ngoài công việc, vượt qua mọi giới
-              hạn."
+              "Kết nối, hợp tác và hiện thực hóa những dự án độc đáo của
+              bạn—vượt ra ngoài công việc, vượt qua mọi giới hạn."
             </p>
           </div>
 
@@ -283,7 +336,11 @@ const LoginPage = () => {
             )}
           </AnimatePresence>
 
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v)} className="w-full">
+          <Tabs
+            value={activeTab}
+            onValueChange={(v) => setActiveTab(v)}
+            className="w-full"
+          >
             <TabsList className="grid w-full grid-cols-2 h-12 bg-gray-100 rounded-xl p-1 mb-8">
               <TabsTrigger
                 value="login"
@@ -333,11 +390,17 @@ const LoginPage = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <Checkbox id="remember" className="border-gray-300" />
-                    <Label htmlFor="remember" className="ml-2 text-sm text-gray-600">
+                    <Label
+                      htmlFor="remember"
+                      className="ml-2 text-sm text-gray-600"
+                    >
                       Ghi nhớ đăng nhập
                     </Label>
                   </div>
-                  <a href="#" className="text-sm text-indigo-600 hover:text-indigo-500 font-medium">
+                  <a
+                    href="#"
+                    className="text-sm text-indigo-600 hover:text-indigo-500 font-medium"
+                  >
                     Quên mật khẩu?
                   </a>
                 </div>
@@ -416,7 +479,9 @@ const LoginPage = () => {
                   placeholder="Nhập lại mật khẩu"
                   error={errors.confirmPassword}
                   showPasswordToggle={showConfirmPassword}
-                  onTogglePassword={() => setShowConfirmPassword(!showConfirmPassword)}
+                  onTogglePassword={() =>
+                    setShowConfirmPassword(!showConfirmPassword)
+                  }
                 />
 
                 <div className="space-y-2">
@@ -427,13 +492,22 @@ const LoginPage = () => {
                       onCheckedChange={(checked) => setAgreeTerms(!!checked)}
                       className="mt-1 border-gray-300"
                     />
-                    <Label htmlFor="terms" className="text-sm text-gray-600 leading-relaxed">
+                    <Label
+                      htmlFor="terms"
+                      className="text-sm text-gray-600 leading-relaxed"
+                    >
                       Tôi đồng ý với{" "}
-                      <a href="#" className="text-indigo-600 hover:text-indigo-500 font-medium">
+                      <a
+                        href="#"
+                        className="text-indigo-600 hover:text-indigo-500 font-medium"
+                      >
                         Điều khoản dịch vụ
                       </a>{" "}
                       và{" "}
-                      <a href="#" className="text-indigo-600 hover:text-indigo-500 font-medium">
+                      <a
+                        href="#"
+                        className="text-indigo-600 hover:text-indigo-500 font-medium"
+                      >
                         Chính sách bảo mật
                       </a>
                     </Label>
@@ -479,9 +553,13 @@ const LoginPage = () => {
           {/* Footer */}
           <div className="mt-8 text-center text-sm text-gray-500">
             <p>
-              {activeTab === "login" ? "Chưa có tài khoản?" : "Đã có tài khoản?"}{" "}
+              {activeTab === "login"
+                ? "Chưa có tài khoản?"
+                : "Đã có tài khoản?"}{" "}
               <button
-                onClick={() => setActiveTab(activeTab === "login" ? "signup" : "login")}
+                onClick={() =>
+                  setActiveTab(activeTab === "login" ? "signup" : "login")
+                }
                 className="text-indigo-600 hover:text-indigo-500 font-medium"
               >
                 {activeTab === "login" ? "Đăng ký ngay" : "Đăng nhập"}
@@ -491,7 +569,7 @@ const LoginPage = () => {
         </motion.div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default LoginPage
+export default LoginPage;

@@ -1,8 +1,8 @@
-import React from "react"
-import PropTypes from "prop-types"
-import JSConfetti from "js-confetti"
-import { useNavigate } from "react-router-dom";
+import JSConfetti from "js-confetti";
+import PropTypes from "prop-types";
+import React from "react";
 import toast, { Toaster } from 'react-hot-toast';
+import { useNavigate } from "react-router-dom";
 
 const ConfettiButton = ({ name, href, description, confettiOptions }) => {
     const navigate = useNavigate();
@@ -45,6 +45,7 @@ ConfettiButton.propTypes = {
     href: PropTypes.string,
     description: PropTypes.string,
     confettiOptions: PropTypes.object,
+    onClick: PropTypes.func,
 }
 
 ConfettiButton.defaultProps = {

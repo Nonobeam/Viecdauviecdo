@@ -1,37 +1,34 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 import PropTypes from "prop-types";
+import React from "react";
 
-const TabList = ({ tabs, activeTab, setActiveTab, labels }) => {
-    return (
-        <Tabs defaultValue={tabs[0]} className="w-full" onValueChange={setActiveTab}>
-            <TabsList className={`grid w-full grid-cols-${tabs.length} h-12 text-md relative`}>
-                {tabs.map((tab) => (
-                    <TabsTrigger 
-                        key={tab} 
-                        value={tab} 
-                        className="relative text-md bg-transparent data-[state=active]:bg-transparent"
-                    >
-                        {activeTab === tab && (
-                            <motion.div
-                                layoutId="underline"
-                                className="absolute bottom-0 left-5 w-90 h-1 bg-indigo-600"
-                                transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                            />
-                        )}
-                        {labels?.[tab] || tab}
-                    </TabsTrigger>
-                ))}
-            </TabsList>
-        </Tabs>
-    );
-};
+export default function TabList({ tabs, activeTab, setActiveTab, labels = {} }) {
+  return (
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <TabsList className="flex border-b border-gray-200">
+        {tabs.map((tab) => (
+          <TabsTrigger
+            key={tab}
+            value={tab}
+            className={cn(
+              "px-4 py-2 text-sm font-medium transition-colors border-b-2",
+              activeTab === tab
+                ? "border-purple-600 text-purple-600"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            )}
+          >
+            {labels[tab] || tab}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+    </Tabs>
+  );
+}
 
 TabList.propTypes = {
-    tabs: PropTypes.arrayOf(PropTypes.string).isRequired,
-    activeTab: PropTypes.string.isRequired,
-    setActiveTab: PropTypes.func.isRequired,
-    labels: PropTypes.objectOf(PropTypes.string),
+  tabs: PropTypes.arrayOf(PropTypes.string).isRequired,
+  activeTab: PropTypes.string.isRequired,
+  setActiveTab: PropTypes.func.isRequired,
+  labels: PropTypes.objectOf(PropTypes.string),
 };
-
-export default TabList;

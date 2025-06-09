@@ -92,13 +92,13 @@ export const uploadDocument = async (
 
 // Get CVs by user ID with pagination
 export const getCVs = async (
-  userId: string,
+  user_id: string,
   page = 0,
   size = 10
 ): Promise<any> =>
   handleRequest(() =>
     api.get(ENDPOINTS.GET_CVS, {
-      params: { userId, page, size },
+      params: { user_id, page, size },
     })
   );
 

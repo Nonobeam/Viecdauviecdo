@@ -1,12 +1,12 @@
 "use client"
 
 import BentoGridDemo from "@/components/BentoGridLayout"
+import { Button } from "@/components/ui/button"
 import ChatbotButton from "@/components/ui/chatbotButton"
 import { getAllProjects } from "@/utils/projectAPI"
-import { useEffect, useState } from "react"
-import { FileText, Loader } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
+import { FileText, Loader } from "lucide-react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 const Project = () => {
@@ -77,12 +77,6 @@ const Project = () => {
           <div className="flex flex-col items-center justify-center h-64 bg-white rounded-2xl shadow-lg p-8 border border-indigo-100">
             <FileText className="w-16 h-16 text-indigo-300 mb-4" />
             <p className="text-lg text-gray-600 mb-4">Hiện tại chưa có dự án nào</p>
-            <Button
-              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
-              onClick={() => navigate("/post-project")}
-            >
-              Đăng dự án đầu tiên
-            </Button>
           </div>
         ) : (
           <BentoGridDemo items={projects} />

@@ -1,7 +1,7 @@
-import { Briefcase, FileText, ArrowRight } from 'lucide-react'
 import { ROUTES } from "@/config"
-import { useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
+import { ArrowRight, Briefcase, FileText } from 'lucide-react'
+import { useNavigate } from "react-router-dom"
 
 const Seeking = () => {
     const navigate = useNavigate()
@@ -41,10 +41,10 @@ const Seeking = () => {
                                 <Briefcase className="h-8 w-8 text-indigo-600" />
                             </div>
                             <h2 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-indigo-700 transition-colors">
-                                Đăng Tin Tuyển Dụng
+                                Tìm kiếm việc làm
                             </h2>
                             <p className="text-gray-600 mb-6">
-                                Đăng tin tuyển dụng cho công ty của bạn và tìm kiếm ứng viên phù hợp với vị trí cần tuyển
+                                Tìm kiếm việc làm mơ ước của mình tại đây
                             </p>
                             <div className="flex items-center text-indigo-600 font-medium">
                                 <span>Đăng ngay</span>
@@ -69,10 +69,10 @@ const Seeking = () => {
                                 <FileText className="h-8 w-8 text-purple-600" />
                             </div>
                             <h2 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-purple-700 transition-colors">
-                                Đăng Dự Án
+                                Tìm kiếm dự án
                             </h2>
                             <p className="text-gray-600 mb-6">
-                                Đăng dự án cần hợp tác hoặc chia sẻ công việc của bạn với cộng đồng chuyên gia
+                                Tìm và tham gia các dự án để nâng trình độ bản thân
                             </p>
                             <div className="flex items-center text-purple-600 font-medium">
                                 <span>Đăng ngay</span>
