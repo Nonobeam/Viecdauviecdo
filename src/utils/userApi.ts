@@ -1,4 +1,4 @@
-import { CreateUserRequest, EditUserInformationRequest, GetAllUsersParams, User } from 'types';
+import { CreateUserRequest, CVItem, EditUserInformationRequest, GetAllUsersParams, User } from 'types';
 import { api, handleRequest } from './apiClient';
 import { ENDPOINTS } from './apiEndpoint';
 
@@ -95,7 +95,7 @@ export const getCVs = async (
   user_id: string,
   page = 0,
   size = 10
-): Promise<any> =>
+): Promise<CVItem[]> =>
   handleRequest(() =>
     api.get(ENDPOINTS.GET_CVS, {
       params: { user_id, page, size },

@@ -1,3 +1,6 @@
+"use client";
+
+import DeletePopup from "@/components/DeletePopup";
 import Loader from "@/components/Loader";
 import TabList from "@/components/TabList";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -6,12 +9,24 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/providers/AuthContext";
 import {
   addProjectMember,
+  deleteProject,
   getProjectById,
   getProjectMembers,
+  uploadProjectImage,
 } from "@/utils/projectAPI";
-import { ArrowLeft, Github, Globe, Loader2, Mail, Tag } from "lucide-react";
-import { Suspense, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { getUserById } from "@/utils/userApi";
+import {
+  ArrowLeft,
+  Github,
+  Globe,
+  Loader2,
+  Mail,
+  NotebookPen,
+  Tag,
+  Trash,
+} from "lucide-react";
+import { Suspense, useEffect, useRef, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 // Tab Components
 const Overview = ({ project }) => (
@@ -146,7 +161,7 @@ const Members = ({ project }) => {
                       ? "Chủ dự án"
                       : "Thành viên"}
                   </h4> */}
-                      
+
                   <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
                     <Mail className="h-4 w-4" />
                     <span>{member.email}</span>
@@ -180,55 +195,79 @@ const Members = ({ project }) => {
   );
 };
 
-const Contact = ({ project }) => (
-  <div className="space-y-8">
-    <div className="bg-gradient-to-br from-white to-purple-50/50 rounded-2xl border border-purple-100 p-8 shadow-lg">
-      <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-6">
-        Thông tin liên hệ
-      </h2>
-      <div className="space-y-6">
-        <p className="text-gray-700 text-lg">
-          Để tham gia dự án này, vui lòng liên hệ với đội ngũ phát triển.
-        </p>
+const Contact = ({ project }) => {
+  const [owner, setOwner] = useState(null);
+  const [ownerInformation, setOwnerInformation] = useState(null);
+  console.log(owner);
+  console.log(ownerInformation);
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white rounded-xl border border-gray-100 p-6">
-            <h3 className="font-semibold text-gray-800 mb-4">
-              Liên hệ trực tiếp
-            </h3>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <Mail className="h-5 w-5 text-purple-500" />
-                <span className="text-gray-700">project@example.com</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Github className="h-5 w-5 text-purple-500" />
-                <span className="text-gray-700">github.com/project-repo</span>
+  const fetchOwner = async (owner_id) => {
+    try {
+      const data = await getUserById(owner_id);
+      setOwner(data.data);
+      setOwnerInformation(data.data.user_information);
+    } catch (error) {
+      console.error("Failed to fetch user:", error);
+    }
+  };
+  useEffect(() => {
+    fetchOwner(project.owner_id);
+    console.log(project.owner_id)
+  }, []);
+
+  return (
+    <div className="space-y-8">
+      <div className="bg-gradient-to-br from-white to-purple-50/50 rounded-2xl border border-purple-100 p-8 shadow-lg">
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-6">
+          Thông tin liên hệ
+        </h2>
+        <div className="space-y-6">
+          <p className="text-gray-700 text-lg">
+            Để tham gia dự án này, vui lòng liên hệ với đội ngũ phát triển.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white rounded-xl border border-gray-100 p-6">
+              <h3 className="font-semibold text-gray-800 mb-4">
+                Liên hệ trực tiếp
+              </h3>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <Mail className="h-5 w-5 text-purple-500" />
+                  <span className="text-gray-700">{owner?.email}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Github className="h-5 w-5 text-purple-500" />
+                  <span className="text-gray-700">{project.external_link}</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="bg-white rounded-xl border border-gray-100 p-6">
-            <h3 className="font-semibold text-gray-800 mb-4">Hành động</h3>
-            <div className="space-y-3">
-              <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white">
-                <Mail className="w-4 h-4 mr-2" />
-                Gửi email
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full border-purple-200 text-purple-600 hover:bg-purple-50"
-              >
-                <Github className="w-4 h-4 mr-2" />
-                Xem GitHub
-              </Button>
+            <div className="bg-white rounded-xl border border-gray-100 p-6">
+              <h3 className="font-semibold text-gray-800 mb-4">Hành động</h3>
+              <div className="space-y-3">
+                <a
+                  href={project.external_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full"
+                >
+                  <Button
+                    variant="outline"
+                    className="w-full border-purple-200 text-purple-600 hover:bg-purple-50"
+                  >
+                    <Github className="w-4 h-4 mr-2" />
+                    Xem GitHub
+                  </Button>
+                </a>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 // Helper function
 const renderTags = (tags) => {
@@ -254,10 +293,16 @@ const ProjectDetails = () => {
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const fileInputRef = useRef(null);
+  const [updated, setUpdated] = useState(false);
   const { user } = useAuth();
   //For getting Owner information
   const [isUserMember, setIsUserMember] = useState(false);
   const [checkingMembership, setCheckingMembership] = useState(true);
+
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const navigate = useNavigate();
 
   // Tab configuration
   const tabs = ["overview", "details", "members", "contact"];
@@ -269,10 +314,27 @@ const ProjectDetails = () => {
   };
   const [activeTab, setActiveTab] = useState(tabs[0]);
 
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    try {
+      await uploadProjectImage(id, file);
+      setUpdated((prev) => !prev);
+    } catch (err) {
+      console.error("Avatar upload failed:", err);
+    }
+  };
+
   const fetchProject = async (projectId) => {
     try {
       setLoading(true);
       const data = await getProjectById(projectId);
+      console.log(data.data);
       setProject(data.data);
     } catch (err) {
       setError("Failed to fetch project details");
@@ -334,12 +396,43 @@ const ProjectDetails = () => {
     }
   };
 
+  const onConfirmDelete = async () => {
+    try {
+      setIsDeleting(true);
+      await deleteProject(project.id);
+      navigate("/"); // Redirect to home
+    } catch (error) {
+      console.error("Failed to delete project:", error);
+      alert("Không thể xóa dự án. Vui lòng thử lại.");
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteDialog(false);
+    }
+  };
+
   useEffect(() => {
     if (id && user?.user_id) {
       fetchProject(id);
       checkUserMembership(user.sub);
     }
-  }, [id, user]);
+  }, [id, user, updated]);
+
+  useEffect(() => {
+    if (showDeleteDialog) {
+      const scrollbarWidth =
+        window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.overflow = "hidden";
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    } else {
+      document.body.style.overflow = "";
+      document.body.style.paddingRight = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+      document.body.style.paddingRight = "";
+    };
+  }, [showDeleteDialog]);
 
   if (loading) {
     return (
@@ -375,6 +468,19 @@ const ProjectDetails = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50">
+      {/* Delete Confirmation Dialog */}
+      <DeletePopup
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={onConfirmDelete}
+        title="Xác nhận xóa dự án"
+        message="Bạn có chắc chắn muốn xóa dự án này? Hành động này không thể hoàn tác."
+        itemName={project.name}
+        confirmText="Xóa dự án"
+        cancelText="Hủy bỏ"
+        isDeleting={isDeleting}
+      />
+
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-purple-600 to-blue-600 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/placeholder.svg?height=200&width=1000')] opacity-10"></div>
@@ -392,7 +498,7 @@ const ProjectDetails = () => {
 
           <div className="flex flex-col md:flex-row items-start gap-6">
             <div className="flex gap-6 flex-1">
-              <div className="relative">
+              <div onClick={handleAvatarClick} className="relative">
                 <div className="absolute -inset-1 bg-white/20 rounded-full blur"></div>
                 <Avatar className="relative h-20 w-20 border-4 border-white shadow-lg">
                   <AvatarImage
@@ -404,39 +510,23 @@ const ProjectDetails = () => {
                   </AvatarFallback>
                 </Avatar>
               </div>
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                onChange={handleFileChange}
+              />
 
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-3">
                   <h1 className="text-4xl font-bold text-white">
                     {project.name || "Dự án không có tên"}
                   </h1>
-                  <Badge className="bg-green-500/20 text-green-100 border-green-400/30">
-                    Đang hoạt động
-                  </Badge>
                 </div>
-                <p className="text-xl text-white/90 mb-4 leading-relaxed">
-                  {project.description || "Không có mô tả"}
-                </p>
-                {/* {project.tags && (
-                  <div className="flex flex-wrap gap-2">
-                    {project.tags.split(",").map((tag, index) => (
-                      <Badge key={index} className="bg-white/20 text-white border-white/30 backdrop-blur-sm">
-                        {tag.trim()}
-                      </Badge>
-                    ))}
-                  </div>
-                )} */}
               </div>
             </div>
-
             <div className="flex gap-3 flex-shrink-0">
-              <Button
-                variant="outline"
-                className="flex items-center gap-2 bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm"
-              >
-                <Mail className="w-4 h-4" />
-                Liên hệ nhóm
-              </Button>
               {!isUserMember && user && (
                 <Button
                   onClick={applyProject}
@@ -445,10 +535,34 @@ const ProjectDetails = () => {
                   Tham gia dự án
                 </Button>
               )}
-              {isUserMember && (
+              {isUserMember && user && user?.user_id !== project.owner_id && (
                 <Badge className="flex items-center gap-2 bg-green-500/20 text-green-100 border-green-400/30 px-4 py-2">
                   Đã tham gia
                 </Badge>
+              )}
+
+              {isUserMember && user && user?.user_id === project.owner_id && (
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() =>
+                      navigate(`/edit-project/${project.id}`, {
+                        state: { user },
+                      })
+                    }
+                    className="flex items-center gap-2 bg-gray-200 border-gray-300 text-gray-800 hover:bg-gray-300 backdrop-blur-sm"
+                  >
+                    <NotebookPen className="w-4 h-4" />
+                    Chỉnh sửa dự án
+                  </Button>
+
+                  <Button
+                    onClick={() => setShowDeleteDialog(true)}
+                    className="flex items-center gap-2 bg-red-600 border-red-700 text-white hover:bg-red-700 backdrop-blur-sm"
+                  >
+                    <Trash className="w-4 h-4" />
+                    Xóa dự án
+                  </Button>
+                </div>
               )}
             </div>
           </div>

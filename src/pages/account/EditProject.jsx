@@ -2,23 +2,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  addProjectMember,
-  createProject,
-  uploadProjectImage,
-} from "@/utils/projectAPI";
-import {
-  Calendar,
-  FileText,
-  ImageIcon,
-  LinkIcon,
-  Plus,
-  X
-} from "lucide-react";
-import { useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { getProjectById, updateProject } from "@/utils/projectAPI";
+import { Calendar, LinkIcon, Plus, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
-const AddProject = () => {
+const EditProject = () => {
   const [projectName, setProjectName] = useState("");
   const [overview, setOverview] = useState("");
   const [details, setDetails] = useState("");
@@ -26,46 +15,10 @@ const AddProject = () => {
   const [startTime, setStartTime] = useState("");
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState([]);
-  const [imagePreview, setImagePreview] = useState(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const fileInputRef = useRef(null);
-  const [image, setImage] = useState(null);
+  const { id } = useParams();
+  const navigate = useNavigate();
   const location = useLocation();
   const user = location.state?.user;
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setIsDragging(false);
-
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleImageChange(e.dataTransfer.files[0]);
-    }
-  };
-
-  const handleImageChange = (file) => {
-    if (file) {
-      setImage(file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleFileInputChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      handleImageChange(e.target.files[0]);
-    }
-  };
 
   const handleAddTag = () => {
     if (tagInput.trim() !== "" && !tags.includes(tagInput.trim())) {
@@ -89,26 +42,6 @@ const AddProject = () => {
     return `${dateOnly}T00:00:00.000Z`;
   };
 
-  const applyProjectOwner = async (project_id) => {
-    try {
-      const payload = {
-        user_id: user.user_id,
-        project_id: project_id,
-        project_role: "OWNER",
-      };
-
-      console.log(payload);
-      if (user != null) {
-        const response = await addProjectMember(payload);
-        console.log(response);
-      } else {
-        console.log("User was not fetch");
-      }
-    } catch (error) {
-      console.error("Something is wrong with the applying process", error);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const IsoStartTime = formatDateToISOString(startTime);
@@ -122,17 +55,32 @@ const AddProject = () => {
       user_id: user.user_id,
       tags,
     };
-    const response = await createProject(projectData);
-    console.log(response);
-    if (response.success) {
-      const responseOwner = await applyProjectOwner(response.data.id);
-    }
-    if (image != null) {
-      console.log(image);
-      const responsePicture = await uploadProjectImage(response.data.id, image);
-      console.log(responsePicture);
+
+    console.log(projectData);
+    const response = await updateProject(id, projectData);
+  };
+
+  const fetchProjectInformation = async (projectId) => {
+    try {
+      const fetchedProject = await getProjectById(projectId);
+      const projectData = fetchedProject.data;
+      console.log(projectData);
+      const dateOnly = projectData.start_time.split("T")[0];
+
+      setProjectName(projectData.name || "");
+      setOverview(projectData.summary || "");
+      setDetails(projectData.description || "");
+      setProjectLink(projectData.external_link || "");
+      setStartTime(dateOnly || "");
+      setTags(projectData.tags || []);
+    } catch (error) {
+      console.error("Failed to fetch user:", error);
     }
   };
+
+  useEffect(() => {
+    fetchProjectInformation(id);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50">
@@ -146,68 +94,11 @@ const AddProject = () => {
         {/* Back Button */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-            Thêm Dự Án Mới
+            Chỉnh sửa lại dự án
           </h1>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Image Upload */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              Ảnh dự án
-            </label>
-            <div
-              className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
-                isDragging
-                  ? "border-purple-500 bg-purple-50"
-                  : imagePreview
-                  ? "border-green-400 bg-green-50/30"
-                  : "border-purple-200 hover:border-purple-400 hover:bg-purple-50/50"
-              }`}
-              onClick={() => fileInputRef.current.click()}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-            >
-              {imagePreview ? (
-                <div className="relative">
-                  <img
-                    src={imagePreview || "/placeholder.svg"}
-                    alt="Project preview"
-                    className="max-h-48 mx-auto rounded-lg shadow-md transition-transform hover:scale-105 duration-300"
-                  />
-                  <button
-                    type="button"
-                    className="absolute top-2 right-2 bg-white rounded-full p-1.5 shadow-md hover:bg-gray-50 transition-colors"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setImage(null);
-                    }}
-                  >
-                    <X className="h-4 w-4 text-gray-500" />
-                  </button>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center">
-                  <div className="bg-gradient-to-r from-purple-400/30 to-blue-400/30 rounded-full p-4 mb-4">
-                    <ImageIcon className="h-10 w-10 text-purple-500" />
-                  </div>
-                  <p className="text-base text-gray-700 mb-2 font-medium">
-                    Kéo và thả ảnh thu nhỏ dự án vào đây
-                  </p>
-                  <p className="text-sm text-gray-500">hoặc nhấp để chọn tệp</p>
-                </div>
-              )}
-              <input
-                type="file"
-                ref={fileInputRef}
-                className="hidden"
-                accept="image/*"
-                onChange={handleFileInputChange}
-              />
-            </div>
-          </div>
-
           {/* Project Name */}
           <div>
             <label
@@ -363,54 +254,23 @@ const AddProject = () => {
               </div>
             )}
           </div>
-
-          {/* Form Guidelines */}
-          <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-6 border border-purple-100/50">
-            <h3 className="font-medium text-purple-900 mb-3 flex items-center">
-              <FileText className="h-4 w-4 mr-2" />
-              Hướng dẫn tạo dự án:
-            </h3>
-            <ul className="text-sm text-gray-700 space-y-2 pl-6">
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-purple-500 flex-shrink-0 mt-2"></div>
-                <span>Tên dự án nên ngắn gọn và dễ hiểu</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-purple-500 flex-shrink-0 mt-2"></div>
-                <span>
-                  Tổng quan nên mô tả ngắn gọn mục đích chính của dự án
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-purple-500 flex-shrink-0 mt-2"></div>
-                <span>
-                  Chi tiết dự án nên bao gồm tính năng, yêu cầu kỹ thuật
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-purple-500 flex-shrink-0 mt-2"></div>
-                <span>Thêm các công nghệ và kỹ năng cần thiết cho dự án</span>
-              </li>
-            </ul>
-          </div>
-
+          
           {/* Action Buttons */}
           <div className="flex gap-4 pt-4">
             <Button
               type="submit"
               className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg"
             >
-              Tạo Dự Án
+              Sửa dự án
             </Button>
-            <Link to="/profile">
-              <Button
-                type="button"
-                variant="outline"
-                className="border-purple-200 text-purple-700 hover:bg-purple-50"
-              >
-                Hủy bỏ
-              </Button>
-            </Link>
+            <Button
+              type="button"
+              variant="outline"
+              className="border-purple-200 text-purple-700 hover:bg-purple-50"
+              onClick={() => navigate(-1)}
+            >
+              Hủy bỏ
+            </Button>
           </div>
         </form>
       </div>
@@ -418,4 +278,4 @@ const AddProject = () => {
   );
 };
 
-export default AddProject;
+export default EditProject;

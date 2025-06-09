@@ -100,7 +100,7 @@ const UserProjects = () => {
         >
           <div className="aspect-video bg-gradient-to-br from-purple-100 to-blue-100 relative overflow-hidden">
             <img
-              src={project.image || "/placeholder.svg"}
+              src={project.image_url || "/placeholder.svg"}
               alt={project.name}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />

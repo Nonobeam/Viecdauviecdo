@@ -17,9 +17,29 @@ export const createProject = async (
     handleRequest(() => api.post<Project>(ENDPOINTS.CREATE_PROJECT, data));
 
 export const updateProject = async (
-    data: CreateProjectRequest
-): Promise<Project> =>
-    handleRequest(() => api.put<Project>(ENDPOINTS.UPDATE_PROJECT, data));
+    projectId: string,
+    data: CreateProjectRequest,
+    imageFile?: File
+): Promise<Project> => {
+    const formData = new FormData();
+
+    // Create a proper JSON blob for the project part
+    formData.append(
+        "project",
+        new Blob([JSON.stringify(data)], { type: "application/json" })
+    );
+
+    if (imageFile) {
+        formData.append("image", imageFile);
+    }
+    return handleRequest(() =>
+        api.put<Project>(ENDPOINTS.UPDATE_PROJECT(projectId), formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data' // Let browser set multipart/form-data automatically
+            }
+        })
+    )
+};
 
 export const deleteProject = async (projectId: string): Promise<void> =>
     handleRequest(() => api.delete<void>(ENDPOINTS.DELETE_PROJECT(projectId)));
@@ -29,7 +49,7 @@ export const uploadProjectImage = async (
     file: File
 ): Promise<void> => {
     const formData = new FormData();
-    formData.append('avatar', file);
+    formData.append('image', file);
     return handleRequest(() =>
         api.post(ENDPOINTS.UPLOAD_PROJECT_IMAGE(projectId), formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
