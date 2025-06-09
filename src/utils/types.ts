@@ -1,15 +1,15 @@
 declare module 'types' {
 
   export interface GetAllUsersParams {
-  page?: number;
-  size?: number;
-  city?: string[];
-  state?: string[];
-  country?: string[];
-  dateOfBirth?: string; // Format: 'YYYY-MM-DD'
-  skill?: string[];
-  certification?: string[];
-}
+    page?: number;
+    size?: number;
+    city?: string[];
+    state?: string[];
+    country?: string[];
+    dateOfBirth?: string; // Format: 'YYYY-MM-DD'
+    skill?: string[];
+    certification?: string[];
+  }
 
   export interface Post {
     id: string;
@@ -92,11 +92,15 @@ declare module 'types' {
     title?: string;
   };
 
-  export type ProjectRequest = {
-    name: string;
-    description?: string;
-    tags?: string[];
-  };
+  export interface CreateProjectRequest {
+    name: string,
+    description: string,
+    summary: string,
+    start_at: string,
+    external_link: string,
+    user_id: string,
+    tags: string[]
+  }
 
   export type AddProjectMemRequest = {
     user_id: string;
@@ -131,8 +135,8 @@ declare module 'types' {
   }
 
   export interface UploadDocumentRequest {
-  file: string;
-}
+    file: string;
+  }
 
   export interface LoginRequest {
     username: string;
@@ -144,49 +148,49 @@ declare module 'types' {
   }
 
   export interface TransactionRequest {
-  order_code: number;
-  amount: number;
-  holder_id: string;
-  description?: string;
-  buyer_name?: string;
-  buyer_email?: string;
-  buyer_phone?: string;
-  buyer_address?: string;
-  items: TransactionItem[];
-  cancel_url?: string;
-  return_url?: string;
-  expired_at?: number;
-  signature?: string;
-}
+    order_code: number;
+    amount: number;
+    holder_id: string;
+    description?: string;
+    buyer_name?: string;
+    buyer_email?: string;
+    buyer_phone?: string;
+    buyer_address?: string;
+    items: TransactionItem[];
+    cancel_url?: string;
+    return_url?: string;
+    expired_at?: number;
+    signature?: string;
+  }
 
-export interface TransactionItem {
-  name: string;
-  quantity: number;
-  price: number;
-}
+  export interface TransactionItem {
+    name: string;
+    quantity: number;
+    price: number;
+  }
 
-export interface TransactionData {
-  amount: number;
-  description: string;
-  reference: string;
-  currency: string;
-  orderCode: number;
-  accountNumber: string;
-  transactionDateTime: string;
-  paymentLinkId: string;
-  counterAccountBankId: string;
-  counterAccountBankName: string;
-  counterAccountName: string;
-  counterAccountNumber: string;
-  virtualAccountName: string;
-  virtualAccountNumber: string;
-}
+  export interface TransactionData {
+    amount: number;
+    description: string;
+    reference: string;
+    currency: string;
+    orderCode: number;
+    accountNumber: string;
+    transactionDateTime: string;
+    paymentLinkId: string;
+    counterAccountBankId: string;
+    counterAccountBankName: string;
+    counterAccountName: string;
+    counterAccountNumber: string;
+    virtualAccountName: string;
+    virtualAccountNumber: string;
+  }
 
-export interface PayOSWebhook {
-  code: string;
-  desc: string;
-  success: boolean;
-  data: TransactionData;
-}
+  export interface PayOSWebhook {
+    code: string;
+    desc: string;
+    success: boolean;
+    data: TransactionData;
+  }
 
 }

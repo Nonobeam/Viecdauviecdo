@@ -1,8 +1,8 @@
 "use client"
 
-import { Outlet } from "react-router-dom"
 import ChangeColorToggle from "@/components/ChangeColorToggle"
 import Header from "@/components/Header"
+import { Outlet } from "react-router-dom"
 
 const MainLayout = () => {
   return (
@@ -62,7 +62,7 @@ const MainLayout = () => {
       </div>
 
       {/* CSS for floating animation */}
-      <style jsx>{`
+      <style>{`
         @keyframes float {
           0%, 100% {
             transform: translateY(0px) translateX(0px);
