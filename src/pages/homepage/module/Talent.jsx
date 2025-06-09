@@ -1,10 +1,9 @@
 import { TalentCard } from "@/components/items/TalentCard";
-import ChatbotButton from "@/components/ui/chatbotButton";
-import { getAllUsers } from "@/utils/userApi";
-import { useEffect, useState } from "react";
-import { User, Loader, Filter } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { getAllUsers } from "@/utils/userApi";
 import { motion } from "framer-motion";
+import { Filter, Loader, User } from 'lucide-react';
+import { useEffect, useState } from "react";
 
 export default function Talent({ filters }) {
   const [talents, setTalents] = useState([]);
@@ -40,7 +39,7 @@ export default function Talent({ filters }) {
         setTalents((prev) => [...prev, ...filteredData]);
       }
 
-      setHasMore(data.length === pageSize);
+      setHasMore(filteredData.length === pageSize);
       setError(null);
     } catch (err) {
       setError("Không thể tải danh sách chuyên gia");
@@ -151,8 +150,6 @@ export default function Talent({ filters }) {
             <p>{error}</p>
           </div>
         )}
-
-        <ChatbotButton />
       </div>
     </div>
   );

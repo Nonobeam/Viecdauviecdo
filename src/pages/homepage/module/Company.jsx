@@ -1,11 +1,10 @@
 import { Badge } from "@/components/ui/badge";
-import ChatbotButton from "@/components/ui/chatbotButton";
+import { Button } from "@/components/ui/button";
 import { getAllCompanies } from "@/utils/companyApi";
+import { motion } from "framer-motion";
+import { Briefcase, Building, MapPin, Search, Users } from 'lucide-react';
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Building, MapPin, Users, Search, Briefcase } from 'lucide-react';
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 
 const Company = () => {
   const [companies, setCompanies] = useState([]);
@@ -24,11 +23,11 @@ const Company = () => {
       if (reset) {
         setCompanies(data.data.content);
       } else {
-        setCompanies((prev) => [...prev, ...data]);
+        setCompanies((prev) => [...prev, ...data.data.content]);
       }
 
       // Check if we have more data to load
-      setHasMore(data.length === pageSize);
+      setHasMore(data.data.content.length === pageSize);
       setError(null);
     } catch (err) {
       setError("Không thể tải danh sách công ty");
@@ -208,8 +207,6 @@ const Company = () => {
             <p>{error}</p>
           </div>
         )}
-
-        <ChatbotButton />
       </div>
     </div>
   );

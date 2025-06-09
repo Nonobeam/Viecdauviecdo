@@ -9,6 +9,7 @@ export { default as AboutUs } from "./homepage/AboutUs";
 export { default as Blog } from "./homepage/Blog";
 export { default as CareerPathBuilder } from "./homepage/CareerPathBuilder";
 export { default as Home } from "./homepage/HomePage";
+export { default as Job } from "./homepage/module/Job";
 export { default as PostJob } from "./homepage/PostJob";
 export { default as PostProject } from "./homepage/PostProject";
 export { default as PremiumPlansPage } from "./homepage/PremiumPlansPage";
