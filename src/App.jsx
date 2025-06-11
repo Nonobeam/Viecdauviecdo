@@ -21,10 +21,10 @@ import {
     EditProject,
     Home,
     InsertCV,
+    Job,
     Login,
     MainLayout,
     PaymentPage,
-    PostJob,
     PremiumPlansPage,
     Profile,
     ProjectDetails,
@@ -45,6 +45,7 @@ function App() {
                             <Route path="/account-plan" element={<PremiumPlansPage />} />
                             <Route path="/transaction-history" element={<TransactionHistory />} />
                             <Route path="/job" element={<Home />} />
+                            <Route path="/job-list" element={<Job />} />
                             <Route path="/aboutus" element={<AboutUs />} />
                             <Route path="/career" element={<CareerPathBuilder />} />
                             <Route path="/profile" element={<Profile />} />
@@ -55,7 +56,6 @@ function App() {
                             <Route path="/insert-project" element={<AddProject />} />
                             <Route path="/edit-project/:id" element={<EditProject />} />
                             <Route path="/seeking" element={<Seeking />} />
-                            <Route path="/post-job" element={<PostJob />} />
                             <Route path="*" element={<div>404 Not Found</div>} />
                         </Route>
                         <Route path="/company" element={<CompanyLayout />}>

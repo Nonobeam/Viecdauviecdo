@@ -1,136 +1,97 @@
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Building, ChevronLeft, ChevronRight, Clock, DollarSign, Filter, MapPin, Search, Users } from "lucide-react"
-import { useEffect, useState } from "react"
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { getCompanyById } from "@/utils/companyApi";
+import { getAllJobs } from "@/utils/jobApi";
+import {
+  Building,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  DollarSign,
+  Filter,
+  MapPin,
+  Search,
+  Users,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 
 const Jobs = () => {
-  const [jobs, setJobs] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [currentPage, setCurrentPage] = useState(0)
-  const [pageSize] = useState(10)
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [companyMap, setCompanyMap] = useState({});
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize] = useState(10);
 
   // Filter states
   const [filters, setFilters] = useState({
-    department: "",
-    level: "",
-    type: "",
-    status: "",
-  })
-
+    company_id: undefined,
+    department: undefined,
+    type: undefined,
+    level: undefined,
+    Jobstatus: undefined,
+  });
   // Filter options
   const filterOptions = {
-    department: ["Công nghệ thông tin", "Marketing", "Nhân sự", "Tài chính", "Thiết kế"],
+    department: [
+      "Công nghệ thông tin",
+      "Marketing",
+      "Nhân sự",
+      "Tài chính",
+      "Thiết kế",
+    ],
     level: ["Thực tập sinh", "Junior", "Middle", "Senior", "Lead", "Manager"],
-    type: ["Toàn thời gian", "Bán thời gian", "Freelance", "Hợp đồng", "Remote"],
+    type: [
+      "Toàn thời gian",
+      "Bán thời gian",
+      "Freelance",
+      "Hợp đồng",
+      "Remote",
+    ],
     status: ["Đang tuyển", "Sắp hết hạn", "Tạm dừng", "Đã đóng"],
-  }
-
-  useEffect(() => {
-    fetchJobs()
-  }, [currentPage, filters, searchTerm])
+  };
 
   const fetchJobs = async () => {
     try {
-      setLoading(true)
-      // Mock API call - replace with actual API
-      // const response = await fetch(`/api/jobs?page=${currentPage}&size=${pageSize}&department=${filters.department}&level=${filters.level}&type=${filters.type}&status=${filters.status}`)
+      setLoading(true);
+      const response = await getAllJobs(currentPage, pageSize, filters);
+      const jobList = response.data.content;
+      setJobs(response.data.content);
 
-      // Mock data
-      const mockJobs = [
-        {
-          id: 1,
-          title: "Frontend Developer",
-          company: "TechCorp Vietnam",
-          location: "Hồ Chí Minh",
-          salary: "15-25 triệu VNĐ",
-          type: "Toàn thời gian",
-          level: "Middle",
-          department: "Công nghệ thông tin",
-          status: "Đang tuyển",
-          description: "Tìm kiếm Frontend Developer có kinh nghiệm với React và TypeScript",
-          skills: ["React", "TypeScript", "Tailwind CSS"],
-          postedDate: "2024-01-15",
-          logo: "/placeholder.svg?height=60&width=60",
-        },
-        {
-          id: 2,
-          title: "UI/UX Designer",
-          company: "Design Studio",
-          location: "Hà Nội",
-          salary: "12-20 triệu VNĐ",
-          type: "Toàn thời gian",
-          level: "Junior",
-          department: "Thiết kế",
-          status: "Đang tuyển",
-          description: "Cần tuyển UI/UX Designer sáng tạo cho các dự án web và mobile",
-          skills: ["Figma", "Adobe XD", "Sketch"],
-          postedDate: "2024-01-14",
-          logo: "/placeholder.svg?height=60&width=60",
-        },
-        {
-          id: 3,
-          title: "Backend Developer",
-          company: "StartupXYZ",
-          location: "Đà Nẵng",
-          salary: "18-30 triệu VNĐ",
-          type: "Remote",
-          level: "Senior",
-          department: "Công nghệ thông tin",
-          status: "Sắp hết hạn",
-          description: "Tuyển Backend Developer có kinh nghiệm với Node.js và microservices",
-          skills: ["Node.js", "PostgreSQL", "Docker"],
-          postedDate: "2024-01-10",
-          logo: "/placeholder.svg?height=60&width=60",
-        },
-        {
-          id: 4,
-          title: "Marketing Manager",
-          company: "E-commerce Co",
-          location: "Hồ Chí Minh",
-          salary: "20-35 triệu VNĐ",
-          type: "Toàn thời gian",
-          level: "Manager",
-          department: "Marketing",
-          status: "Đang tuyển",
-          description: "Quản lý chiến lược marketing và phát triển thương hiệu",
-          skills: ["Digital Marketing", "SEO", "Analytics"],
-          postedDate: "2024-01-12",
-          logo: "/placeholder.svg?height=60&width=60",
-        },
-        {
-          id: 5,
-          title: "DevOps Engineer",
-          company: "CloudTech",
-          location: "Remote",
-          salary: "25-40 triệu VNĐ",
-          type: "Toàn thời gian",
-          level: "Senior",
-          department: "Công nghệ thông tin",
-          status: "Đang tuyển",
-          description: "Xây dựng và duy trì hạ tầng cloud cho các ứng dụng quy mô lớn",
-          skills: ["AWS", "Kubernetes", "Terraform"],
-          postedDate: "2024-01-13",
-          logo: "/placeholder.svg?height=60&width=60",
-        },
-      ]
+      const uniqueCompanyIds = Array.from(
+        new Set(jobList.map((job) => job.company_id))
+      );
+      console.log("Job id", uniqueCompanyIds);
 
-      setJobs(mockJobs)
-      setLoading(false)
+      const companies = await Promise.all(
+        uniqueCompanyIds.map((id) => getCompanyById(id))
+      );
+
+      const companiesData = companies.map((company) => company.data);
+
+      const companyMap = {};
+      companiesData.forEach((company) => {
+        companyMap[company.id] = company;
+      });
+
+      setCompanyMap(companyMap);
     } catch (error) {
-      console.error("Failed to fetch jobs:", error)
-      setLoading(false)
+      console.error("Failed to fetch jobs:", error);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
+
+  console.log("Com", companyMap);
 
   const handleFilterChange = (filterType, value) => {
     setFilters((prev) => ({
       ...prev,
       [filterType]: value,
-    }))
-    setCurrentPage(0) // Reset to first page when filtering
-  }
+    }));
+    setCurrentPage(0); // Reset to first page when filtering
+  };
 
   const clearFilters = () => {
     setFilters({
@@ -138,25 +99,29 @@ const Jobs = () => {
       level: "",
       type: "",
       status: "",
-    })
-    setSearchTerm("")
-    setCurrentPage(0)
-  }
+    });
+    setSearchTerm("");
+    setCurrentPage(0);
+  };
+
+  useEffect(() => {
+    fetchJobs();
+  }, [currentPage, filters, searchTerm]);
 
   const getStatusColor = (status) => {
     switch (status) {
       case "Đang tuyển":
-        return "bg-green-100 text-green-700 border-green-200"
+        return "bg-green-100 text-green-700 border-green-200";
       case "Sắp hết hạn":
-        return "bg-yellow-100 text-yellow-700 border-yellow-200"
+        return "bg-yellow-100 text-yellow-700 border-yellow-200";
       case "Tạm dừng":
-        return "bg-gray-100 text-gray-700 border-gray-200"
+        return "bg-gray-100 text-gray-700 border-gray-200";
       case "Đã đóng":
-        return "bg-red-100 text-red-700 border-red-200"
+        return "bg-red-100 text-red-700 border-red-200";
       default:
-        return "bg-gray-100 text-gray-700 border-gray-200"
+        return "bg-gray-100 text-gray-700 border-gray-200";
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50">
@@ -167,8 +132,12 @@ const Jobs = () => {
 
         <div className="relative max-w-7xl mx-auto px-4 py-12">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-white mb-4">Tìm kiếm việc làm</h1>
-            <p className="text-xl text-white/90 mb-8">Khám phá hàng nghìn cơ hội nghề nghiệp phù hợp với bạn</p>
+            <h1 className="text-4xl font-bold text-white mb-4">
+              Tìm kiếm việc làm
+            </h1>
+            <p className="text-xl text-white/90 mb-8">
+              Khám phá hàng nghìn cơ hội nghề nghiệp phù hợp với bạn
+            </p>
 
             {/* Search Bar */}
             <div className="max-w-2xl mx-auto relative">
@@ -195,7 +164,12 @@ const Jobs = () => {
                 <h2 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                   Bộ lọc
                 </h2>
-                <Button variant="ghost" size="sm" onClick={clearFilters} className="text-purple-600 hover:bg-purple-50">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearFilters}
+                  className="text-purple-600 hover:bg-purple-50"
+                >
                   Xóa tất cả
                 </Button>
               </div>
@@ -203,10 +177,14 @@ const Jobs = () => {
               <div className="space-y-6">
                 {/* Department Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Phòng ban</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Phòng ban
+                  </label>
                   <select
                     value={filters.department}
-                    onChange={(e) => handleFilterChange("department", e.target.value)}
+                    onChange={(e) =>
+                      handleFilterChange("department", e.target.value)
+                    }
                     className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80"
                   >
                     <option value="">Tất cả phòng ban</option>
@@ -220,10 +198,14 @@ const Jobs = () => {
 
                 {/* Level Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Cấp độ</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Cấp độ
+                  </label>
                   <select
                     value={filters.level}
-                    onChange={(e) => handleFilterChange("level", e.target.value)}
+                    onChange={(e) =>
+                      handleFilterChange("level", e.target.value)
+                    }
                     className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80"
                   >
                     <option value="">Tất cả cấp độ</option>
@@ -237,7 +219,9 @@ const Jobs = () => {
 
                 {/* Type Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Loại hình</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Loại hình
+                  </label>
                   <select
                     value={filters.type}
                     onChange={(e) => handleFilterChange("type", e.target.value)}
@@ -254,10 +238,14 @@ const Jobs = () => {
 
                 {/* Status Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Trạng thái</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Trạng thái
+                  </label>
                   <select
                     value={filters.status}
-                    onChange={(e) => handleFilterChange("status", e.target.value)}
+                    onChange={(e) =>
+                      handleFilterChange("status", e.target.value)
+                    }
                     className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80"
                   >
                     <option value="">Tất cả trạng thái</option>
@@ -272,7 +260,9 @@ const Jobs = () => {
 
               {/* Active Filters */}
               <div className="mt-6 pt-6 border-t border-gray-200">
-                <h3 className="text-sm font-medium text-gray-700 mb-3">Bộ lọc đang áp dụng:</h3>
+                <h3 className="text-sm font-medium text-gray-700 mb-3">
+                  Bộ lọc đang áp dụng:
+                </h3>
                 <div className="flex flex-wrap gap-2">
                   {Object.entries(filters).map(
                     ([key, value]) =>
@@ -289,7 +279,7 @@ const Jobs = () => {
                             ×
                           </button>
                         </Badge>
-                      ),
+                      )
                   )}
                 </div>
               </div>
@@ -326,14 +316,6 @@ const Jobs = () => {
                         className="bg-gradient-to-br from-white to-gray-50/50 rounded-xl border border-gray-100 p-6 hover:shadow-lg transition-all duration-200 group"
                       >
                         <div className="flex items-start gap-4">
-                          <div className="flex-shrink-0">
-                            <img
-                              src={job.logo || "/placeholder.svg"}
-                              alt={job.company}
-                              className="w-12 h-12 rounded-lg object-cover"
-                            />
-                          </div>
-
                           <div className="flex-1">
                             <div className="flex items-start justify-between mb-3">
                               <div>
@@ -342,13 +324,20 @@ const Jobs = () => {
                                 </h3>
                                 <div className="flex items-center gap-2 text-gray-600 mb-2">
                                   <Building className="h-4 w-4" />
-                                  <span className="font-medium">{job.company}</span>
+                                  <span className="font-medium">
+                                    {companyMap[job.company_id]?.name ||
+                                      "Loading..."}
+                                  </span>
                                 </div>
                               </div>
-                              <Badge className={getStatusColor(job.status)}>{job.status}</Badge>
+                              <Badge className={getStatusColor(job.status)}>
+                                {job.status}
+                              </Badge>
                             </div>
 
-                            <p className="text-gray-700 mb-4 leading-relaxed">{job.description}</p>
+                            <p className="text-gray-700 mb-4 leading-relaxed">
+                              {job.description}
+                            </p>
 
                             <div className="flex flex-wrap gap-4 mb-4 text-sm text-gray-600">
                               <div className="flex items-center gap-1">
@@ -370,13 +359,6 @@ const Jobs = () => {
                             </div>
 
                             <div className="flex items-center justify-between">
-                              <div className="flex flex-wrap gap-2">
-                                {job.skills.map((skill, index) => (
-                                  <Badge key={index} variant="secondary" className="bg-purple-100 text-purple-700">
-                                    {skill}
-                                  </Badge>
-                                ))}
-                              </div>
                               <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white">
                                 Ứng tuyển
                               </Button>
@@ -391,14 +373,17 @@ const Jobs = () => {
                 {/* Pagination */}
                 <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-200">
                   <div className="text-sm text-gray-600">
-                    Hiển thị {currentPage * pageSize + 1}-{Math.min((currentPage + 1) * pageSize, jobs.length)} trong số{" "}
-                    {jobs.length} việc làm
+                    Hiển thị {currentPage * pageSize + 1}-
+                    {Math.min((currentPage + 1) * pageSize, jobs.length)} trong
+                    số {jobs.length} việc làm
                   </div>
                   <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(0, prev - 1))
+                      }
                       disabled={currentPage === 0}
                       className="border-purple-200 text-purple-600 hover:bg-purple-50"
                     >
@@ -425,7 +410,7 @@ const Jobs = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Jobs
+export default Jobs;

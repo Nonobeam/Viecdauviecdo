@@ -18,18 +18,18 @@ const Seeking = () => {
             <div className="max-w-4xl mx-auto px-4 sm:px-6 w-full">
                 <div className="text-center mb-12">
                     <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent mb-4">
-                        Bạn Muốn Đăng Gì?
+                        Bạn Muốn Tìm Gì?
                     </h1>
                     <p className="text-gray-600 max-w-2xl mx-auto">
-                        Chọn loại nội dung bạn muốn đăng để kết nối với cộng đồng chuyên gia và nhà tuyển dụng
+                        Chọn loại nội dung bạn muốn tìm để kết nối với cộng đồng chuyên gia và nhà tuyển dụng
                     </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {/* Job Posting Card */}
+                    {/* Job Card */}
                     <motion.button 
                         className="bg-white rounded-2xl p-8 shadow-lg border border-indigo-100 text-left transition-all duration-300 relative overflow-hidden group"
-                        onClick={() => navigate(ROUTES.postJob)}
+                        onClick={() => navigate("/job-list")}
                         variants={cardVariants}
                         initial="initial"
                         animate="animate"

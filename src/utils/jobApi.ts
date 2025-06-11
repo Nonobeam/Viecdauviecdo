@@ -1,4 +1,4 @@
-import { JobRequest, JobUpdateRequest } from "types";
+import { Job, JobUpdateRequest } from "types";
 import { api, handleRequest } from "./apiClient";
 import { ENDPOINTS } from "./apiEndpoint";
 
@@ -6,28 +6,39 @@ export const getAllJobs = async (
     page = 0,
     size = 10,
     filters?: {
-        company_id?: string;
         department?: string;
         type?: string;
         level?: string;
-        country?: string;
-        state?: string;
-        city?: string;
         status?: string;
     }
-): Promise<JobRequest[]> =>
-    handleRequest(() => api.get<JobRequest[]>(ENDPOINTS.GET_ALL_JOBS, { params: { page, size, ...filters } }));
+): Promise<Job[]> => {
+    // Filter out empty/undefined/null values from filters
+    const cleanFilters = filters ? Object.entries(filters).reduce((acc, [key, value]) => {
+        if (value && value.trim() !== '') {
+            acc[key] = value;
+        }
+        return acc;
+    }, {} as Record<string, string>) : {};
+
+    const params = {
+        page,
+        size,
+        ...cleanFilters
+    };
+
+    return handleRequest(() => api.get<Job[]>(ENDPOINTS.GET_ALL_JOBS, { params }));
+};
 
 export const createJob = async (
-    data: JobRequest
-): Promise<JobRequest> =>
-    handleRequest(() => api.post<JobRequest>(ENDPOINTS.CREATE_JOB, data));
+    data: Job
+): Promise<Job> =>
+    handleRequest(() => api.post<Job>(ENDPOINTS.CREATE_JOB, data));
 
 export const updateJob = async (
     jobId: string,
     data: JobUpdateRequest
-): Promise<JobRequest> =>
-    handleRequest(() => api.put<JobRequest>(ENDPOINTS.UPDATE_JOB(jobId), data));
+): Promise<Job> =>
+    handleRequest(() => api.put<Job>(ENDPOINTS.UPDATE_JOB(jobId), data));
 
 export const deleteJob = async (jobId: string): Promise<void> =>
     handleRequest(() => api.delete<void>(ENDPOINTS.DELETE_JOB(jobId)));
