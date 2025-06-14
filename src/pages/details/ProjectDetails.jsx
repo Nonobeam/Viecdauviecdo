@@ -87,9 +87,11 @@ const Members = ({ project }) => {
   const pageSize = 10;
 
   // Fetch project members
+  console.log(project);
   const fetchMembers = async (pageNum = 0, reset = false) => {
     try {
       const memberData = await getProjectMembers(id, pageNum, pageSize);
+        console.log(memberData); 
       if (reset) {
         setMembers(memberData.data.content);
       } else {
@@ -156,11 +158,11 @@ const Members = ({ project }) => {
                     {member.user_information.full_name}
                   </h3>
 
-                  {/* <h4 className="font-semibold text-gray-600 mb-1">
-                    {member.user_information.user_id === project.owner_id
+                  <h4 className="font-semibold text-gray-600 mb-1">
+                    {member.user_id === project.owner_id
                       ? "Chủ dự án"
                       : "Thành viên"}
-                  </h4> */}
+                  </h4>
 
                   <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
                     <Mail className="h-4 w-4" />
