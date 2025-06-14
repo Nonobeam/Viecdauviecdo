@@ -1,4 +1,3 @@
-import { ROUTES } from "@/config"
 import { motion } from "framer-motion"
 import { ArrowRight, Briefcase, FileText } from 'lucide-react'
 import { useNavigate } from "react-router-dom"
@@ -56,7 +55,7 @@ const Seeking = () => {
                     {/* Project Posting Card */}
                     <motion.button 
                         className="bg-white rounded-2xl p-8 shadow-lg border border-indigo-100 text-left transition-all duration-300 relative overflow-hidden group"
-                        onClick={() => navigate(ROUTES.postProject)}
+                        onClick={() => navigate("/project")}
                         variants={cardVariants}
                         initial="initial"
                         animate="animate"

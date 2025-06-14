@@ -135,6 +135,7 @@ const Post = () => {
     if (!newPostContent.trim()) return;
     try {
       setCreating(true);
+      console.log(user);
       const newPost = await createPost({
         user_id: currentUserId,
         title: newPostTitle,

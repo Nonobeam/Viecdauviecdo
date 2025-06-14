@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/providers/AuthContext";
 import { getCompanyById } from "@/utils/companyApi";
 import { getAllJobs } from "@/utils/jobApi";
 import {
@@ -15,8 +16,10 @@ import {
   Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const Jobs = () => {
+  const { user } = useAuth();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [companyMap, setCompanyMap] = useState({});
@@ -62,8 +65,6 @@ const Jobs = () => {
       const uniqueCompanyIds = Array.from(
         new Set(jobList.map((job) => job.company_id))
       );
-      console.log("Job id", uniqueCompanyIds);
-
       const companies = await Promise.all(
         uniqueCompanyIds.map((id) => getCompanyById(id))
       );
@@ -82,8 +83,6 @@ const Jobs = () => {
       setLoading(false);
     }
   };
-
-  console.log("Com", companyMap);
 
   const handleFilterChange = (filterType, value) => {
     setFilters((prev) => ({
@@ -106,7 +105,7 @@ const Jobs = () => {
 
   useEffect(() => {
     fetchJobs();
-  }, [currentPage, filters, searchTerm]);
+  }, [currentPage, filters, searchTerm, user]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -359,9 +358,16 @@ const Jobs = () => {
                             </div>
 
                             <div className="flex items-center justify-between">
-                              <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white">
-                                Ứng tuyển
-                              </Button>
+                              {user && (
+                                <Link
+                                  to={`/apply/${job.id}`}
+                                  state={{ user }}
+                                >
+                                  <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white">
+                                    Ứng tuyển
+                                  </Button>
+                                </Link>
+                              )}
                             </div>
                           </div>
                         </div>

@@ -1,8 +1,7 @@
 import { TalentCard } from "@/components/items/TalentCard";
 import { Button } from "@/components/ui/button";
 import { getAllUsers } from "@/utils/userApi";
-import { motion } from "framer-motion";
-import { Filter, Loader, User } from 'lucide-react';
+import { Loader, User } from 'lucide-react';
 import { useEffect, useState } from "react";
 
 export default function Talent({ filters }) {
@@ -73,29 +72,6 @@ export default function Talent({ filters }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-blue-50 py-8">
       <div className="container mx-auto px-4 sm:px-6">
-        <motion.div 
-          className="mb-8 flex flex-wrap items-center justify-between gap-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent mb-2">
-              Chuyên Gia Tài Năng
-            </h1>
-            <p className="text-gray-600">
-              Kết nối với các chuyên gia hàng đầu trong lĩnh vực của bạn
-            </p>
-          </div>
-          
-          <Button 
-            variant="outline" 
-            className="flex items-center border-indigo-200 text-indigo-700 hover:bg-indigo-50"
-          >
-            <Filter className="h-4 w-4 mr-2" />
-            Lọc kết quả
-          </Button>
-        </motion.div>
 
         {loading && talents.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64">

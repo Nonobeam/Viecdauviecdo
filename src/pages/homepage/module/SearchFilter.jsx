@@ -1,45 +1,58 @@
-"use client"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { motion } from "framer-motion";
+import {
+  Award,
+  Calendar,
+  Code,
+  Filter,
+  MapPin,
+  Plus,
+  RefreshCw,
+  X,
+} from "lucide-react";
 
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Plus, X, Filter, MapPin, Calendar, Code, Award, RefreshCw } from "lucide-react"
-import { motion } from "framer-motion"
-
-export default function SearchFilter({ filters, setFilters, inputValues, setInputValues, onSearch }) {
+export default function SearchFilter({
+  filters,
+  setFilters,
+  inputValues,
+  setInputValues,
+  onSearch,
+}) {
   const addToArray = (field, value) => {
     if (value.trim() && !filters[field].includes(value.trim())) {
       setFilters((prev) => ({
         ...prev,
         [field]: [...prev[field], value.trim()],
-      }))
+      }));
       setInputValues((prev) => ({
         ...prev,
         [`${field}Input`]: "",
-      }))
+      }));
     }
-  }
+  };
 
   const removeFromArray = (field, value) => {
     setFilters((prev) => ({
       ...prev,
       [field]: prev[field].filter((item) => item !== value),
-    }))
-  }
+    }));
+  };
 
   const handleInputChange = (field, value) => {
     setInputValues((prev) => ({
       ...prev,
       [field]: value,
-    }))
-  }
+    }));
+  };
 
   const handleInputKeyPress = (e, field) => {
     if (e.key === "Enter") {
-      e.preventDefault()
-      const inputField = field.replace("Input", "")
-      addToArray(inputField, inputValues[field])
+      e.preventDefault();
+      const inputField = field.replace("Input", "");
+      addToArray(inputField, inputValues[field]);
     }
-  }
+  };
 
   const clearAllFilters = () => {
     setFilters({
@@ -49,70 +62,62 @@ export default function SearchFilter({ filters, setFilters, inputValues, setInpu
       dateOfBirth: "",
       skill: [],
       certification: [],
-    })
+    });
     setInputValues({
       cityInput: "",
       stateInput: "",
       countryInput: "",
       skillInput: "",
       certificationInput: "",
-    })
-  }
+    });
+  };
 
   const handleSearch = () => {
-    onSearch()
-  }
-
-  const tagColors = {
-    city: "bg-blue-100 text-blue-800",
-    state: "bg-green-100 text-green-800",
-    country: "bg-purple-100 text-purple-800",
-    skill: "bg-orange-100 text-orange-800",
-    certification: "bg-red-100 text-red-800",
-  }
+    onSearch();
+  };
 
   return (
-    <aside className="w-full md:w-64 bg-white rounded-2xl shadow-lg p-6 border border-indigo-100 h-fit sticky top-24">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg font-bold bg-gradient-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent flex items-center">
-          <Filter className="h-4 w-4 mr-2 text-indigo-600" />
+    <aside className="w-full md:w-64 bg-white rounded-xl shadow-sm p-5 border border-gray-100 h-fit sticky top-24">
+      <div className="flex justify-between items-center mb-5">
+        <h2 className="text-base font-semibold text-gray-900 flex items-center">
+          <Filter className="h-4 w-4 mr-2 text-gray-600" />
           Bộ Lọc Tìm Kiếm
         </h2>
         <Button
           variant="ghost"
           size="sm"
-          className="text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 p-0 h-8 w-8"
+          className="text-gray-500 hover:text-gray-700 hover:bg-gray-50 p-0 h-7 w-7"
           onClick={clearAllFilters}
         >
-          <RefreshCw className="h-4 w-4" />
+          <RefreshCw className="h-3.5 w-3.5" />
         </Button>
       </div>
 
       {/* Location Filters */}
-      <div className="space-y-5 mb-6">
-        <h3 className="font-medium text-gray-900 flex items-center">
-          <MapPin className="h-4 w-4 mr-2 text-indigo-600" />
+      <div className="space-y-4 mb-5">
+        <h3 className="text-sm font-medium text-gray-800 flex items-center">
+          <MapPin className="h-3.5 w-3.5 mr-2 text-gray-600" />
           Địa Điểm
         </h3>
 
         {/* City Filter */}
         <div className="space-y-2">
-          <label className="text-sm text-gray-600 font-medium">Thành Phố</label>
+          <label className="text-xs text-gray-600 font-medium">Thành Phố</label>
           <div className="flex gap-2 mb-2">
             <Input
               placeholder="Thêm thành phố..."
               value={inputValues.cityInput}
               onChange={(e) => handleInputChange("cityInput", e.target.value)}
               onKeyPress={(e) => handleInputKeyPress(e, "cityInput")}
-              className="border-indigo-200 focus:border-indigo-500 focus:ring-indigo-500"
+              className="text-sm border-gray-200 focus:border-gray-400 focus:ring-gray-400 h-8"
             />
             <Button
               size="icon"
               onClick={() => addToArray("city", inputValues.cityInput)}
               disabled={!inputValues.cityInput.trim()}
-              className="bg-indigo-600 hover:bg-indigo-700 h-10 w-10 p-0"
+              className="bg-gray-700 hover:bg-gray-800 h-8 w-8 p-0"
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="h-3.5 w-3.5" />
             </Button>
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -122,12 +127,12 @@ export default function SearchFilter({ filters, setFilters, inputValues, setInpu
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
-                className={`inline-flex items-center px-2 py-1 ${tagColors.city} text-xs rounded-full`}
+                className="inline-flex items-center px-2.5 py-1 bg-gray-100 text-gray-700 text-xs rounded-md border border-gray-200"
               >
                 {city}
                 <button
                   onClick={() => removeFromArray("city", city)}
-                  className="ml-1 hover:bg-blue-200 rounded-full p-0.5"
+                  className="ml-1.5 hover:bg-gray-200 rounded-full p-0.5 transition-colors"
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -138,22 +143,24 @@ export default function SearchFilter({ filters, setFilters, inputValues, setInpu
 
         {/* State Filter */}
         <div className="space-y-2">
-          <label className="text-sm text-gray-600 font-medium">Tỉnh/Thành</label>
+          <label className="text-xs text-gray-600 font-medium">
+            Tỉnh/Thành
+          </label>
           <div className="flex gap-2 mb-2">
             <Input
               placeholder="Thêm tỉnh/thành..."
               value={inputValues.stateInput}
               onChange={(e) => handleInputChange("stateInput", e.target.value)}
               onKeyPress={(e) => handleInputKeyPress(e, "stateInput")}
-              className="border-indigo-200 focus:border-indigo-500 focus:ring-indigo-500"
+              className="text-sm border-gray-200 focus:border-gray-400 focus:ring-gray-400 h-8"
             />
             <Button
               size="icon"
               onClick={() => addToArray("state", inputValues.stateInput)}
               disabled={!inputValues.stateInput.trim()}
-              className="bg-indigo-600 hover:bg-indigo-700 h-10 w-10 p-0"
+              className="bg-gray-700 hover:bg-gray-800 h-8 w-8 p-0"
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="h-3.5 w-3.5" />
             </Button>
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -163,12 +170,12 @@ export default function SearchFilter({ filters, setFilters, inputValues, setInpu
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
-                className={`inline-flex items-center px-2 py-1 ${tagColors.state} text-xs rounded-full`}
+                className="inline-flex items-center px-2.5 py-1 bg-gray-100 text-gray-700 text-xs rounded-md border border-gray-200"
               >
                 {state}
                 <button
                   onClick={() => removeFromArray("state", state)}
-                  className="ml-1 hover:bg-green-200 rounded-full p-0.5"
+                  className="ml-1.5 hover:bg-gray-200 rounded-full p-0.5 transition-colors"
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -179,22 +186,24 @@ export default function SearchFilter({ filters, setFilters, inputValues, setInpu
 
         {/* Country Filter */}
         <div className="space-y-2">
-          <label className="text-sm text-gray-600 font-medium">Quốc Gia</label>
+          <label className="text-xs text-gray-600 font-medium">Quốc Gia</label>
           <div className="flex gap-2 mb-2">
             <Input
               placeholder="Thêm quốc gia..."
               value={inputValues.countryInput}
-              onChange={(e) => handleInputChange("countryInput", e.target.value)}
+              onChange={(e) =>
+                handleInputChange("countryInput", e.target.value)
+              }
               onKeyPress={(e) => handleInputKeyPress(e, "countryInput")}
-              className="border-indigo-200 focus:border-indigo-500 focus:ring-indigo-500"
+              className="text-sm border-gray-200 focus:border-gray-400 focus:ring-gray-400 h-8"
             />
             <Button
               size="icon"
               onClick={() => addToArray("country", inputValues.countryInput)}
               disabled={!inputValues.countryInput.trim()}
-              className="bg-indigo-600 hover:bg-indigo-700 h-10 w-10 p-0"
+              className="bg-gray-700 hover:bg-gray-800 h-8 w-8 p-0"
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="h-3.5 w-3.5" />
             </Button>
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -204,12 +213,12 @@ export default function SearchFilter({ filters, setFilters, inputValues, setInpu
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
-                className={`inline-flex items-center px-2 py-1 ${tagColors.country} text-xs rounded-full`}
+                className="inline-flex items-center px-2.5 py-1 bg-gray-100 text-gray-700 text-xs rounded-md border border-gray-200"
               >
                 {country}
                 <button
                   onClick={() => removeFromArray("country", country)}
-                  className="ml-1 hover:bg-purple-200 rounded-full p-0.5"
+                  className="ml-1.5 hover:bg-gray-200 rounded-full p-0.5 transition-colors"
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -220,23 +229,25 @@ export default function SearchFilter({ filters, setFilters, inputValues, setInpu
       </div>
 
       {/* Date of Birth */}
-      <div className="space-y-2 mb-6">
-        <h3 className="font-medium text-gray-900 flex items-center">
-          <Calendar className="h-4 w-4 mr-2 text-indigo-600" />
+      <div className="space-y-2 mb-5">
+        <h3 className="text-sm font-medium text-gray-800 flex items-center">
+          <Calendar className="h-3.5 w-3.5 mr-2 text-gray-600" />
           Ngày Sinh
         </h3>
         <Input
           type="date"
           value={filters.dateOfBirth}
-          onChange={(e) => setFilters((prev) => ({ ...prev, dateOfBirth: e.target.value }))}
-          className="border-indigo-200 focus:border-indigo-500 focus:ring-indigo-500"
+          onChange={(e) =>
+            setFilters((prev) => ({ ...prev, dateOfBirth: e.target.value }))
+          }
+          className="text-sm border-gray-200 focus:border-gray-400 focus:ring-gray-400 h-8"
         />
       </div>
 
       {/* Skills Section */}
-      <div className="space-y-2 mb-6">
-        <h3 className="font-medium text-gray-900 flex items-center">
-          <Code className="h-4 w-4 mr-2 text-indigo-600" />
+      <div className="space-y-2 mb-5">
+        <h3 className="text-sm font-medium text-gray-800 flex items-center">
+          <Code className="h-3.5 w-3.5 mr-2 text-gray-600" />
           Kỹ Năng
         </h3>
         <div>
@@ -246,15 +257,15 @@ export default function SearchFilter({ filters, setFilters, inputValues, setInpu
               value={inputValues.skillInput}
               onChange={(e) => handleInputChange("skillInput", e.target.value)}
               onKeyPress={(e) => handleInputKeyPress(e, "skillInput")}
-              className="border-indigo-200 focus:border-indigo-500 focus:ring-indigo-500"
+              className="text-sm border-gray-200 focus:border-gray-400 focus:ring-gray-400 h-8"
             />
             <Button
               size="icon"
               onClick={() => addToArray("skill", inputValues.skillInput)}
               disabled={!inputValues.skillInput.trim()}
-              className="bg-indigo-600 hover:bg-indigo-700 h-10 w-10 p-0"
+              className="bg-gray-700 hover:bg-gray-800 h-8 w-8 p-0"
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="h-3.5 w-3.5" />
             </Button>
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -264,12 +275,12 @@ export default function SearchFilter({ filters, setFilters, inputValues, setInpu
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
-                className={`inline-flex items-center px-2 py-1 ${tagColors.skill} text-xs rounded-full`}
+                className="inline-flex items-center px-2.5 py-1 bg-blue-50 text-blue-700 text-xs rounded-md border border-blue-200"
               >
                 {skill}
                 <button
                   onClick={() => removeFromArray("skill", skill)}
-                  className="ml-1 hover:bg-orange-200 rounded-full p-0.5"
+                  className="ml-1.5 hover:bg-blue-100 rounded-full p-0.5 transition-colors"
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -281,8 +292,8 @@ export default function SearchFilter({ filters, setFilters, inputValues, setInpu
 
       {/* Certifications Section */}
       <div className="space-y-2 mb-6">
-        <h3 className="font-medium text-gray-900 flex items-center">
-          <Award className="h-4 w-4 mr-2 text-indigo-600" />
+        <h3 className="text-sm font-medium text-gray-800 flex items-center">
+          <Award className="h-3.5 w-3.5 mr-2 text-gray-600" />
           Chứng Chỉ
         </h3>
         <div>
@@ -290,17 +301,21 @@ export default function SearchFilter({ filters, setFilters, inputValues, setInpu
             <Input
               placeholder="Thêm chứng chỉ..."
               value={inputValues.certificationInput}
-              onChange={(e) => handleInputChange("certificationInput", e.target.value)}
+              onChange={(e) =>
+                handleInputChange("certificationInput", e.target.value)
+              }
               onKeyUp={(e) => handleInputKeyPress(e, "certificationInput")}
-              className="border-indigo-200 focus:border-indigo-500 focus:ring-indigo-500"
+              className="text-sm border-gray-200 focus:border-gray-400 focus:ring-gray-400 h-8"
             />
             <Button
               size="icon"
-              onClick={() => addToArray("certification", inputValues.certificationInput)}
+              onClick={() =>
+                addToArray("certification", inputValues.certificationInput)
+              }
               disabled={!inputValues.certificationInput.trim()}
-              className="bg-indigo-600 hover:bg-indigo-700 h-10 w-10 p-0"
+              className="bg-gray-700 hover:bg-gray-800 h-8 w-8 p-0"
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="h-3.5 w-3.5" />
             </Button>
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -310,12 +325,12 @@ export default function SearchFilter({ filters, setFilters, inputValues, setInpu
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
-                className={`inline-flex items-center px-2 py-1 ${tagColors.certification} text-xs rounded-full`}
+                className="inline-flex items-center px-2.5 py-1 bg-green-50 text-green-700 text-xs rounded-md border border-green-200"
               >
                 {cert}
                 <button
                   onClick={() => removeFromArray("certification", cert)}
-                  className="ml-1 hover:bg-red-200 rounded-full p-0.5"
+                  className="ml-1.5 hover:bg-green-100 rounded-full p-0.5 transition-colors"
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -324,14 +339,6 @@ export default function SearchFilter({ filters, setFilters, inputValues, setInpu
           </div>
         </div>
       </div>
-
-      {/* Search Button */}
-      <Button
-        onClick={handleSearch}
-        className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md hover:shadow-lg transition-all duration-300"
-      >
-        Áp Dụng Bộ Lọc
-      </Button>
     </aside>
-  )
+  );
 }
