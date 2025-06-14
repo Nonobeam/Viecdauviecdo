@@ -20,13 +20,13 @@ const Company = () => {
       const data = await getAllCompanies(pageNum, pageSize);
 
       if (reset) {
-        setCompanies(data.data.content);
+        setCompanies(data.content);
       } else {
-        setCompanies((prev) => [...prev, ...data.data.content]);
+        setCompanies((prev) => [...prev, ...data.content]);
       }
 
       // Check if we have more data to load
-      setHasMore(data.data.content.length === pageSize);
+      setHasMore(data.content.length === pageSize);
       setError(null);
     } catch (err) {
       setError("Không thể tải danh sách công ty");
@@ -89,12 +89,6 @@ const Company = () => {
           <div className="flex flex-col items-center justify-center h-64 bg-white rounded-2xl shadow-lg p-8 border border-indigo-100">
             <Building className="w-16 h-16 text-indigo-300 mb-4" />
             <p className="text-lg text-gray-600 mb-4">Hiện tại chưa có công ty nào</p>
-            <Button 
-              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
-              onClick={() => navigate("/register-company")}
-            >
-              Đăng ký công ty của bạn
-            </Button>
           </div>
         ) : (
           <motion.div 

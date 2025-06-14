@@ -163,8 +163,8 @@ declare module 'types' {
     created_at: string;
     user_full_name: string;
     user_email: string;
-    skills: string[];
-    certifications: string[];
+    skills?: string[];
+    certifications?: string[];
   }
 
 

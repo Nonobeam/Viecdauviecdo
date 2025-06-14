@@ -1,4 +1,4 @@
-import { Job, JobUpdateRequest } from "types";
+import { Application, ApplicationRequest, Job, JobUpdateRequest, UserApplyJobRequest } from "types";
 import { api, handleRequest } from "./apiClient";
 import { ENDPOINTS } from "./apiEndpoint";
 
@@ -61,10 +61,10 @@ export const deleteJob = async (jobId: string): Promise<void> =>
 // export const getApplicationById = async (applicationId: string): Promise<ApplicationRequest> =>
 //     handleRequest(() => api.get<ApplicationRequest>(ENDPOINTS.GET_APPLICATION_BY_ID(applicationId)));
 
-// export const createApplication = async (
-//     data: ApplicationRequest
-// ): Promise<ApplicationRequest> =>
-//     handleRequest(() => api.post<Application>(ENDPOINTS.CREATE_APPLICATION, data));
+export const createApplication = async (
+    data: ApplicationRequest
+): Promise<Application> =>
+    handleRequest(() => api.post<Application>(ENDPOINTS.CREATE_APPLICATION, data));
 
 // export const updateApplication = async (
 //     applicationId: string,
@@ -75,7 +75,7 @@ export const deleteJob = async (jobId: string): Promise<void> =>
 // export const deleteApplication = async (applicationId: string): Promise<void> =>
 //     handleRequest(() => api.delete<void>(ENDPOINTS.DELETE_APPLICATION(applicationId)));
 
-// export const applyToJob = async (
-//     data: UserApplyJobRequest
-// ): Promise<ApplicationRequest> =>
-//     handleRequest(() => api.post<Application>(ENDPOINTS.APPLY_TO_JOB, data));
+export const applyToJob = async (
+    data: UserApplyJobRequest
+): Promise<void> =>
+    handleRequest(() => api.post<void>(ENDPOINTS.APPLY_TO_JOB, data));

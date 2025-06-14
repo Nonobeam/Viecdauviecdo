@@ -13,6 +13,7 @@ import PaymentLayout from "./layout/PaymentLayout";
 import {
     AboutUs,
     AddProject,
+    ApplicationForm,
     Blog,
     CancelPage,
     CareerPathBuilder,
@@ -32,6 +33,7 @@ import {
     SuccessPage,
     TransactionHistory
 } from "./pages";
+import Project from "./pages/homepage/module/Project";
 
 function App() {
     return (
@@ -52,9 +54,11 @@ function App() {
                             <Route path="/edit-profile" element={<EditProfile />} />
                             <Route path="/company/:id" element={<CompanyProfile />} />
                             <Route path="/project/:id" element={<ProjectDetails />} />
+                            <Route path="/project" element={<Project />} />
                             <Route path="/insert-cv" element={<InsertCV />} />
                             <Route path="/insert-project" element={<AddProject />} />
                             <Route path="/edit-project/:id" element={<EditProject />} />
+                            <Route path="/apply/:id" element={<ApplicationForm />} />
                             <Route path="/seeking" element={<Seeking />} />
                             <Route path="*" element={<div>404 Not Found</div>} />
                         </Route>
