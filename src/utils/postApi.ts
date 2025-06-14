@@ -40,7 +40,7 @@ export const likePost = async (postId: string): Promise<void> =>
 
 export const commentOnPost = async (
   postId: string,
-  data: { userId: string; content: string }
+  data: { user_id: string; content: string }
 ): Promise<Comment> =>
   handleRequest(() => api.post<Comment>(ENDPOINTS.COMMENT_ON_POST(postId), data));
 
