@@ -250,8 +250,6 @@ const Post = () => {
 
     
     try {
-      console.log(commentContent);
-      console.log(currentUserId)
       setCommenting((prev) => ({ ...prev, [postId]: true }));
       await commentOnPost(postId, {
         user_id: currentUserId,
