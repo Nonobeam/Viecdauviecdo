@@ -36,24 +36,29 @@ const Jobs = () => {
     Jobstatus: undefined,
   });
   // Filter options
-  const filterOptions = {
-    department: [
-      "Công nghệ thông tin",
-      "Marketing",
-      "Nhân sự",
-      "Tài chính",
-      "Thiết kế",
-    ],
-    level: ["Thực tập sinh", "Junior", "Middle", "Senior", "Lead", "Manager"],
-    type: [
-      "Toàn thời gian",
-      "Bán thời gian",
-      "Freelance",
-      "Hợp đồng",
-      "Remote",
-    ],
-    status: ["Đang tuyển", "Sắp hết hạn", "Tạm dừng", "Đã đóng"],
-  };
+ 
+const filterOptions = {
+  level: [
+    { label: "Thực tập sinh", value: "INTERN" },
+    { label: "Fresher", value: "FRESHER" },
+    { label: "Junior", value: "JUNIOR" },
+    { label: "Middle", value: "MIDDLE" },
+    { label: "Senior", value: "SENIOR" },
+    { label: "Lead", value: "LEAD" },
+    { label: "Manager", value: "MANAGER" },
+  ],
+  type: [
+    { label: "Toàn thời gian", value: "FULL_TIME" },
+    { label: "Bán thời gian", value: "PART_TIME" },
+  ],
+  status: [
+    { label: "Đang tuyển", value: "ACTIVE" },
+    { label: "Sắp hết hạn", value: "EXPIRING" },
+    { label: "Tạm dừng", value: "PAUSED" },
+    { label: "Đã đóng", value: "CLOSED" },
+  ],
+
+};
 
   const fetchJobs = async () => {
     try {
@@ -174,27 +179,6 @@ const Jobs = () => {
               </div>
 
               <div className="space-y-6">
-                {/* Department Filter */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Phòng ban
-                  </label>
-                  <select
-                    value={filters.department}
-                    onChange={(e) =>
-                      handleFilterChange("department", e.target.value)
-                    }
-                    className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80"
-                  >
-                    <option value="">Tất cả phòng ban</option>
-                    {filterOptions.department.map((dept) => (
-                      <option key={dept} value={dept}>
-                        {dept}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
                 {/* Level Filter */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -209,8 +193,8 @@ const Jobs = () => {
                   >
                     <option value="">Tất cả cấp độ</option>
                     {filterOptions.level.map((level) => (
-                      <option key={level} value={level}>
-                        {level}
+                      <option key={level.value} value={level.value}>
+                        {level.label}
                       </option>
                     ))}
                   </select>
@@ -228,8 +212,8 @@ const Jobs = () => {
                   >
                     <option value="">Tất cả loại hình</option>
                     {filterOptions.type.map((type) => (
-                      <option key={type} value={type}>
-                        {type}
+                      <option key={type.value} value={type.value}>
+                        {type.label}
                       </option>
                     ))}
                   </select>
@@ -249,8 +233,8 @@ const Jobs = () => {
                   >
                     <option value="">Tất cả trạng thái</option>
                     {filterOptions.status.map((status) => (
-                      <option key={status} value={status}>
-                        {status}
+                      <option key={status.value} value={status.value}>
+                        {status.label}
                       </option>
                     ))}
                   </select>
