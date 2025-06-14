@@ -13,6 +13,7 @@ import PaymentLayout from "./layout/PaymentLayout";
 import {
     AboutUs,
     AddProject,
+    ApplicationForm,
     Blog,
     CancelPage,
     CareerPathBuilder,
@@ -21,10 +22,10 @@ import {
     EditProject,
     Home,
     InsertCV,
+    Job,
     Login,
     MainLayout,
     PaymentPage,
-    PostJob,
     PremiumPlansPage,
     Profile,
     ProjectDetails,
@@ -32,6 +33,7 @@ import {
     SuccessPage,
     TransactionHistory
 } from "./pages";
+import Project from "./pages/homepage/module/Project";
 
 function App() {
     return (
@@ -45,17 +47,19 @@ function App() {
                             <Route path="/account-plan" element={<PremiumPlansPage />} />
                             <Route path="/transaction-history" element={<TransactionHistory />} />
                             <Route path="/job" element={<Home />} />
+                            <Route path="/job-list" element={<Job />} />
                             <Route path="/aboutus" element={<AboutUs />} />
                             <Route path="/career" element={<CareerPathBuilder />} />
                             <Route path="/profile" element={<Profile />} />
                             <Route path="/edit-profile" element={<EditProfile />} />
                             <Route path="/company/:id" element={<CompanyProfile />} />
                             <Route path="/project/:id" element={<ProjectDetails />} />
+                            <Route path="/project" element={<Project />} />
                             <Route path="/insert-cv" element={<InsertCV />} />
                             <Route path="/insert-project" element={<AddProject />} />
                             <Route path="/edit-project/:id" element={<EditProject />} />
+                            <Route path="/apply/:id" element={<ApplicationForm />} />
                             <Route path="/seeking" element={<Seeking />} />
-                            <Route path="/post-job" element={<PostJob />} />
                             <Route path="*" element={<div>404 Not Found</div>} />
                         </Route>
                         <Route path="/company" element={<CompanyLayout />}>

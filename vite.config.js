@@ -30,7 +30,8 @@ export default defineConfig({
     allowedHosts: [
       "localhost",
       "exe.threemusketeer.click",
-      "matchlent.xyz"
+      "matchlent.xyz",
+      "business.matchlent.xyz"
     ]
   },
   resolve: {

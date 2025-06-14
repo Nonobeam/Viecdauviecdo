@@ -1,5 +1,3 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,7 +13,27 @@ import {
   updatePost,
 } from "@/utils/postApi";
 import { getUserById } from "@/utils/userApi";
-import { Edit, Heart, Home, MessageCircle, MoreVertical, Plus, Share2, Trash2, User, ImageIcon as Image, Smile, Calendar, Bookmark, TrendingUp, X, Send, HeartIcon as HeartFilled } from 'lucide-react';
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  Bookmark,
+  Calendar,
+  Edit,
+  Heart,
+  HeartIcon as HeartFilled,
+  Home,
+  ImageIcon as Image,
+  MessageCircle,
+  MoreVertical,
+  Plus,
+  Send,
+  Share2,
+  Smile,
+  Trash2,
+  TrendingUp,
+  User,
+  X,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 
 const Post = () => {
   const [posts, setPosts] = useState([]);
@@ -81,7 +99,6 @@ const Post = () => {
       else setLoadingMore(true);
 
       const newPosts = await getAllPosts(pageNum, 10);
-      console.log(newPosts);
 
       if (reset || pageNum === 0) {
         setPosts(newPosts);
@@ -104,7 +121,6 @@ const Post = () => {
     try {
       setWaitLoading(true);
       const userPosts = await getUserPosts(currentUserId);
-      console.log(userPosts);
       setPosts(userPosts);
       setHasMore(false);
     } catch (err) {
@@ -117,9 +133,9 @@ const Post = () => {
 
   const handleCreatePost = async () => {
     if (!newPostContent.trim()) return;
-    console.log(currentUserId);
     try {
       setCreating(true);
+      console.log(user);
       const newPost = await createPost({
         user_id: currentUserId,
         title: newPostTitle,
@@ -324,7 +340,9 @@ const Post = () => {
             <div className="absolute inset-3 rounded-full border-t-4 border-b-4 border-pink-500 animate-spin animation-delay-150"></div>
             <div className="absolute inset-6 rounded-full border-t-4 border-b-4 border-blue-500 animate-spin animation-delay-300"></div>
           </div>
-          <p className="text-lg font-medium text-gray-600">Đang tải bài viết...</p>
+          <p className="text-lg font-medium text-gray-600">
+            Đang tải bài viết...
+          </p>
         </div>
       </div>
     );
@@ -339,7 +357,7 @@ const Post = () => {
           </div>
           <h3 className="text-xl font-bold text-gray-800">Đã xảy ra lỗi</h3>
           <p className="text-red-600 font-medium">{error}</p>
-          <Button 
+          <Button
             onClick={() => fetchPosts(0, true)}
             className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 w-full"
           >
@@ -366,18 +384,23 @@ const Post = () => {
                       <AvatarImage
                         src={
                           userData[currentUserId]?.image ||
-                          "https://www.gravatar.com/avatar/default?s=200&d=mp"
-                         || "/placeholder.svg"}
+                          "https://www.gravatar.com/avatar/default?s=200&d=mp" ||
+                          "/placeholder.svg"
+                        }
                       />
                       <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white text-xl">
-                        {userInformation[currentUserId]?.full_name?.[0]?.toUpperCase() || "U"}
+                        {userInformation[
+                          currentUserId
+                        ]?.full_name?.[0]?.toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
                     <h3 className="mt-4 text-xl font-bold text-gray-900">
-                      {userInformation[currentUserId]?.full_name || "Người dùng"}
+                      {userInformation[currentUserId]?.full_name ||
+                        "Người dùng"}
                     </h3>
                     <p className="text-gray-600">
-                      {userInformation[currentUserId]?.job_title || "Thành viên"}
+                      {userInformation[currentUserId]?.job_title ||
+                        "Thành viên"}
                     </p>
                     <div className="mt-4 flex items-center text-sm text-gray-500">
                       <Calendar className="h-4 w-4 mr-1" />
@@ -397,7 +420,11 @@ const Post = () => {
                       : "hover:bg-gray-100 text-gray-700"
                   }`}
                 >
-                  <Home className={`h-5 w-5 ${viewMode === "all" ? "text-white" : "text-gray-500"}`} />
+                  <Home
+                    className={`h-5 w-5 ${
+                      viewMode === "all" ? "text-white" : "text-gray-500"
+                    }`}
+                  />
                   <span>Tất cả bài viết</span>
                 </button>
                 <button
@@ -408,18 +435,18 @@ const Post = () => {
                       : "hover:bg-gray-100 text-gray-700"
                   }`}
                 >
-                  <User className={`h-5 w-5 ${viewMode === "user" ? "text-white" : "text-gray-500"}`} />
+                  <User
+                    className={`h-5 w-5 ${
+                      viewMode === "user" ? "text-white" : "text-gray-500"
+                    }`}
+                  />
                   <span>Bài viết của tôi</span>
                 </button>
-                <button
-                  className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl hover:bg-gray-100 text-gray-700 transition-all"
-                >
+                <button className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl hover:bg-gray-100 text-gray-700 transition-all">
                   <Bookmark className="h-5 w-5 text-gray-500" />
                   <span>Đã lưu</span>
                 </button>
-                <button
-                  className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl hover:bg-gray-100 text-gray-700 transition-all"
-                >
+                <button className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl hover:bg-gray-100 text-gray-700 transition-all">
                   <TrendingUp className="h-5 w-5 text-gray-500" />
                   <span>Xu hướng</span>
                 </button>
@@ -453,15 +480,11 @@ const Post = () => {
                 <User className="h-4 w-4" />
                 <span>Của tôi</span>
               </button>
-              <button
-                className="flex items-center space-x-2 px-4 py-2 rounded-full whitespace-nowrap bg-white text-gray-700 border border-gray-200"
-              >
+              <button className="flex items-center space-x-2 px-4 py-2 rounded-full whitespace-nowrap bg-white text-gray-700 border border-gray-200">
                 <Bookmark className="h-4 w-4" />
                 <span>Đã lưu</span>
               </button>
-              <button
-                className="flex items-center space-x-2 px-4 py-2 rounded-full whitespace-nowrap bg-white text-gray-700 border border-gray-200"
-              >
+              <button className="flex items-center space-x-2 px-4 py-2 rounded-full whitespace-nowrap bg-white text-gray-700 border border-gray-200">
                 <TrendingUp className="h-4 w-4" />
                 <span>Xu hướng</span>
               </button>
@@ -469,28 +492,38 @@ const Post = () => {
 
             {/* Create Post Button */}
             <div className="mb-6">
-              <button
+              <div
                 onClick={() => setShowCreateForm(!showCreateForm)}
-                className="w-full bg-white rounded-2xl shadow-lg p-4 flex items-center space-x-3 hover:shadow-xl transition-shadow"
+                className="w-full bg-white rounded-2xl shadow-lg p-4 flex items-center space-x-3 hover:shadow-xl transition-shadow cursor-pointer"
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    setShowCreateForm(!showCreateForm);
+                  }
+                }}
               >
                 <Avatar className="h-10 w-10">
                   <AvatarImage
                     src={
                       userData[currentUserId]?.image ||
-                      "https://www.gravatar.com/avatar/default?s=200&d=mp"
-                     || "/placeholder.svg"}
+                      "https://www.gravatar.com/avatar/default?s=200&d=mp" ||
+                      "/placeholder.svg"
+                    }
                   />
                   <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white">
-                    {userInformation[currentUserId]?.full_name?.[0]?.toUpperCase() || "U"}
+                    {userInformation[
+                      currentUserId
+                    ]?.full_name?.[0]?.toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
-                <div className="flex-1 text-left text-gray-500">Bạn đang nghĩ gì?</div>
-                <Button
-                  className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-xl"
-                >
+                <div className="flex-1 text-left text-gray-500">
+                  Bạn đang nghĩ gì?
+                </div>
+                <Button className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-xl">
                   <Plus className="h-5 w-5" />
                 </Button>
-              </button>
+              </div>
             </div>
 
             {/* Create post form */}
@@ -504,7 +537,9 @@ const Post = () => {
                   className="bg-white rounded-2xl shadow-lg p-6 mb-6"
                 >
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-bold text-gray-800">Tạo bài viết mới</h3>
+                    <h3 className="text-xl font-bold text-gray-800">
+                      Tạo bài viết mới
+                    </h3>
                     <button
                       onClick={() => {
                         setShowCreateForm(false);
@@ -522,19 +557,24 @@ const Post = () => {
                         <AvatarImage
                           src={
                             userData[currentUserId]?.image ||
-                            "https://www.gravatar.com/avatar/default?s=200&d=mp"
-                           || "/placeholder.svg"}
+                            "https://www.gravatar.com/avatar/default?s=200&d=mp" ||
+                            "/placeholder.svg"
+                          }
                         />
                         <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white">
-                          {userInformation[currentUserId]?.full_name?.[0]?.toUpperCase() || "U"}
+                          {userInformation[
+                            currentUserId
+                          ]?.full_name?.[0]?.toUpperCase() || "U"}
                         </AvatarFallback>
                       </Avatar>
                       <div>
                         <p className="font-medium text-gray-900">
-                          {userInformation[currentUserId]?.full_name || "Người dùng"}
+                          {userInformation[currentUserId]?.full_name ||
+                            "Người dùng"}
                         </p>
                         <p className="text-sm text-gray-500">
-                          {userInformation[currentUserId]?.job_title || "Thành viên"}
+                          {userInformation[currentUserId]?.job_title ||
+                            "Thành viên"}
                         </p>
                       </div>
                     </div>
@@ -576,19 +616,39 @@ const Post = () => {
                         <Button
                           onClick={handleCreatePost}
                           disabled={
-                            creating || !newPostTitle.trim() || !newPostContent.trim()
+                            creating ||
+                            !newPostTitle.trim() ||
+                            !newPostContent.trim()
                           }
                           className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-xl"
                         >
                           {creating ? (
                             <span className="flex items-center">
-                              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              <svg
+                                className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                ></circle>
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                ></path>
                               </svg>
                               Đang đăng...
                             </span>
-                          ) : "Đăng bài"}
+                          ) : (
+                            "Đăng bài"
+                          )}
                         </Button>
                       </div>
                     </div>
@@ -619,8 +679,9 @@ const Post = () => {
                               <AvatarImage
                                 src={
                                   user?.image ||
-                                  "https://www.gravatar.com/avatar/default?s=200&d=mp"
-                                 || "/placeholder.svg"}
+                                  "https://www.gravatar.com/avatar/default?s=200&d=mp" ||
+                                  "/placeholder.svg"
+                                }
                               />
                               <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white text-lg">
                                 {userInfo?.full_name?.[0]?.toUpperCase() || "U"}
@@ -631,13 +692,17 @@ const Post = () => {
                                 {userInfo?.full_name || "Người dùng"}
                               </h3>
                               <div className="flex items-center text-sm text-gray-500">
-                                <span>{userInfo?.job_title || "Thành viên"}</span>
+                                <span>
+                                  {userInfo?.job_title || "Thành viên"}
+                                </span>
                                 <span className="mx-1.5">•</span>
-                                <span>{formatTime(post.created_at) || "Vừa xong"}</span>
+                                <span>
+                                  {formatTime(post.created_at) || "Vừa xong"}
+                                </span>
                               </div>
                             </div>
                           </div>
-                          
+
                           {/* Post actions dropdown */}
                           {viewMode === "user" && (
                             <div className="relative">
@@ -676,7 +741,9 @@ const Post = () => {
                                     >
                                       <Trash2 className="h-4 w-4" />
                                       <span>
-                                        {deleting[post.id] ? "Đang xóa..." : "Xóa bài viết"}
+                                        {deleting[post.id]
+                                          ? "Đang xóa..."
+                                          : "Xóa bài viết"}
                                       </span>
                                     </button>
                                   </motion.div>
@@ -710,8 +777,8 @@ const Post = () => {
                                 >
                                   {updating ? "Đang cập nhật..." : "Cập nhật"}
                                 </Button>
-                                <Button 
-                                  variant="outline" 
+                                <Button
+                                  variant="outline"
                                   onClick={handleCancelEdit}
                                   className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-xl"
                                 >
@@ -721,8 +788,12 @@ const Post = () => {
                             </div>
                           ) : (
                             <>
-                              <h2 className="text-xl font-bold text-gray-900 mb-3">{post.title}</h2>
-                              <p className="text-gray-700 leading-relaxed whitespace-pre-line">{post.content}</p>
+                              <h2 className="text-xl font-bold text-gray-900 mb-3">
+                                {post.title}
+                              </h2>
+                              <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                                {post.content}
+                              </p>
                             </>
                           )}
                         </div>
@@ -764,7 +835,11 @@ const Post = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleLikePost(post.id)}
-                          className={`flex-1 rounded-xl h-10 ${post.liked ? 'text-pink-600' : 'text-gray-600 hover:text-pink-600'}`}
+                          className={`flex-1 rounded-xl h-10 ${
+                            post.liked
+                              ? "text-pink-600"
+                              : "text-gray-600 hover:text-pink-600"
+                          }`}
                         >
                           {post.liked ? (
                             <HeartFilled className="h-5 w-5 mr-2 text-pink-600" />
@@ -808,11 +883,14 @@ const Post = () => {
                                 <AvatarImage
                                   src={
                                     userData[currentUserId]?.image ||
-                                    "https://www.gravatar.com/avatar/default?s=200&d=mp"
-                                   || "/placeholder.svg"}
+                                    "https://www.gravatar.com/avatar/default?s=200&d=mp" ||
+                                    "/placeholder.svg"
+                                  }
                                 />
                                 <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white">
-                                  {userInformation[currentUserId]?.full_name?.[0]?.toUpperCase() || "U"}
+                                  {userInformation[
+                                    currentUserId
+                                  ]?.full_name?.[0]?.toUpperCase() || "U"}
                                 </AvatarFallback>
                               </Avatar>
                               <div className="flex-1 flex space-x-2">
@@ -829,7 +907,10 @@ const Post = () => {
                                     }
                                     className="w-full p-3 pr-12 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                                     onKeyPress={(e) => {
-                                      if (e.key === "Enter" && !commenting[post.id]) {
+                                      if (
+                                        e.key === "Enter" &&
+                                        !commenting[post.id]
+                                      ) {
                                         handleCommentOnPost(post.id);
                                       }
                                     }}
@@ -837,7 +918,8 @@ const Post = () => {
                                   <button
                                     onClick={() => handleCommentOnPost(post.id)}
                                     disabled={
-                                      commenting[post.id] || !commentInputs[post.id]?.trim()
+                                      commenting[post.id] ||
+                                      !commentInputs[post.id]?.trim()
                                     }
                                     className="absolute right-2 top-1/2 transform -translate-y-1/2 text-purple-600 hover:text-purple-700 disabled:text-gray-400"
                                   >
@@ -846,7 +928,7 @@ const Post = () => {
                                 </div>
                               </div>
                             </div>
-                            
+
                             {post.comment_count > 0 && (
                               <div className="mt-4 text-center">
                                 <button className="text-sm text-purple-600 font-medium hover:text-purple-700">
@@ -868,14 +950,16 @@ const Post = () => {
                   <div className="w-20 h-20 mx-auto bg-purple-100 rounded-full flex items-center justify-center mb-6">
                     <MessageCircle className="h-10 w-10 text-purple-500" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-2">Chưa có bài viết nào</h3>
+                  <h3 className="text-xl font-bold text-gray-800 mb-2">
+                    Chưa có bài viết nào
+                  </h3>
                   <p className="text-gray-600 mb-6">
                     {viewMode === "user"
                       ? "Bạn chưa tạo bài viết nào. Hãy chia sẻ suy nghĩ của bạn!"
                       : "Chưa có bài viết nào. Hãy là người đầu tiên chia sẻ!"}
                   </p>
                   {viewMode === "user" && (
-                    <Button 
+                    <Button
                       onClick={() => setShowCreateForm(true)}
                       className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-xl px-6 py-3"
                     >
@@ -890,21 +974,39 @@ const Post = () => {
             {/* Load more button */}
             {hasMore && viewMode === "all" && (
               <div className="text-center py-8">
-                <Button 
-                  onClick={loadMore} 
-                  disabled={loadingMore} 
+                <Button
+                  onClick={loadMore}
+                  disabled={loadingMore}
                   variant="outline"
                   className="border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl px-8 py-6 h-auto"
                 >
                   {loadingMore ? (
                     <span className="flex items-center">
-                      <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      <svg
+                        className="animate-spin -ml-1 mr-2 h-5 w-5 text-gray-700"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
                       </svg>
                       Đang tải...
                     </span>
-                  ) : "Xem thêm bài viết"}
+                  ) : (
+                    "Xem thêm bài viết"
+                  )}
                 </Button>
               </div>
             )}
@@ -928,9 +1030,13 @@ const Post = () => {
                   ].map((topic, i) => (
                     <div key={i} className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <span className="text-sm font-medium text-gray-900">#{topic.tag}</span>
+                        <span className="text-sm font-medium text-gray-900">
+                          #{topic.tag}
+                        </span>
                       </div>
-                      <span className="text-xs text-gray-500">{topic.posts} bài viết</span>
+                      <span className="text-xs text-gray-500">
+                        {topic.posts} bài viết
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -960,11 +1066,17 @@ const Post = () => {
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="text-sm font-medium text-gray-900">{user.name}</p>
+                          <p className="text-sm font-medium text-gray-900">
+                            {user.name}
+                          </p>
                           <p className="text-xs text-gray-500">{user.role}</p>
                         </div>
                       </div>
-                      <Button variant="outline" size="sm" className="h-8 text-xs border-purple-200 text-purple-600 hover:bg-purple-50 rounded-lg">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 text-xs border-purple-200 text-purple-600 hover:bg-purple-50 rounded-lg"
+                      >
                         Kết nối
                       </Button>
                     </div>

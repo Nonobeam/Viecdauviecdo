@@ -114,8 +114,31 @@ declare module 'types' {
     project_role: string;
   }
 
-  export interface JobRequest {
-    company_id: string;
+  export interface Job {
+    id: string,
+    company_id: string,
+    title?: string,
+    department?: string,
+    type?: string,
+    level?: string,
+    working_time?: string,
+    salary?: string,
+    description?: string,
+    requirements?: string,
+    benefits?: string[],
+    status?: string,
+    posted: string,
+    deadline: string
+  }
+
+  export interface UserApplyJobRequest {
+    user_id: string;
+    job_id: string;
+    year_experience: number;
+    university: string;
+  }
+
+  export interface JobUpdateRequest {
     title?: string;
     department?: string;
     type?: string;
@@ -126,35 +149,12 @@ declare module 'types' {
     description?: string;
     requirements?: string;
     benefits?: string;
-    status: string;
+    status?: string;
     posted?: string;
     deadline?: string;
   }
 
-  export interface UserApplyJobRequest {
-  user_id: string;
-  job_id: string;
-  year_experience: number;
-  university: string;
-}
-
-export interface JobUpdateRequest {
-  title?: string;
-  department?: string;
-  type?: string;
-  level?: string;
-  location?: Location;
-  working_time?: string;
-  salary?: string;
-  description?: string;
-  requirements?: string;
-  benefits?: string;
-  status?: string;
-  posted?: string;
-  deadline?: string;
-}
-
-export interface Application {
+  export interface Application {
     id: string;
     university: string;
     notes: string;
@@ -163,32 +163,32 @@ export interface Application {
     created_at: string;
     user_full_name: string;
     user_email: string;
-    skills: string[];
-    certifications: string[];
-}
+    skills?: string[];
+    certifications?: string[];
+  }
 
 
-export interface ApplicationUpdateRequest {
-  university?: string;
-  notes?: string;
-  year_experience?: number;
-  user_id?: string;
-  country?: string;
-  state?: string;
-  city?: string;
-  status?: string;
-  created_at?: string;
-}
+  export interface ApplicationUpdateRequest {
+    university?: string;
+    notes?: string;
+    year_experience?: number;
+    user_id?: string;
+    country?: string;
+    state?: string;
+    city?: string;
+    status?: string;
+    created_at?: string;
+  }
 
-export interface ApplicationRequest {
-  university: string;
-  notes?: string;
-  year_experience: number;
-  user_id: string;
-  country: string;
-  state: string;
-  city: string;
-}
+  export interface ApplicationRequest {
+    university: string;
+    notes?: string;
+    year_experience: number;
+    user_id: string;
+    country: string;
+    state: string;
+    city: string;
+  }
 
   export interface User {
     id: string;
@@ -216,10 +216,10 @@ export interface ApplicationRequest {
     phone?: string
   }
 
-export interface CVItem {
-  type: string;
-  url: string;
-}
+  export interface CVItem {
+    type: string;
+    url: string;
+  }
 
   export interface LoginRequest {
     username: string;
