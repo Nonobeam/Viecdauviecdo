@@ -248,10 +248,11 @@ const Post = () => {
     const commentContent = commentInputs[postId];
     if (!commentContent?.trim()) return;
 
+    
     try {
       setCommenting((prev) => ({ ...prev, [postId]: true }));
       await commentOnPost(postId, {
-        userId: currentUserId,
+        user_id: currentUserId,
         content: commentContent,
       });
       setPosts((prevPosts) =>
