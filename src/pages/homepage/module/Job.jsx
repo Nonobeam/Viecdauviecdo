@@ -39,23 +39,23 @@ const Jobs = () => {
  
 const filterOptions = {
   level: [
-    { label: "Thực tập sinh", value: "INTERN" },
-    { label: "Fresher", value: "FRESHER" },
-    { label: "Junior", value: "JUNIOR" },
-    { label: "Middle", value: "MIDDLE" },
-    { label: "Senior", value: "SENIOR" },
-    { label: "Lead", value: "LEAD" },
-    { label: "Manager", value: "MANAGER" },
+    { label: "Thực tập sinh", value: "intern" },
+    { label: "Fresher", value: "fresher" },
+    { label: "Junior", value: "junior" },
+    { label: "Middle", value: "middle" },
+    { label: "Senior", value: "senior" },
+    { label: "Lead", value: "lead" },
+    { label: "Manager", value: "manager" },
   ],
   type: [
-    { label: "Toàn thời gian", value: "FULL_TIME" },
-    { label: "Bán thời gian", value: "PART_TIME" },
+    { label: "Toàn thời gian", value: "full-Time" },
+    { label: "Bán thời gian", value: "part-Time" },
   ],
   status: [
-    { label: "Đang tuyển", value: "ACTIVE" },
-    { label: "Sắp hết hạn", value: "EXPIRING" },
-    { label: "Tạm dừng", value: "PAUSED" },
-    { label: "Đã đóng", value: "CLOSED" },
+    { label: "Đang tuyển", value: "active" },
+    { label: "Sắp hết hạn", value: "expiring" },
+    { label: "Tạm dừng", value: "pause" },
+    { label: "Đã đóng", value: "closed" },
   ],
 
 };
@@ -113,7 +113,7 @@ const filterOptions = {
   }, [currentPage, filters, searchTerm, user]);
 
   const getStatusColor = (status) => {
-    switch (status) {
+    switch (status.label) {
       case "Đang tuyển":
         return "bg-green-100 text-green-700 border-green-200";
       case "Sắp hết hạn":

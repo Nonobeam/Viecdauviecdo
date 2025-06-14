@@ -16,7 +16,7 @@ import {
   X
 } from "lucide-react";
 import { useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const AddProject = () => {
   const [projectName, setProjectName] = useState("");
@@ -30,6 +30,8 @@ const AddProject = () => {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
   const [image, setImage] = useState(null);
+  const [showSuccess, setShowSuccess] = useState(false)
+  const navigate = useNavigate();
   const location = useLocation();
   const user = location.state?.user;
   const handleDragOver = (e) => {
@@ -128,10 +130,14 @@ const AddProject = () => {
       const responseOwner = await applyProjectOwner(response.data.id);
     }
     if (image != null) {
-      console.log(image);
       const responsePicture = await uploadProjectImage(response.data.id, image);
-      console.log(responsePicture);
     }
+
+    setShowSuccess(true);
+
+     setTimeout(() => {
+        navigate("/profile")
+      }, 3000)
   };
 
   return (
@@ -151,6 +157,14 @@ const AddProject = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
+           {/* Success Message */}
+          {showSuccess && (
+            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-sm text-green-700 font-medium">
+                Một dự án mới đã được tạo, chuyển hướng về trang cũ...
+              </p>
+            </div>
+          )}
           {/* Image Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-3">
