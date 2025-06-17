@@ -9,6 +9,16 @@
   <link rel="manifest" href="/logo/site.webmanifest">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Matchlent</title>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2XG09VG1YK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-2XG09VG1YK');
+  </script>
 </head>
 
 <body>
@@ -38,16 +48,6 @@
   </div>
 
   <script type="module" src="/src/main.jsx"></script>
-
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2XG09VG1YK"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-
-    gtag('config', 'G-2XG09VG1YK');
-  </script>
   <script>
     const coords = { x: 0, y: 0 };
     const circles = document.querySelectorAll(".circle");
