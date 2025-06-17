@@ -540,7 +540,7 @@ const ProjectDetails = () => {
               {isUserMember && user && user?.user_id !== project.owner_id && (
                 <Badge className="flex items-center gap-2 bg-green-500/20 text-green-100 border-green-400/30 px-4 py-2">
                   Đã tham gia
-                </Badge>
+                </Badge>  
               )}
 
               {isUserMember && user && user?.user_id === project.owner_id && (

@@ -33,11 +33,12 @@ export const updateProject = async (
         formData.append("image", imageFile);
     }
     return handleRequest(() =>
-        api.put<Project>(ENDPOINTS.UPDATE_PROJECT(projectId), formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data' // Let browser set multipart/form-data automatically
-            }
-        })
+        api.put<Project>(ENDPOINTS.UPDATE_PROJECT(projectId), formData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data' // Let browser set multipart/form-data automatically
+                }
+            })
     )
 };
 

@@ -251,10 +251,10 @@ const Post = () => {
     
     try {
       setCommenting((prev) => ({ ...prev, [postId]: true }));
-      await commentOnPost(postId, {
-        user_id: currentUserId,
-        content: commentContent,
-      });
+          await commentOnPost(postId, {
+            user_id: currentUserId,
+            content: commentContent,
+          });
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
           post.id === postId
