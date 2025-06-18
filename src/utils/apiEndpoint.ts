@@ -28,6 +28,7 @@ export const ENDPOINTS = {
   ADD_PROJECT_MEMBER: `/api/projects/mem`,
   GET_USER_PROJECTS: (id: string) => `/api/projects/users/${id}`,
   GET_PROJECT_MEMBERS: (id: string) => `/api/projects/${id}/members`,
+  LEAVE_PROJECT: '/api/users/project/leave',
 
 
   // Users

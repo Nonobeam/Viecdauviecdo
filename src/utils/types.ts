@@ -114,6 +114,11 @@ declare module 'types' {
     project_role: string;
   }
 
+  export interface LeaveProjectRequest {
+    project_id: string;
+    user_id: string;
+  }
+
   export interface Job {
     id: string,
     company_id: string,

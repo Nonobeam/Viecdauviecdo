@@ -20,6 +20,7 @@ import {
     CompanyProfile,
     EditProfile,
     EditProject,
+    Feedback,
     Home,
     InsertCV,
     Job,
@@ -50,6 +51,7 @@ function App() {
                             <Route path="/job-list" element={<Job />} />
                             <Route path="/aboutus" element={<AboutUs />} />
                             <Route path="/career" element={<CareerPathBuilder />} />
+                             <Route path="/feedback" element={<Feedback />} />
                             <Route path="/profile" element={<Profile />} />
                             <Route path="/edit-profile" element={<EditProfile />} />
                             <Route path="/company/:id" element={<CompanyProfile />} />
