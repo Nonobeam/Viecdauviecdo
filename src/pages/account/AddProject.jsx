@@ -7,16 +7,9 @@ import {
   createProject,
   uploadProjectImage,
 } from "@/utils/projectAPI";
-import {
-  Calendar,
-  FileText,
-  ImageIcon,
-  LinkIcon,
-  Plus,
-  X
-} from "lucide-react";
+import { Calendar, FileText, ImageIcon, LinkIcon, Plus, X } from "lucide-react";
 import { useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const AddProject = () => {
   const [projectName, setProjectName] = useState("");
@@ -30,6 +23,9 @@ const AddProject = () => {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
   const [image, setImage] = useState(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
   const location = useLocation();
   const user = location.state?.user;
   const handleDragOver = (e) => {
@@ -100,7 +96,6 @@ const AddProject = () => {
       console.log(payload);
       if (user != null) {
         const response = await addProjectMember(payload);
-        console.log(response);
       } else {
         console.log("User was not fetch");
       }
@@ -111,26 +106,44 @@ const AddProject = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const IsoStartTime = formatDateToISOString(startTime);
-    // Handle form submission here
-    const projectData = {
-      name: projectName,
-      description: details,
-      summary: overview,
-      external_link: projectLink,
-      start_at: IsoStartTime,
-      user_id: user.user_id,
-      tags,
-    };
-    const response = await createProject(projectData);
-    console.log(response);
-    if (response.success) {
-      const responseOwner = await applyProjectOwner(response.data.id);
-    }
-    if (image != null) {
-      console.log(image);
-      const responsePicture = await uploadProjectImage(response.data.id, image);
-      console.log(responsePicture);
+
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+    try {
+      const IsoStartTime = formatDateToISOString(startTime);
+      // Handle form submission here
+      const projectData = {
+        name: projectName,
+        description: details,
+        summary: overview,
+        external_link: projectLink,
+        start_at: IsoStartTime,
+        user_id: user.user_id,
+        tags,
+      };
+      const response = await createProject(projectData);
+      console.log(response);
+      if (response.success) {
+        const responseOwner = await applyProjectOwner(response.data.id);
+      }
+      if (image != null) {
+        const responsePicture = await uploadProjectImage(
+          response.data.id,
+          image
+        );
+      }
+
+      setShowSuccess(true);
+
+      setTimeout(() => {
+        navigate("/profile");
+      }, 3000);
+    } catch (error) {
+      console.error("Error creating project:", error);
+      // You might want to show an error message to the user here
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -151,6 +164,14 @@ const AddProject = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Success Message */}
+          {showSuccess && (
+            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-sm text-green-700 font-medium">
+                Một dự án mới đã được tạo, chuyển hướng về trang cũ...
+              </p>
+            </div>
+          )}
           {/* Image Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -398,9 +419,10 @@ const AddProject = () => {
           <div className="flex gap-4 pt-4">
             <Button
               type="submit"
+              disabled={isSubmitting}
               className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg"
             >
-              Tạo Dự Án
+              {isSubmitting ? "Đang tạo..." : "Tạo Dự Án"}
             </Button>
             <Link to="/profile">
               <Button

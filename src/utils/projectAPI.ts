@@ -43,7 +43,7 @@ export const updateProject = async (
                 headers: {
                     'Content-Type': 'multipart/form-data' // Let browser set multipart/form-data automatically
                 }
-            }   )
+            })
     )
 };
 
