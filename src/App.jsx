@@ -1,89 +1,147 @@
-import { DarkModeProvider } from "@/hooks/DarkModeContext";
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import CandidateList from "./company/components/CandidateList";
-import CompanySettings from "./company/components/CompanySetting";
-import Dashboard from "./company/components/Dashboard";
-import HRAccountManager from "./company/components/HRAccountManager";
-import HRDashboard from "./company/components/HRDashboard";
-import JobForm from "./company/components/JobForm";
-import JobList from "./company/components/JobList";
-import ServicePackageManager from "./company/components/ServicePackageManager";
-import CompanyLayout from "./company/layouts/CompanyLayout";
-import PaymentLayout from "./layout/PaymentLayout";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom"
+import PaymentLayout from "./layout/PaymentLayout"
+import ProtectedRoute from "./components/protectedRoute"
 import {
-    AboutUs,
-    AddProject,
-    ApplicationForm,
-    Blog,
-    CancelPage,
-    CareerPathBuilder,
-    CompanyProfile,
-    EditProfile,
-    EditProject,
-    Feedback,
-    Home,
-    InsertCV,
-    Job,
-    Login,
-    MainLayout,
-    PaymentPage,
-    PremiumPlansPage,
-    Profile,
-    ProjectDetails,
-    Seeking,
-    SuccessPage,
-    TransactionHistory
-} from "./pages";
-import Project from "./pages/homepage/module/Project";
+  AboutUs,
+  AddProject,
+  ApplicationForm,
+  Blog,
+  CancelPage,
+  CareerPathBuilder,
+  CompanyProfile,
+  EditProfile,
+  EditProject,
+  Home,
+  InsertCV,
+  Job,
+  Login,
+  MainLayout,
+  PaymentPage,
+  PremiumPlansPage,
+  Profile,
+  ProjectDetails,
+  Seeking,
+  SuccessPage,
+  TransactionHistory,
+} from "./pages"
+import Project from "./pages/homepage/module/Project"
 
 function App() {
-    return (
-        <DarkModeProvider>
-            <div className="overflow-y-auto h-screen">
-                <Router>
-                    <Routes>
-                        <Route element={<MainLayout />}>
-                            <Route path="/" element={<Blog />} />
-                            <Route path="/login" element={<Login />} />
-                            <Route path="/account-plan" element={<PremiumPlansPage />} />
-                            <Route path="/transaction-history" element={<TransactionHistory />} />
-                            <Route path="/job" element={<Home />} />
-                            <Route path="/job-list" element={<Job />} />
-                            <Route path="/aboutus" element={<AboutUs />} />
-                            <Route path="/career" element={<CareerPathBuilder />} />
-                             <Route path="/feedback" element={<Feedback />} />
-                            <Route path="/profile" element={<Profile />} />
-                            <Route path="/edit-profile" element={<EditProfile />} />
-                            <Route path="/company/:id" element={<CompanyProfile />} />
-                            <Route path="/project/:id" element={<ProjectDetails />} />
-                            <Route path="/project" element={<Project />} />
-                            <Route path="/insert-cv" element={<InsertCV />} />
-                            <Route path="/insert-project" element={<AddProject />} />
-                            <Route path="/edit-project/:id" element={<EditProject />} />
-                            <Route path="/apply/:id" element={<ApplicationForm />} />
-                            <Route path="/seeking" element={<Seeking />} />
-                            <Route path="*" element={<div>404 Not Found</div>} />
-                        </Route>
-                        <Route path="/company" element={<CompanyLayout />}>
-                            <Route index element={<Dashboard />} />
-                            <Route path="jobs" element={<JobList />} />
-                            <Route path="jobs/new" element={<JobForm />} />
-                            <Route path="candidates" element={<CandidateList />} />
-                            <Route path="hr-accounts" element={<HRAccountManager />} />
-                            <Route path="settings" element={<CompanySettings />} />
-                            <Route path="packages" element={<ServicePackageManager />} />
-                            <Route path="hr-dashboard" element={<HRDashboard />} />
-                        </Route>
-                        <Route path="/payment" element={<PaymentLayout />}>
-                            <Route index element={<PaymentPage />} />
-                            <Route path="success" element={<SuccessPage />} />
-                            <Route path="cancel" element={<CancelPage />} />
-                        </Route>
-                    </Routes>
-                </Router>
-            </div>
-        </DarkModeProvider>
-    );
+  return (
+      <div className="overflow-y-auto h-screen">
+        <Router>
+          <Routes>
+            <Route element={<MainLayout />}>
+              <Route path="/" element={<Blog />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/job" element={<Home />} />
+              <Route path="/job-list" element={<Job />} />
+              <Route path="/aboutus" element={<AboutUs />} />
+              <Route path="/company/:id" element={<CompanyProfile />} />
+              <Route path="/project/:id" element={<ProjectDetails />} />
+              <Route path="/project" element={<Project />} />
+              <Route path="/seeking" element={<Seeking />} />
+
+              <Route
+                path="/account-plan"
+                element={
+                  <ProtectedRoute>
+                    <PremiumPlansPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/transaction-history"
+                element={
+                  <ProtectedRoute>
+                    <TransactionHistory />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/career"
+                element={
+                  <ProtectedRoute>
+                    <CareerPathBuilder />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/edit-profile"
+                element={
+                  <ProtectedRoute>
+                    <EditProfile />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/insert-cv"
+                element={
+                  <ProtectedRoute>
+                    <InsertCV />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/insert-project"
+                element={
+                  <ProtectedRoute>
+                    <AddProject />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/edit-project/:id"
+                element={
+                  <ProtectedRoute>
+                    <EditProject />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/apply/:id"
+                element={
+                  <ProtectedRoute>
+                    <ApplicationForm />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route path="*" element={<div>404 Not Found</div>} />
+            </Route>
+
+            <Route
+              path="/payment"
+              element={
+                <ProtectedRoute>
+                  <PaymentLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<PaymentPage />} />
+              <Route path="success" element={<SuccessPage />} />
+              <Route path="cancel" element={<CancelPage />} />
+            </Route>
+          </Routes>
+        </Router>
+      </div>
+  )
 }
 
-export default App;
+export default App

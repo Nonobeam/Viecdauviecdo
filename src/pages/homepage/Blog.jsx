@@ -1,7 +1,7 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { useAuth } from "@/providers/AuthContext";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
+import { useAuth } from "@/providers/AuthContext"
 import {
   commentOnPost,
   createPost,
@@ -11,9 +11,9 @@ import {
   likePost,
   sharePost,
   updatePost,
-} from "@/utils/postApi";
-import { getUserById } from "@/utils/userApi";
-import { AnimatePresence, motion } from "framer-motion";
+} from "@/utils/postApi"
+import { getUserById } from "@/utils/userApi"
+import { AnimatePresence, motion } from "framer-motion"
 import {
   Bookmark,
   Calendar,
@@ -21,7 +21,7 @@ import {
   Heart,
   HeartIcon as HeartFilled,
   Home,
-  ImageIcon as Image,
+  Image,
   MessageCircle,
   MoreVertical,
   Plus,
@@ -32,255 +32,268 @@ import {
   TrendingUp,
   User,
   X,
-} from "lucide-react";
-import { useEffect, useState } from "react";
+} from "lucide-react"
+import { useEffect, useState } from "react"
+import LoginNotificationPopup from "../../components/LoginNotificationPopup"
+import { useLoginNotification } from "../../hooks/useNotificationPopup"
 
 const Post = () => {
-  const [posts, setPosts] = useState([]);
-  const [waitLoading, setWaitLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [page, setPage] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const { user, loading } = useAuth();
-  const [fetch, setFetch] = useState(0);
+  const [posts, setPosts] = useState([])
+  const [waitLoading, setWaitLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [page, setPage] = useState(0)
+  const [hasMore, setHasMore] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const { user, loading } = useAuth()
+  const [fetch, setFetch] = useState(0)
 
-  const [userData, setUserData] = useState({});
-  const [userInformation, setUserInformation] = useState({});
+  const [userData, setUserData] = useState({})
+  const [userInformation, setUserInformation] = useState({})
 
   // Create post states
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [newPostTitle, setNewPostTitle] = useState("");
-  const [newPostContent, setNewPostContent] = useState("");
-  const [creating, setCreating] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(false)
+  const [newPostTitle, setNewPostTitle] = useState("")
+  const [newPostContent, setNewPostContent] = useState("")
+  const [creating, setCreating] = useState(false)
 
   // Edit post states
-  const [editingPost, setEditingPost] = useState(null);
-  const [editTitle, setEditTitle] = useState("");
-  const [editContent, setEditContent] = useState("");
-  const [updating, setUpdating] = useState(false);
+  const [editingPost, setEditingPost] = useState(null)
+  const [editTitle, setEditTitle] = useState("")
+  const [editContent, setEditContent] = useState("")
+  const [updating, setUpdating] = useState(false)
 
   // Delete states
-  const [deleting, setDeleting] = useState({});
+  const [deleting, setDeleting] = useState({})
 
   // View mode states
-  const [viewMode, setViewMode] = useState("all");
-  const [currentUserId, setCurrentUserId] = useState(null);
+  const [viewMode, setViewMode] = useState("all")
+  const [currentUserId, setCurrentUserId] = useState(null)
 
   // Comment states
-  const [commentInputs, setCommentInputs] = useState({});
-  const [commenting, setCommenting] = useState({});
-  const [showComments, setShowComments] = useState({});
+  const [commentInputs, setCommentInputs] = useState({})
+  const [commenting, setCommenting] = useState({})
+  const [showComments, setShowComments] = useState({})
 
   // Dropdown menu states
-  const [showDropdown, setShowDropdown] = useState({});
+  const [showDropdown, setShowDropdown] = useState({})
+
+  // Login notification
+  const { isOpen: showLoginPopup, showLoginNotification, hideLoginNotification } = useLoginNotification()
 
   const fetchUser = async (userId) => {
     if (userId != null && !userData[userId]) {
       try {
-        const fetchedUser = await getUserById(userId);
+        const fetchedUser = await getUserById(userId)
         setUserData((prev) => ({
           ...prev,
           [userId]: fetchedUser.data,
-        }));
+        }))
         setUserInformation((prev) => ({
           ...prev,
           [userId]: fetchedUser.data.user_information,
-        }));
+        }))
       } catch (error) {
-        console.error("Failed to fetch user:", error);
+        console.error("Failed to fetch user:", error)
       }
     }
-  };
+  }
 
   const fetchPosts = async (pageNum = 0, reset = false) => {
     try {
-      if (pageNum === 0) setWaitLoading(true);
-      else setLoadingMore(true);
+      if (pageNum === 0) setWaitLoading(true)
+      else setLoadingMore(true)
 
-      const newPosts = await getAllPosts(pageNum, 10);
+      const newPosts = await getAllPosts(pageNum, 10)
 
       if (reset || pageNum === 0) {
-        setPosts(newPosts);
+        setPosts(newPosts)
       } else {
-        setPosts((prev) => [...prev, ...newPosts]);
+        setPosts((prev) => [...prev, ...newPosts])
       }
 
-      setHasMore(newPosts.length === 10);
-      setPage(pageNum);
+      setHasMore(newPosts.length === 10)
+      setPage(pageNum)
     } catch (err) {
-      setError("Failed to fetch posts");
-      console.error("Error fetching posts:", err);
+      setError("Failed to fetch posts")
+      console.error("Error fetching posts:", err)
     } finally {
-      setWaitLoading(false);
-      setLoadingMore(false);
+      setWaitLoading(false)
+      setLoadingMore(false)
     }
-  };
+  }
 
   const fetchUserPosts = async () => {
     try {
-      setWaitLoading(true);
-      const userPosts = await getUserPosts(currentUserId);
-      setPosts(userPosts);
-      setHasMore(false);
+      setWaitLoading(true)
+      const userPosts = await getUserPosts(currentUserId)
+      setPosts(userPosts)
+      setHasMore(false)
     } catch (err) {
-      setError("Failed to fetch user posts");
-      console.error("Error fetching user posts:", err);
+      setError("Failed to fetch user posts")
+      console.error("Error fetching user posts:", err)
     } finally {
-      setWaitLoading(false);
+      setWaitLoading(false)
     }
-  };
+  }
 
   const handleCreatePost = async () => {
-    if (!newPostContent.trim()) return;
+    if (!user) {
+      showLoginNotification()
+      return
+    }
+
+    if (!newPostContent.trim()) return
     try {
-      setCreating(true);
-      console.log(user);
+      setCreating(true)
+      console.log(user)
       const newPost = await createPost({
         user_id: currentUserId,
         title: newPostTitle,
         content: newPostContent,
         image_url: "",
         tags: [],
-      });
-      setFetch((prev) => prev + 1);
-      setPosts((prev) => [newPost, ...prev]);
-      setNewPostTitle("");
-      setNewPostContent("");
-      setShowCreateForm(false);
+      })
+      setFetch((prev) => prev + 1)
+      setPosts((prev) => [newPost, ...prev])
+      setNewPostTitle("")
+      setNewPostContent("")
+      setShowCreateForm(false)
     } catch (err) {
-      setError("Failed to create post");
-      console.error("Error creating post:", err);
+      setError("Failed to create post")
+      console.error("Error creating post:", err)
     } finally {
-      setCreating(false);
+      setCreating(false)
     }
-  };
+  }
 
   const handleEditPost = (post) => {
-    setEditingPost(post.id);
-    setEditTitle(post.title);
-    setEditContent(post.content);
-    setShowDropdown((prev) => ({ ...prev, [post.id]: false }));
-  };
+    setEditingPost(post.id)
+    setEditTitle(post.title)
+    setEditContent(post.content)
+    setShowDropdown((prev) => ({ ...prev, [post.id]: false }))
+  }
 
   const handleCancelEdit = () => {
-    setEditingPost(null);
-    setEditTitle("");
-    setEditContent("");
-  };
+    setEditingPost(null)
+    setEditTitle("")
+    setEditContent("")
+  }
 
   const handleUpdatePost = async (postId) => {
-    if (!editContent.trim()) return;
+    if (!editContent.trim()) return
 
-    setUpdating(true);
+    setUpdating(true)
     try {
       const updatedPost = await updatePost(postId, {
         title: editTitle,
         content: editContent,
-      });
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === postId ? { ...post, ...updatedPost } : post
-        )
-      );
-      setFetch((prev) => prev + 1);
-      setEditingPost(null);
-      setEditTitle("");
-      setEditContent("");
+      })
+      setPosts((prevPosts) => prevPosts.map((post) => (post.id === postId ? { ...post, ...updatedPost } : post)))
+      setFetch((prev) => prev + 1)
+      setEditingPost(null)
+      setEditTitle("")
+      setEditContent("")
     } catch (err) {
-      setError("Failed to update post");
-      console.error("Error updating post:", err);
+      setError("Failed to update post")
+      console.error("Error updating post:", err)
     } finally {
-      setUpdating(false);
+      setUpdating(false)
     }
-  };
+  }
 
   const handleDeletePost = async (postId) => {
-    const confirmDelete = window.confirm(
-      "Bạn có chắc chắn muốn xóa bài viết này? Hành động này không thể hoàn tác."
-    );
-    if (!confirmDelete) return;
+    const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa bài viết này? Hành động này không thể hoàn tác.")
+    if (!confirmDelete) return
 
     try {
-      setDeleting((prev) => ({ ...prev, [postId]: true }));
-      await deletePost(postId);
-      setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
-      setShowDropdown((prev) => ({ ...prev, [postId]: false }));
+      setDeleting((prev) => ({ ...prev, [postId]: true }))
+      await deletePost(postId)
+      setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId))
+      setShowDropdown((prev) => ({ ...prev, [postId]: false }))
     } catch (err) {
-      setError("Failed to delete post");
-      console.error("Error deleting post:", err);
+      setError("Failed to delete post")
+      console.error("Error deleting post:", err)
     } finally {
-      setDeleting((prev) => ({ ...prev, [postId]: false }));
+      setDeleting((prev) => ({ ...prev, [postId]: false }))
     }
-  };
+  }
 
   const handleLikePost = async (postId) => {
+    if (!user) {
+      showLoginNotification()
+      return
+    }
+
     try {
-      await likePost(postId);
+      await likePost(postId)
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
-          post.id === postId
-            ? { ...post, like_count: post.like_count + 1, liked: true }
-            : post
-        )
-      );
+          post.id === postId ? { ...post, like_count: post.like_count + 1, liked: true } : post,
+        ),
+      )
     } catch (err) {
-      console.error("Error liking post:", err);
+      console.error("Error liking post:", err)
     }
-  };
+  }
 
   const handleSharePost = async (postId) => {
-    try {
-      await sharePost(postId);
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === postId
-            ? { ...post, share_count: post.share_count + 1 }
-            : post
-        )
-      );
-    } catch (err) {
-      console.error("Error sharing post:", err);
+    if (!user) {
+      showLoginNotification()
+      return
     }
-  };
+
+    try {
+      await sharePost(postId)
+      setPosts((prevPosts) =>
+        prevPosts.map((post) => (post.id === postId ? { ...post, share_count: post.share_count + 1 } : post)),
+      )
+    } catch (err) {
+      console.error("Error sharing post:", err)
+    }
+  }
 
   const handleCommentOnPost = async (postId) => {
-    const commentContent = commentInputs[postId];
-    if (!commentContent?.trim()) return;
-
-    
-    try {
-      setCommenting((prev) => ({ ...prev, [postId]: true }));
-          await commentOnPost(postId, {
-            user_id: currentUserId,
-            content: commentContent,
-          });
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === postId
-            ? { ...post, comment_count: post.comment_count + 1 }
-            : post
-        )
-      );
-      setCommentInputs((prev) => ({ ...prev, [postId]: "" }));
-    } catch (err) {
-      console.error("Error commenting on post:", err);
-    } finally {
-      setCommenting((prev) => ({ ...prev, [postId]: false }));
+    if (!user) {
+      showLoginNotification()
+      return
     }
-  };
+
+    const commentContent = commentInputs[postId]
+    if (!commentContent?.trim()) return
+
+    try {
+      setCommenting((prev) => ({ ...prev, [postId]: true }))
+      await commentOnPost(postId, {
+        user_id: currentUserId,
+        content: commentContent,
+      })
+      setPosts((prevPosts) =>
+        prevPosts.map((post) => (post.id === postId ? { ...post, comment_count: post.comment_count + 1 } : post)),
+      )
+      setCommentInputs((prev) => ({ ...prev, [postId]: "" }))
+    } catch (err) {
+      console.error("Error commenting on post:", err)
+    } finally {
+      setCommenting((prev) => ({ ...prev, [postId]: false }))
+    }
+  }
 
   const toggleCommentInput = (postId) => {
-    setShowComments((prev) => ({ ...prev, [postId]: !prev[postId] }));
-  };
+    if (!user) {
+      showLoginNotification()
+      return
+    }
+
+    setShowComments((prev) => ({ ...prev, [postId]: !prev[postId] }))
+  }
 
   const toggleDropdown = (postId) => {
-    setShowDropdown((prev) => ({ ...prev, [postId]: !prev[postId] }));
-  };
+    setShowDropdown((prev) => ({ ...prev, [postId]: !prev[postId] }))
+  }
 
   const formatTime = (isoString) => {
-    const date = new Date(isoString);
-    if (isNaN(date)) return "Invalid date";
+    const date = new Date(isoString)
+    if (isNaN(date)) return "Invalid date"
 
     const options = {
       year: "numeric",
@@ -288,49 +301,49 @@ const Post = () => {
       day: "2-digit",
       hour: "2-digit",
       minute: "2-digit",
-    };
+    }
 
-    return date.toLocaleString(undefined, options);
-  };
+    return date.toLocaleString(undefined, options)
+  }
 
   const loadMore = () => {
     if (!loadingMore && hasMore && viewMode === "all") {
-      fetchPosts(page + 1);
+      fetchPosts(page + 1)
     }
-  };
+  }
 
   const switchViewMode = (mode) => {
-    setViewMode(mode);
-    setPage(0);
+    setViewMode(mode)
+    setPage(0)
     if (mode === "all") {
-      fetchPosts(0, true);
+      fetchPosts(0, true)
     } else {
-      fetchUserPosts();
+      fetchUserPosts()
     }
-  };
+  }
 
   useEffect(() => {
     if (!loading && user?.user_id) {
-      setCurrentUserId(user.user_id);
+      setCurrentUserId(user.user_id)
     }
-    switchViewMode("all");
-  }, [loading, user]);
+    switchViewMode("all")
+  }, [loading, user])
 
   useEffect(() => {
     if (posts.length > 0) {
       posts.forEach((post) => {
-        fetchUser(post.user_id);
-      });
+        fetchUser(post.user_id)
+      })
     }
-  }, [posts]);
+  }, [posts])
 
   useEffect(() => {
     if (viewMode === "all") {
-      fetchPosts(0, true);
+      fetchPosts(0, true)
     } else {
-      fetchUserPosts();
+      fetchUserPosts()
     }
-  }, [fetch]);
+  }, [fetch])
 
   if (waitLoading && posts && posts.length === 0) {
     return (
@@ -341,12 +354,10 @@ const Post = () => {
             <div className="absolute inset-3 rounded-full border-t-4 border-b-4 border-pink-500 animate-spin animation-delay-150"></div>
             <div className="absolute inset-6 rounded-full border-t-4 border-b-4 border-blue-500 animate-spin animation-delay-300"></div>
           </div>
-          <p className="text-lg font-medium text-gray-600">
-            Đang tải bài viết...
-          </p>
+          <p className="text-lg font-medium text-gray-600">Đang tải bài viết...</p>
         </div>
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -366,7 +377,7 @@ const Post = () => {
           </Button>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -386,23 +397,18 @@ const Post = () => {
                         src={
                           userData[currentUserId]?.image ||
                           "https://www.gravatar.com/avatar/default?s=200&d=mp" ||
+                          "/placeholder.svg" ||
                           "/placeholder.svg"
                         }
                       />
                       <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white text-xl">
-                        {userInformation[
-                          currentUserId
-                        ]?.full_name?.[0]?.toUpperCase() || "U"}
+                        {userInformation[currentUserId]?.full_name?.[0]?.toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
                     <h3 className="mt-4 text-xl font-bold text-gray-900">
-                      {userInformation[currentUserId]?.full_name ||
-                        "Người dùng"}
+                      {userInformation[currentUserId]?.full_name || "Người dùng"}
                     </h3>
-                    <p className="text-gray-600">
-                      {userInformation[currentUserId]?.job_title ||
-                        "Thành viên"}
-                    </p>
+                    <p className="text-gray-600">{userInformation[currentUserId]?.job_title || "Thành viên"}</p>
                     <div className="mt-4 flex items-center text-sm text-gray-500">
                       <Calendar className="h-4 w-4 mr-1" />
                       <span>Tham gia tháng 6, 2023</span>
@@ -415,32 +421,22 @@ const Post = () => {
               <div className="bg-white rounded-2xl shadow-lg p-6 space-y-2">
                 <button
                   onClick={() => switchViewMode("all")}
-                  className={`flex items-center space-x-3 w-full px-4 py-3 rounded-xl transition-all ${
-                    viewMode === "all"
+                  className={`flex items-center space-x-3 w-full px-4 py-3 rounded-xl transition-all ${viewMode === "all"
                       ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white font-medium"
                       : "hover:bg-gray-100 text-gray-700"
-                  }`}
-                >
-                  <Home
-                    className={`h-5 w-5 ${
-                      viewMode === "all" ? "text-white" : "text-gray-500"
                     }`}
-                  />
+                >
+                  <Home className={`h-5 w-5 ${viewMode === "all" ? "text-white" : "text-gray-500"}`} />
                   <span>Tất cả bài viết</span>
                 </button>
                 <button
                   onClick={() => switchViewMode("user")}
-                  className={`flex items-center space-x-3 w-full px-4 py-3 rounded-xl transition-all ${
-                    viewMode === "user"
+                  className={`flex items-center space-x-3 w-full px-4 py-3 rounded-xl transition-all ${viewMode === "user"
                       ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white font-medium"
                       : "hover:bg-gray-100 text-gray-700"
-                  }`}
-                >
-                  <User
-                    className={`h-5 w-5 ${
-                      viewMode === "user" ? "text-white" : "text-gray-500"
                     }`}
-                  />
+                >
+                  <User className={`h-5 w-5 ${viewMode === "user" ? "text-white" : "text-gray-500"}`} />
                   <span>Bài viết của tôi</span>
                 </button>
                 <button className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl hover:bg-gray-100 text-gray-700 transition-all">
@@ -461,22 +457,20 @@ const Post = () => {
             <div className="lg:hidden flex overflow-x-auto space-x-2 pb-4 scrollbar-hide">
               <button
                 onClick={() => switchViewMode("all")}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-full whitespace-nowrap ${
-                  viewMode === "all"
+                className={`flex items-center space-x-2 px-4 py-2 rounded-full whitespace-nowrap ${viewMode === "all"
                     ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white font-medium"
                     : "bg-white text-gray-700 border border-gray-200"
-                }`}
+                  }`}
               >
                 <Home className="h-4 w-4" />
                 <span>Tất cả</span>
               </button>
               <button
                 onClick={() => switchViewMode("user")}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-full whitespace-nowrap ${
-                  viewMode === "user"
+                className={`flex items-center space-x-2 px-4 py-2 rounded-full whitespace-nowrap ${viewMode === "user"
                     ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white font-medium"
                     : "bg-white text-gray-700 border border-gray-200"
-                }`}
+                  }`}
               >
                 <User className="h-4 w-4" />
                 <span>Của tôi</span>
@@ -494,13 +488,19 @@ const Post = () => {
             {/* Create Post Button */}
             <div className="mb-6">
               <div
-                onClick={() => setShowCreateForm(!showCreateForm)}
+                onClick={() => {
+                  if (!user) {
+                    showLoginNotification()
+                    return
+                  }
+                  setShowCreateForm(!showCreateForm)
+                }}
                 className="w-full bg-white rounded-2xl shadow-lg p-4 flex items-center space-x-3 hover:shadow-xl transition-shadow cursor-pointer"
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
-                    setShowCreateForm(!showCreateForm);
+                    setShowCreateForm(!showCreateForm)
                   }
                 }}
               >
@@ -509,18 +509,15 @@ const Post = () => {
                     src={
                       userData[currentUserId]?.image ||
                       "https://www.gravatar.com/avatar/default?s=200&d=mp" ||
+                      "/placeholder.svg" ||
                       "/placeholder.svg"
                     }
                   />
                   <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white">
-                    {userInformation[
-                      currentUserId
-                    ]?.full_name?.[0]?.toUpperCase() || "U"}
+                    {userInformation[currentUserId]?.full_name?.[0]?.toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
-                <div className="flex-1 text-left text-gray-500">
-                  Bạn đang nghĩ gì?
-                </div>
+                <div className="flex-1 text-left text-gray-500">Bạn đang nghĩ gì?</div>
                 <Button className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-xl">
                   <Plus className="h-5 w-5" />
                 </Button>
@@ -538,14 +535,12 @@ const Post = () => {
                   className="bg-white rounded-2xl shadow-lg p-6 mb-6"
                 >
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-bold text-gray-800">
-                      Tạo bài viết mới
-                    </h3>
+                    <h3 className="text-xl font-bold text-gray-800">Tạo bài viết mới</h3>
                     <button
                       onClick={() => {
-                        setShowCreateForm(false);
-                        setNewPostTitle("");
-                        setNewPostContent("");
+                        setShowCreateForm(false)
+                        setNewPostTitle("")
+                        setNewPostContent("")
                       }}
                       className="text-gray-500 hover:text-gray-700"
                     >
@@ -559,23 +554,20 @@ const Post = () => {
                           src={
                             userData[currentUserId]?.image ||
                             "https://www.gravatar.com/avatar/default?s=200&d=mp" ||
+                            "/placeholder.svg" ||
                             "/placeholder.svg"
                           }
                         />
                         <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white">
-                          {userInformation[
-                            currentUserId
-                          ]?.full_name?.[0]?.toUpperCase() || "U"}
+                          {userInformation[currentUserId]?.full_name?.[0]?.toUpperCase() || "U"}
                         </AvatarFallback>
                       </Avatar>
                       <div>
                         <p className="font-medium text-gray-900">
-                          {userInformation[currentUserId]?.full_name ||
-                            "Người dùng"}
+                          {userInformation[currentUserId]?.full_name || "Người dùng"}
                         </p>
                         <p className="text-sm text-gray-500">
-                          {userInformation[currentUserId]?.job_title ||
-                            "Thành viên"}
+                          {userInformation[currentUserId]?.job_title || "Thành viên"}
                         </p>
                       </div>
                     </div>
@@ -606,9 +598,9 @@ const Post = () => {
                         <Button
                           variant="outline"
                           onClick={() => {
-                            setShowCreateForm(false);
-                            setNewPostTitle("");
-                            setNewPostContent("");
+                            setShowCreateForm(false)
+                            setNewPostTitle("")
+                            setNewPostContent("")
                           }}
                           className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-xl"
                         >
@@ -616,11 +608,7 @@ const Post = () => {
                         </Button>
                         <Button
                           onClick={handleCreatePost}
-                          disabled={
-                            creating ||
-                            !newPostTitle.trim() ||
-                            !newPostContent.trim()
-                          }
+                          disabled={creating || !newPostTitle.trim() || !newPostContent.trim()}
                           className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-xl"
                         >
                           {creating ? (
@@ -662,8 +650,8 @@ const Post = () => {
             {posts.length > 0 ? (
               <div className="space-y-6">
                 {posts.map((post) => {
-                  const user = userData[post.user_id];
-                  const userInfo = userInformation[post.user_id];
+                  const user = userData[post.user_id]
+                  const userInfo = userInformation[post.user_id]
                   return (
                     <motion.div
                       key={post.id}
@@ -681,6 +669,7 @@ const Post = () => {
                                 src={
                                   user?.image ||
                                   "https://www.gravatar.com/avatar/default?s=200&d=mp" ||
+                                  "/placeholder.svg" ||
                                   "/placeholder.svg"
                                 }
                               />
@@ -689,17 +678,11 @@ const Post = () => {
                               </AvatarFallback>
                             </Avatar>
                             <div>
-                              <h3 className="font-bold text-gray-900 text-lg">
-                                {userInfo?.full_name || "Người dùng"}
-                              </h3>
+                              <h3 className="font-bold text-gray-900 text-lg">{userInfo?.full_name || "Người dùng"}</h3>
                               <div className="flex items-center text-sm text-gray-500">
-                                <span>
-                                  {userInfo?.job_title || "Thành viên"}
-                                </span>
+                                <span>{userInfo?.job_title || "Thành viên"}</span>
                                 <span className="mx-1.5">•</span>
-                                <span>
-                                  {formatTime(post.created_at) || "Vừa xong"}
-                                </span>
+                                <span>{formatTime(post.created_at) || "Vừa xong"}</span>
                               </div>
                             </div>
                           </div>
@@ -711,8 +694,8 @@ const Post = () => {
                                 variant="ghost"
                                 size="sm"
                                 onClick={(e) => {
-                                  e.stopPropagation();
-                                  toggleDropdown(post.id);
+                                  e.stopPropagation()
+                                  toggleDropdown(post.id)
                                 }}
                                 className="h-9 w-9 p-0 rounded-full text-gray-500 hover:bg-gray-100"
                               >
@@ -741,11 +724,7 @@ const Post = () => {
                                       className="flex items-center space-x-3 w-full px-4 py-3 text-sm text-red-600 hover:bg-red-50"
                                     >
                                       <Trash2 className="h-4 w-4" />
-                                      <span>
-                                        {deleting[post.id]
-                                          ? "Đang xóa..."
-                                          : "Xóa bài viết"}
-                                      </span>
+                                      <span>{deleting[post.id] ? "Đang xóa..." : "Xóa bài viết"}</span>
                                     </button>
                                   </motion.div>
                                 )}
@@ -789,12 +768,8 @@ const Post = () => {
                             </div>
                           ) : (
                             <>
-                              <h2 className="text-xl font-bold text-gray-900 mb-3">
-                                {post.title}
-                              </h2>
-                              <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                                {post.content}
-                              </p>
+                              <h2 className="text-xl font-bold text-gray-900 mb-3">{post.title}</h2>
+                              <p className="text-gray-700 leading-relaxed whitespace-pre-line">{post.content}</p>
                             </>
                           )}
                         </div>
@@ -836,11 +811,8 @@ const Post = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleLikePost(post.id)}
-                          className={`flex-1 rounded-xl h-10 ${
-                            post.liked
-                              ? "text-pink-600"
-                              : "text-gray-600 hover:text-pink-600"
-                          }`}
+                          className={`flex-1 rounded-xl h-10 ${post.liked ? "text-pink-600" : "text-gray-600 hover:text-pink-600"
+                            }`}
                         >
                           {post.liked ? (
                             <HeartFilled className="h-5 w-5 mr-2 text-pink-600" />
@@ -885,13 +857,12 @@ const Post = () => {
                                   src={
                                     userData[currentUserId]?.image ||
                                     "https://www.gravatar.com/avatar/default?s=200&d=mp" ||
+                                    "/placeholder.svg" ||
                                     "/placeholder.svg"
                                   }
                                 />
                                 <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white">
-                                  {userInformation[
-                                    currentUserId
-                                  ]?.full_name?.[0]?.toUpperCase() || "U"}
+                                  {userInformation[currentUserId]?.full_name?.[0]?.toUpperCase() || "U"}
                                 </AvatarFallback>
                               </Avatar>
                               <div className="flex-1 flex space-x-2">
@@ -908,20 +879,14 @@ const Post = () => {
                                     }
                                     className="w-full p-3 pr-12 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                                     onKeyPress={(e) => {
-                                      if (
-                                        e.key === "Enter" &&
-                                        !commenting[post.id]
-                                      ) {
-                                        handleCommentOnPost(post.id);
+                                      if (e.key === "Enter" && !commenting[post.id]) {
+                                        handleCommentOnPost(post.id)
                                       }
                                     }}
                                   />
                                   <button
                                     onClick={() => handleCommentOnPost(post.id)}
-                                    disabled={
-                                      commenting[post.id] ||
-                                      !commentInputs[post.id]?.trim()
-                                    }
+                                    disabled={commenting[post.id] || !commentInputs[post.id]?.trim()}
                                     className="absolute right-2 top-1/2 transform -translate-y-1/2 text-purple-600 hover:text-purple-700 disabled:text-gray-400"
                                   >
                                     <Send className="h-5 w-5" />
@@ -941,7 +906,7 @@ const Post = () => {
                         )}
                       </AnimatePresence>
                     </motion.div>
-                  );
+                  )
                 })}
               </div>
             ) : (
@@ -951,9 +916,7 @@ const Post = () => {
                   <div className="w-20 h-20 mx-auto bg-purple-100 rounded-full flex items-center justify-center mb-6">
                     <MessageCircle className="h-10 w-10 text-purple-500" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-2">
-                    Chưa có bài viết nào
-                  </h3>
+                  <h3 className="text-xl font-bold text-gray-800 mb-2">Chưa có bài viết nào</h3>
                   <p className="text-gray-600 mb-6">
                     {viewMode === "user"
                       ? "Bạn chưa tạo bài viết nào. Hãy chia sẻ suy nghĩ của bạn!"
@@ -1031,13 +994,9 @@ const Post = () => {
                   ].map((topic, i) => (
                     <div key={i} className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <span className="text-sm font-medium text-gray-900">
-                          #{topic.tag}
-                        </span>
+                        <span className="text-sm font-medium text-gray-900">#{topic.tag}</span>
                       </div>
-                      <span className="text-xs text-gray-500">
-                        {topic.posts} bài viết
-                      </span>
+                      <span className="text-xs text-gray-500">{topic.posts} bài viết</span>
                     </div>
                   ))}
                 </div>
@@ -1067,9 +1026,7 @@ const Post = () => {
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="text-sm font-medium text-gray-900">
-                            {user.name}
-                          </p>
+                          <p className="text-sm font-medium text-gray-900">{user.name}</p>
                           <p className="text-xs text-gray-500">{user.role}</p>
                         </div>
                       </div>
@@ -1091,8 +1048,9 @@ const Post = () => {
           </div>
         </div>
       </div>
+      <LoginNotificationPopup isOpen={showLoginPopup} onClose={hideLoginNotification} />
     </div>
-  );
-};
+  )
+}
 
-export default Post;
+export default Post
