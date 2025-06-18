@@ -1,56 +1,58 @@
-"use client"
+"use client";
 
-import BentoGridDemo from "@/components/BentoGridLayout"
-import { Button } from "@/components/ui/button"
-import { getAllProjects } from "@/utils/projectAPI"
-import { motion } from "framer-motion"
-import { FileText, Loader } from "lucide-react"
-import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import BentoGridDemo from "@/components/BentoGridLayout";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/providers/AuthContext";
+import { getAllProjects } from "@/utils/projectAPI";
+import { motion } from "framer-motion";
+import { FileText, Loader, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 const Project = () => {
-  const [projects, setProjects] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [page, setPage] = useState(0)
-  const [hasMore, setHasMore] = useState(true)
-  const pageSize = 10
-  const navigate = useNavigate()
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const pageSize = 10;
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const fetchProjects = async (pageNum = 0, reset = false) => {
     try {
-      setLoading(true)
-      const data = await getAllProjects(pageNum, pageSize)
+      setLoading(true);
+      const data = await getAllProjects(pageNum, pageSize);
 
       if (reset) {
-        setProjects(data.data.content)
+        setProjects(data.data.content);
       } else {
-        setProjects((prev) => [...prev, ...data.data.content])
+        setProjects((prev) => [...prev, ...data.data.content]);
       }
 
       // Check if we have more data to load
-      setHasMore(data.data.content.length === pageSize)
-      setError(null)
+      setHasMore(data.data.content.length === pageSize);
+      setError(null);
     } catch (err) {
-      setError("Không thể tải danh sách dự án")
-      console.error("Lỗi khi tải danh sách dự án:", err)
+      setError("Không thể tải danh sách dự án");
+      console.error("Lỗi khi tải danh sách dự án:", err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const loadMore = () => {
     if (!loading && hasMore) {
-      const nextPage = page + 1
-      setPage(nextPage)
-      fetchProjects(nextPage, false)
+      const nextPage = page + 1;
+      setPage(nextPage);
+      fetchProjects(nextPage, false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchProjects(0, true)
-    setPage(0)
-  }, [])
+    fetchProjects(0, true);
+    setPage(0);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-blue-50 py-8">
@@ -61,10 +63,26 @@ const Project = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent mb-4">
-            Khám Phá Dự Án
-          </h1>
-          <p className="text-gray-600">Tìm kiếm và tham gia các dự án hấp dẫn từ cộng đồng chuyên gia</p>
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent">
+              Khám Phá Dự Án
+            </h1>
+            {user && (
+              <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg">
+                <Link
+                  to="/insert-project"
+                  state={{ user }}
+                  className="flex items-center"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Thêm Dự Án
+                </Link>
+              </Button>
+            )}
+          </div>
+          <p className="text-gray-600">
+            Tìm kiếm và tham gia các dự án hấp dẫn từ cộng đồng chuyên gia
+          </p>
         </motion.div>
 
         {loading && projects.length === 0 ? (
@@ -75,7 +93,9 @@ const Project = () => {
         ) : !loading && projects.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 bg-white rounded-2xl shadow-lg p-8 border border-indigo-100">
             <FileText className="w-16 h-16 text-indigo-300 mb-4" />
-            <p className="text-lg text-gray-600 mb-4">Hiện tại chưa có dự án nào</p>
+            <p className="text-lg text-gray-600 mb-4">
+              Hiện tại chưa có dự án nào
+            </p>
           </div>
         ) : (
           <BentoGridDemo items={projects} />
@@ -109,7 +129,7 @@ const Project = () => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Project
+export default Project;

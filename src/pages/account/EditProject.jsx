@@ -2,9 +2,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { getProjectById, updateProject } from "@/utils/projectAPI";
-import { Calendar, LinkIcon, Plus, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { getProjectById, updateProject, uploadProjectImage } from "@/utils/projectAPI";
+import { Calendar, ImageIcon, LinkIcon, Plus, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 const EditProject = () => {
@@ -15,10 +15,65 @@ const EditProject = () => {
   const [startTime, setStartTime] = useState("");
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState([]);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [image, setImage] = useState(null);
+  const [existingImageUrl, setExistingImageUrl] = useState(null);
+  const [hasImageChanged, setHasImageChanged] = useState(false);
+  const fileInputRef = useRef(null);
+  const displayImage = imagePreview || existingImageUrl;
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const user = location.state?.user;
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleImageChange(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleImageChange = (file) => {
+    if (file) {
+      setImage(file);
+      setHasImageChanged(true);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  
+
+  const handleFileInputChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      handleImageChange(e.target.files[0]);
+    }
+  };
+
+  const handleRemoveImage = (e) => {
+    e.stopPropagation();
+    setImage(null);
+    setImagePreview(null);
+    setHasImageChanged(false);
+    // Keep existing image URL if no new image is selected
+    if (!existingImageUrl) {
+      setExistingImageUrl(null);
+    }
+  };
 
   const handleAddTag = () => {
     if (tagInput.trim() !== "" && !tags.includes(tagInput.trim())) {
@@ -56,15 +111,19 @@ const EditProject = () => {
       tags,
     };
 
-    console.log(projectData);
+    console.log(image);
     const response = await updateProject(id, projectData);
+    if (hasImageChanged && image) {
+      await uploadProjectImage(id, image);
+    }
+
+    navigate(-1);
   };
 
   const fetchProjectInformation = async (projectId) => {
     try {
       const fetchedProject = await getProjectById(projectId);
       const projectData = fetchedProject.data;
-      console.log(projectData);
       const dateOnly = projectData.start_time.split("T")[0];
 
       setProjectName(projectData.name || "");
@@ -73,6 +132,11 @@ const EditProject = () => {
       setProjectLink(projectData.external_link || "");
       setStartTime(dateOnly || "");
       setTags(projectData.tags || []);
+
+      if (projectData.image_url) {
+        setExistingImageUrl(projectData.image_url);
+        setImagePreview(projectData.image_url);
+      }
     } catch (error) {
       console.error("Failed to fetch user:", error);
     }
@@ -99,6 +163,69 @@ const EditProject = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Image Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              Ảnh dự án
+            </label>
+            <div
+              className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
+                isDragging
+                  ? "border-purple-500 bg-purple-50"
+                  : displayImage
+                  ? "border-green-400 bg-green-50/30"
+                  : "border-purple-200 hover:border-purple-400 hover:bg-purple-50/50"
+              }`}
+              onClick={() => fileInputRef.current.click()}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+            >
+              {displayImage ? (
+                <div className="relative">
+                  <img
+                    src={displayImage}
+                    alt="Project preview"
+                    className="max-h-48 mx-auto rounded-lg shadow-md transition-transform hover:scale-105 duration-300"
+                  />
+                  <button
+                    type="button"
+                    className="absolute top-2 right-2 bg-white rounded-full p-1.5 shadow-md hover:bg-gray-50 transition-colors"
+                    onClick={handleRemoveImage}
+                  >
+                    <X className="h-4 w-4 text-gray-500" />
+                  </button>
+                  {existingImageUrl && !image && (
+                    <div className="absolute bottom-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+                      Ảnh hiện tại
+                    </div>
+                  )}
+                  {image && (
+                    <div className="absolute bottom-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                      Ảnh mới
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center">
+                  <div className="bg-gradient-to-r from-purple-400/30 to-blue-400/30 rounded-full p-4 mb-4">
+                    <ImageIcon className="h-10 w-10 text-purple-500" />
+                  </div>
+                  <p className="text-base text-gray-700 mb-2 font-medium">
+                    Kéo và thả ảnh thu nhỏ dự án vào đây
+                  </p>
+                  <p className="text-sm text-gray-500">hoặc nhấp để chọn tệp</p>
+                </div>
+              )}
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*"
+                onChange={handleFileInputChange}
+              />
+            </div>
+          </div>
           {/* Project Name */}
           <div>
             <label
@@ -254,7 +381,7 @@ const EditProject = () => {
               </div>
             )}
           </div>
-          
+
           {/* Action Buttons */}
           <div className="flex gap-4 pt-4">
             <Button

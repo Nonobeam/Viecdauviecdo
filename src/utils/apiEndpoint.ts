@@ -4,7 +4,7 @@ export const ENDPOINTS = {
   UPDATE_POST: (id: string) => `/api/posts/${id}`,
   DELETE_POST: (id: string) => `/api/posts/${id}`,
   GET_ALL_POSTS: '/api/posts',
-  CREATE_POST: '/api/posts',
+  CREATE_POST: '/api/posts/create',
   SHARE_POST: (id: string) => `/api/posts/${id}/shares`,
   LIKE_POST: (id: string) => `/api/posts/${id}/likes`,
   COMMENT_ON_POST: (id: string) => `/api/posts/${id}/comments`,
@@ -28,6 +28,7 @@ export const ENDPOINTS = {
   ADD_PROJECT_MEMBER: `/api/projects/mem`,
   GET_USER_PROJECTS: (id: string) => `/api/projects/users/${id}`,
   GET_PROJECT_MEMBERS: (id: string) => `/api/projects/${id}/members`,
+  LEAVE_PROJECT: '/api/users/project/leave',
 
 
   // Users

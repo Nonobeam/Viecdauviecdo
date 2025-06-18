@@ -12,6 +12,7 @@ import {
   deleteProject,
   getProjectById,
   getProjectMembers,
+  leaveProject,
   uploadProjectImage,
 } from "@/utils/projectAPI";
 import { getUserById } from "@/utils/userApi";
@@ -296,7 +297,7 @@ const ProjectDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const fileInputRef = useRef(null);
-  const [updated, setUpdated] = useState(false);
+  const [updated, setUpdated] = useState(0);
   const { user } = useAuth();
   //For getting Owner information
   const [isUserMember, setIsUserMember] = useState(false);
@@ -304,6 +305,8 @@ const ProjectDetails = () => {
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showLeaveDialog, setShowLeaveDialog] = useState(false);
+  const [isLeaving, setIsLeaving] = useState(false);
   const navigate = useNavigate();
 
   // Tab configuration
@@ -388,13 +391,13 @@ const ProjectDetails = () => {
 
       if (user != null) {
         addProjectMember(payload);
-        alert("Joined successfully");
+        alert("Tham gia thành công");
+        window.location.reload();
       } else {
-        console.log("User was not fetch");
+        console.log("Không lấy được người dùng");
       }
-      console.log("Success");
     } catch (error) {
-      console.error("Something is wrong with the applying process", error);
+      console.error("Có vấn đề xảy ra khi tham gia dự án", error);
     }
   };
 
@@ -412,6 +415,26 @@ const ProjectDetails = () => {
     }
   };
 
+    const onConfirmLeave = async (member_id) => {
+    try {
+
+      const leaveProjectRequest = {
+        project_id: id,
+        user_id: member_id
+      };
+
+      setIsLeaving(true);
+      await leaveProject(leaveProjectRequest);
+      navigate("/"); // Redirect to home
+    } catch (error) {
+      console.error("Failed to delete project:", error);
+      alert("Không thể rời dự án. Vui lòng thử lại.");
+    } finally {
+      setIsLeaving(false);
+      setShowLeaveDialog(false);
+    }
+  };
+
   useEffect(() => {
     if (id && user?.user_id) {
       fetchProject(id);
@@ -420,7 +443,7 @@ const ProjectDetails = () => {
   }, [id, user, updated]);
 
   useEffect(() => {
-    if (showDeleteDialog) {
+    if (showDeleteDialog || showLeaveDialog) {
       const scrollbarWidth =
         window.innerWidth - document.documentElement.clientWidth;
       document.body.style.overflow = "hidden";
@@ -434,7 +457,7 @@ const ProjectDetails = () => {
       document.body.style.overflow = "";
       document.body.style.paddingRight = "";
     };
-  }, [showDeleteDialog]);
+  }, [showDeleteDialog, showLeaveDialog]);
 
   if (loading) {
     return (
@@ -474,13 +497,25 @@ const ProjectDetails = () => {
       <DeletePopup
         isOpen={showDeleteDialog}
         onClose={() => setShowDeleteDialog(false)}
-        onConfirm={onConfirmDelete}
+        onConfirm={() => onConfirmDelete}
         title="Xác nhận xóa dự án"
         message="Bạn có chắc chắn muốn xóa dự án này? Hành động này không thể hoàn tác."
         itemName={project.name}
         confirmText="Xóa dự án"
         cancelText="Hủy bỏ"
         isDeleting={isDeleting}
+      />
+
+      <DeletePopup
+        isOpen={showLeaveDialog}
+        onClose={() => setShowLeaveDialog(false)}
+        onConfirm={() => onConfirmLeave(user.user_id)}
+        title="Xác nhận rời dự án"
+        message="Bạn có chắc chắn muốn rời dự án này?"
+        itemName={project.name}
+        confirmText="Rời dự án"
+        cancelText="Hủy bỏ"
+        isDeleting={isLeaving}
       />
 
       {/* Hero Section */}
@@ -529,6 +564,16 @@ const ProjectDetails = () => {
               </div>
             </div>
             <div className="flex gap-3 flex-shrink-0">
+
+              {isUserMember && user && user?.user_id !== project.owner_id && (
+                  <Button
+                    onClick={() => setShowLeaveDialog(true)}
+                    className="flex items-center gap-2 bg-red-600 border-red-700 text-white hover:bg-red-700 backdrop-blur-sm"
+                  >
+                    Rời dự án
+                  </Button>
+              )}
+
               {!isUserMember && user && (
                 <Button
                   onClick={applyProject}
@@ -537,12 +582,6 @@ const ProjectDetails = () => {
                   Tham gia dự án
                 </Button>
               )}
-              {isUserMember && user && user?.user_id !== project.owner_id && (
-                <Badge className="flex items-center gap-2 bg-green-500/20 text-green-100 border-green-400/30 px-4 py-2">
-                  Đã tham gia
-                </Badge>
-              )}
-
               {isUserMember && user && user?.user_id === project.owner_id && (
                 <div className="flex gap-2">
                   <Button
