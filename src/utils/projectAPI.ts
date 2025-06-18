@@ -1,4 +1,4 @@
-import { AddProjectMemRequest, CreateProjectRequest, Project, User } from "types";
+import { AddProjectMemRequest, CreateProjectRequest, LeaveProjectRequest, Project, User } from "types";
 import { api, handleRequest } from "./apiClient";
 import { ENDPOINTS } from "./apiEndpoint";
 
@@ -15,6 +15,11 @@ export const createProject = async (
     data: CreateProjectRequest
 ): Promise<Project> =>
     handleRequest(() => api.post<Project>(ENDPOINTS.CREATE_PROJECT, data));
+
+export const leaveProject = async (
+    data: LeaveProjectRequest
+): Promise<void> =>
+    handleRequest(() => api.post<void>(ENDPOINTS.LEAVE_PROJECT, data));
 
 export const updateProject = async (
     projectId: string,
@@ -33,11 +38,12 @@ export const updateProject = async (
         formData.append("image", imageFile);
     }
     return handleRequest(() =>
-        api.put<Project>(ENDPOINTS.UPDATE_PROJECT(projectId), formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data' // Let browser set multipart/form-data automatically
-            }
-        })
+        api.put<Project>(ENDPOINTS.UPDATE_PROJECT(projectId), formData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data' // Let browser set multipart/form-data automatically
+                }
+            }   )
     )
 };
 
