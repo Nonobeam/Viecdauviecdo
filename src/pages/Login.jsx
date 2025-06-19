@@ -177,7 +177,7 @@ const LoginPage = () => {
       alert(
         "Đăng ký thành công — email xác nhận đã được gửi đến hộp thư của bạn"
       );
-      setActiveTab("login");
+      setActiveTab("/login");
     } catch (err) {
       console.error(err);
       setErrors({ general: "Đăng ký thất bại. Vui lòng thử lại." });
