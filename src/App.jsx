@@ -4,6 +4,7 @@ import ProtectedRoute from "./components/protectedRoute"
 import {
   AboutUs,
   AddProject,
+    Activate,
   ApplicationForm,
   Blog,
   CancelPage,
@@ -34,6 +35,7 @@ function App() {
             <Route element={<MainLayout />}>
               <Route path="/" element={<Blog />} />
               <Route path="/login" element={<Login />} />
+                <Route path="/activate" element={<Activate />} />
               <Route path="/job" element={<Home />} />
               <Route path="/job-list" element={<Job />} />
               <Route path="/aboutus" element={<AboutUs />} />
