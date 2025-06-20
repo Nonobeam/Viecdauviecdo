@@ -218,7 +218,7 @@ declare module 'types' {
     country?: string,
     state?: string,
     city?: string,
-    phone?: string
+    phone?: string,
   }
 
   export interface CVItem {
@@ -283,6 +283,15 @@ declare module 'types' {
 
   export interface resetPasswordRequest {
     email: string;
+  }
+
+  export interface Skill {
+  success: boolean;
+  data: string[];
+}
+
+    export interface SkillRequest {
+    skill: string;
   }
 
 }
