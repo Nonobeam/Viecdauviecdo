@@ -12,6 +12,8 @@ import {
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
+const API_URL = "https://backend.matchlent.xyz/api/user-info";
+
 const SkillsAndLinks = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -55,20 +57,17 @@ const SkillsAndLinks = () => {
         throw new Error("Không tìm thấy token xác thực");
       }
 
-      const response = await fetch(
-        `https://backend.matchlent.xyz/api/user-info/${user.user_id}/skills`,
-        {
-          method: "POST",
-          headers: {
-            accept: "*/*",
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            skills: skills,
-          }),
-        }
-      );
+      const response = await fetch(`${API_URL}/${user.user_id}/skills`, {
+        method: "POST",
+        headers: {
+          accept: "*/*",
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          skills: skills,
+        }),
+      });
 
       if (response.ok) {
         setSaveSuccess(true);
