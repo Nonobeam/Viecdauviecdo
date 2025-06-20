@@ -22,9 +22,10 @@ import {
   Sparkles,
   User,
 } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../providers/AuthContext";
+import TermsSection from "./Term&Services";
 
 const InputField = ({
   icon: Icon,
@@ -98,7 +99,31 @@ const LoginPage = () => {
   const [full_name, setName] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [agreeTerms, setAgreeTerms] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
   const { login } = useAuth();
+
+   const resetFormFields = () => {
+    setEmail("")
+    setPassword("")
+    setName("")
+    setConfirmPassword("")
+    setAgreeTerms(false)
+    setShowPassword(false)
+    setShowConfirmPassword(false)
+    setErrors({})
+  }
+
+  // Reset fields when tab changes
+  useEffect(() => {
+    resetFormFields()
+  }, [activeTab])
+
+  // Reset fields on component mount (page reload)
+  useEffect(() => {
+    resetFormFields()
+  }, [])
+
 
   const validateForm = () => {
     const newErrors = {};
@@ -154,7 +179,8 @@ const LoginPage = () => {
 
   const handleGoogle = useCallback(async () => {
     try {
-      window.location.href = 'https://backend.matchlent.xyz/oauth2/authorization/google';
+      window.location.href =
+        "https://backend.matchlent.xyz/oauth2/authorization/google";
     } catch (err) {
       console.error(err);
     } finally {
@@ -423,7 +449,7 @@ const LoginPage = () => {
                   )}
                 </Button>
 
-                {renderSocialLogins()}
+                {/* {renderSocialLogins()} */}
               </motion.div>
             </TabsContent>
 
@@ -484,7 +510,13 @@ const LoginPage = () => {
                   }
                 />
 
-                <div className="space-y-2">
+                <TermsSection
+                  errors={errors}
+                  agreeTerms={agreeTerms}
+                  setAgreeTerms={setAgreeTerms}
+                />
+
+                {/* <div className="space-y-2">
                   <div className="flex items-start space-x-3">
                     <Checkbox
                       id="terms"
@@ -497,19 +529,19 @@ const LoginPage = () => {
                       className="text-sm text-gray-600 leading-relaxed"
                     >
                       Tôi đồng ý với{" "}
-                      <a
-                        href="#"
-                        className="text-indigo-600 hover:text-indigo-500 font-medium"
+                      <span
+                        onClick={() => setShowTerms(true)}
+                        className="cursor-pointer text-indigo-600 hover:text-indigo-500 font-medium"
                       >
                         Điều khoản dịch vụ
-                      </a>{" "}
+                      </span>{" "}
                       và{" "}
-                      <a
-                        href="#"
-                        className="text-indigo-600 hover:text-indigo-500 font-medium"
+                      <span
+                        onClick={() => setShowPrivacy(true)}
+                        className="cursor-pointer text-indigo-600 hover:text-indigo-500 font-medium"
                       >
                         Chính sách bảo mật
-                      </a>
+                      </span>
                     </Label>
                   </div>
                   <AnimatePresence>
@@ -525,7 +557,7 @@ const LoginPage = () => {
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </div>
+                </div> */}
 
                 <Button
                   className="w-full h-12 text-base bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
@@ -545,7 +577,7 @@ const LoginPage = () => {
                   )}
                 </Button>
 
-                {renderSocialLogins()}
+                {/* {renderSocialLogins()} */}
               </motion.div>
             </TabsContent>
           </Tabs>

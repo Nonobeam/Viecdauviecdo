@@ -1,7 +1,6 @@
-import { InfiniteMovingCardsDemo } from "@/components/ReviewMovingCard"
 import TeamMembersCarousel from "@/components/TeamMemberCarousel"
-import { ChevronLeft, ChevronRight, Globe, MessageCircle, Smile, Target, User, Users, Sparkles, ArrowRight, Building, Award, Zap } from 'lucide-react'
 import { motion } from "framer-motion"
+import { ArrowRight, Award, Building, ChevronLeft, ChevronRight, Globe, MessageCircle, Smile, Sparkles, Target, User, Users, Zap } from 'lucide-react'
 
 const About = () => {
   const stats = [

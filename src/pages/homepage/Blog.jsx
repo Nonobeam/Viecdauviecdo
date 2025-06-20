@@ -15,7 +15,6 @@ import {
 import { getUserById } from "@/utils/userApi";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  Bookmark,
   Calendar,
   Edit,
   Heart,
@@ -29,9 +28,8 @@ import {
   Share2,
   Smile,
   Trash2,
-  TrendingUp,
   User,
-  X,
+  X
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -443,14 +441,6 @@ const Post = () => {
                   />
                   <span>Bài viết của tôi</span>
                 </button>
-                <button className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl hover:bg-gray-100 text-gray-700 transition-all">
-                  <Bookmark className="h-5 w-5 text-gray-500" />
-                  <span>Đã lưu</span>
-                </button>
-                <button className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl hover:bg-gray-100 text-gray-700 transition-all">
-                  <TrendingUp className="h-5 w-5 text-gray-500" />
-                  <span>Xu hướng</span>
-                </button>
               </div>
             </div>
           </div>
@@ -480,14 +470,6 @@ const Post = () => {
               >
                 <User className="h-4 w-4" />
                 <span>Của tôi</span>
-              </button>
-              <button className="flex items-center space-x-2 px-4 py-2 rounded-full whitespace-nowrap bg-white text-gray-700 border border-gray-200">
-                <Bookmark className="h-4 w-4" />
-                <span>Đã lưu</span>
-              </button>
-              <button className="flex items-center space-x-2 px-4 py-2 rounded-full whitespace-nowrap bg-white text-gray-700 border border-gray-200">
-                <TrendingUp className="h-4 w-4" />
-                <span>Xu hướng</span>
               </button>
             </div>
 
@@ -1011,83 +993,6 @@ const Post = () => {
                 </Button>
               </div>
             )}
-          </div>
-
-          {/* Right Sidebar */}
-          <div className="hidden lg:block lg:col-span-3">
-            <div className="sticky top-24 space-y-6">
-              {/* Trending Topics */}
-              <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                  <TrendingUp className="h-5 w-5 mr-2 text-purple-500" />
-                  Xu hướng
-                </h3>
-                <div className="space-y-4">
-                  {[
-                    { tag: "Công nghệ", posts: 120 },
-                    { tag: "Thiết kế", posts: 86 },
-                    { tag: "Marketing", posts: 74 },
-                    { tag: "Phát triển", posts: 65 },
-                  ].map((topic, i) => (
-                    <div key={i} className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm font-medium text-gray-900">
-                          #{topic.tag}
-                        </span>
-                      </div>
-                      <span className="text-xs text-gray-500">
-                        {topic.posts} bài viết
-                      </span>
-                    </div>
-                  ))}
-                </div>
-                <button className="w-full mt-4 text-sm text-purple-600 font-medium hover:text-purple-700">
-                  Xem tất cả xu hướng
-                </button>
-              </div>
-
-              {/* Suggested Users */}
-              <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                  <User className="h-5 w-5 mr-2 text-purple-500" />
-                  Gợi ý kết nối
-                </h3>
-                <div className="space-y-4">
-                  {[
-                    { name: "Nguyễn Văn A", role: "Nhà thiết kế", img: "" },
-                    { name: "Trần Thị B", role: "Kỹ sư phần mềm", img: "" },
-                    { name: "Lê Văn C", role: "Nhà marketing", img: "" },
-                  ].map((user, i) => (
-                    <div key={i} className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={user.img || "/placeholder.svg"} />
-                          <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white text-xs">
-                            {user.name[0]}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">
-                            {user.name}
-                          </p>
-                          <p className="text-xs text-gray-500">{user.role}</p>
-                        </div>
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 text-xs border-purple-200 text-purple-600 hover:bg-purple-50 rounded-lg"
-                      >
-                        Kết nối
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-                <button className="w-full mt-4 text-sm text-purple-600 font-medium hover:text-purple-700">
-                  Xem tất cả gợi ý
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       </div>
