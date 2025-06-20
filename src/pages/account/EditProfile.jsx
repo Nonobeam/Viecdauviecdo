@@ -6,6 +6,7 @@ import {
   ArrowLeft,
   Briefcase,
   Building,
+  Calendar,
   CheckCircle,
   FileText,
   MapPin,
@@ -237,6 +238,21 @@ const EditProfile = () => {
                   type="text"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
+                  className="pl-10 block w-full rounded-lg border-gray-200 shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80"
+                />
+              </div>
+
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Ngày sinh
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Calendar className="h-4 w-4 text-purple-500" />
+                </div>
+                <input
+                  type="date"
+                  value={dateOfBirth}
+                  onChange={(e) => setDateOfBirth(e.target.value)}
                   className="pl-10 block w-full rounded-lg border-gray-200 shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80"
                 />
               </div>

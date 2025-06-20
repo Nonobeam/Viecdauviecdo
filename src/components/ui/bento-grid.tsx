@@ -42,8 +42,6 @@ export const BentoGridItem = ({
   onClick?: () => void;
 }) => {
 
-  console.log(tags);
-
   const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString('en-US', {
     month: 'short',
