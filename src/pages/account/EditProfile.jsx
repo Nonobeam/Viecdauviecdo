@@ -1,33 +1,43 @@
-import { Button } from "@/components/ui/button"
-import { useAuth } from "@/providers/AuthContext"
-import { changeUserInformation } from "@/utils/userApi"
-import { AlertCircle, ArrowLeft, Briefcase, Building, CheckCircle, FileText, MapPin, Phone, User } from "lucide-react"
-import { useEffect, useState } from "react"
-import { Link, useLocation, useNavigate } from "react-router-dom"
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/providers/AuthContext";
+import { changeUserInformation } from "@/utils/userApi";
+import {
+  AlertCircle,
+  ArrowLeft,
+  Briefcase,
+  Building,
+  CheckCircle,
+  FileText,
+  MapPin,
+  Phone,
+  User,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const EditProfile = () => {
-  const navigate = useNavigate()
-  const { user } = useAuth()
-  const location = useLocation()
-  const { userInformation } = location.state || {}
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const location = useLocation();
+  const { userInformation } = location.state || {};
 
   // form state
-  const [fullName, setFullName] = useState("")
-  const [jobTitle, setJobTitle] = useState("")
-  const [aboutMe, setAboutMe] = useState("")
-  const [country, setCountry] = useState("")
-  const [state, setState] = useState("")
-  const [city, setCity] = useState("")
-  const [phone, setPhone] = useState("")
-  const [dateOfBirth, setDateOfBirth] = useState("")
+  const [fullName, setFullName] = useState("");
+  const [jobTitle, setJobTitle] = useState("");
+  const [aboutMe, setAboutMe] = useState("");
+  const [country, setCountry] = useState("");
+  const [state, setState] = useState("");
+  const [city, setCity] = useState("");
+  const [phone, setPhone] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
 
-  const [isSaving, setIsSaving] = useState(false)
-  const [saveSuccess, setSaveSuccess] = useState(false)
-  const [saveError, setSaveError] = useState("")
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveError, setSaveError] = useState("");
 
   const handleSave = async () => {
-    setIsSaving(true)
-    setSaveError("")
+    setIsSaving(true);
+    setSaveError("");
     try {
       await changeUserInformation(user.user_id, {
         full_name: fullName,
@@ -37,29 +47,29 @@ const EditProfile = () => {
         state: state,
         city: city,
         phone: phone,
-      })
-      setSaveSuccess(true)
-      setTimeout(() => navigate("/profile"), 1000)
+      });
+      setSaveSuccess(true);
+      setTimeout(() => navigate("/profile"), 1000);
     } catch (err) {
-      console.error(err)
-      setSaveError("Failed to save profile. Please try again.")
+      console.error(err);
+      setSaveError("Failed to save profile. Please try again.");
     } finally {
-      setIsSaving(false)
+      setIsSaving(false);
     }
-  }
+  };
 
   useEffect(() => {
     if (userInformation) {
-      setFullName(userInformation.full_name || "")
-      setJobTitle(userInformation.job_title || "")
-      setAboutMe(userInformation.summary || "")
-      setPhone(userInformation.phone_number || "")
-      setCountry(userInformation.country || "")
-      setState(userInformation.state || "")
-      setCity(userInformation.city || "")
-      setDateOfBirth(userInformation.date_of_birth || "")
+      setFullName(userInformation.full_name || "");
+      setJobTitle(userInformation.job_title || "");
+      setAboutMe(userInformation.summary || "");
+      setPhone(userInformation.phone_number || "");
+      setCountry(userInformation.country || "");
+      setState(userInformation.state || "");
+      setCity(userInformation.city || "");
+      setDateOfBirth(userInformation.date_of_birth || "");
     }
-  }, [userInformation])
+  }, [userInformation]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50">
@@ -101,7 +111,9 @@ const EditProfile = () => {
           <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200 animate-pulse">
             <div className="flex items-center">
               <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
-              <p className="text-sm text-green-800">Profile saved! Redirecting...</p>
+              <p className="text-sm text-green-800">
+                Profile saved! Redirecting...
+              </p>
             </div>
           </div>
         )}
@@ -109,7 +121,9 @@ const EditProfile = () => {
         {/* Form Fields */}
         <div className="space-y-6">
           <div className="relative">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Full Name
+            </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <User className="h-4 w-4 text-purple-500" />
@@ -124,7 +138,9 @@ const EditProfile = () => {
           </div>
 
           <div className="relative">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Job Title
+            </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Briefcase className="h-4 w-4 text-purple-500" />
@@ -139,7 +155,9 @@ const EditProfile = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">About Me</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              About Me
+            </label>
             <div className="relative">
               <div className="absolute top-3 left-3 flex items-start pointer-events-none">
                 <FileText className="h-4 w-4 text-purple-500" />
@@ -155,7 +173,9 @@ const EditProfile = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Country
+              </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <MapPin className="h-4 w-4 text-purple-500" />
@@ -170,7 +190,9 @@ const EditProfile = () => {
             </div>
 
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                State
+              </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Building className="h-4 w-4 text-purple-500" />
@@ -187,7 +209,9 @@ const EditProfile = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                City
+              </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Building className="h-4 w-4 text-purple-500" />
@@ -202,7 +226,9 @@ const EditProfile = () => {
             </div>
 
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Phone
+              </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Phone className="h-4 w-4 text-purple-500" />
@@ -238,7 +264,7 @@ const EditProfile = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default EditProfile
+export default EditProfile;
