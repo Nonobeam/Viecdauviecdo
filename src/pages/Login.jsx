@@ -1,10 +1,9 @@
-"use client";
-
 import { Logo } from "@/components/icons/Logo";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Swal from "sweetalert2";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { login as apiLogin } from "@/utils/authApi";
 import { createUser as apiRegister } from "@/utils/userApi";
@@ -215,12 +214,23 @@ const LoginPage = () => {
         image: undefined,
       });
       setErrors({});
-      alert(
-        "Đăng ký thành công — email xác nhận đã được gửi đến hộp thư của bạn"
-      );
+      Swal.fire({
+        title:
+          "Đăng ký thành công — email xác nhận đã được gửi đến hộp thư của bạn",
+        icon: "success",
+        draggable: true,
+        timer: 3000,
+        timerProgressBar: true,
+      });
       setActiveTab("/login");
     } catch (err) {
       console.error(err);
+      Swal.fire({
+        title: "Đăng ký thất bại. Vui lòng thử lại",
+        icon: "error",
+        timer: 2500,
+        timerProgressBar: true,
+      });
       setErrors({ general: "Đăng ký thất bại. Vui lòng thử lại." });
     } finally {
       setIsLoading(false);
