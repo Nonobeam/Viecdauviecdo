@@ -10,6 +10,7 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
+  base: "/", // 👈 Rất quan trọng với React Router + serve SPA
   plugins: [
     react(), 
     tailwindcss(),
@@ -39,4 +40,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-})
+  build: {
+    outDir: "dist", // optional
+  },
+});

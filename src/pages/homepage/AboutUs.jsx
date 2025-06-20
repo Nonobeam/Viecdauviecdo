@@ -220,8 +220,6 @@ const About = () => {
             <InfiniteMovingCardsDemo />
           </div> */}
         </div>
-
-        {/* Call to Action */}
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -260,7 +258,6 @@ const About = () => {
         </motion.div>
       </div>
 
-      {/* ChatWidget with Lucide Icon */}
       <div className="fixed bottom-6 right-6 z-50">
         <button className="group relative bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4 rounded-2xl flex items-center shadow-2xl hover:shadow-indigo-500/25 transition-all duration-300 hover:scale-105">
           <MessageCircle className="w-6 h-6 mr-2 group-hover:animate-pulse" />
@@ -269,7 +266,6 @@ const About = () => {
         </button>
       </div>
 
-      {/* Navigation with Lucide Icons */}
       <div className="fixed bottom-6 left-6 flex items-center space-x-3 z-50">
         <button className="group p-3 rounded-xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 hover:bg-white">
           <ChevronLeft className="w-5 h-5 text-gray-600 group-hover:text-indigo-600 transition-colors" />

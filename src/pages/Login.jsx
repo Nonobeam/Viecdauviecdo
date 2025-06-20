@@ -203,7 +203,7 @@ const LoginPage = () => {
       alert(
         "Đăng ký thành công — email xác nhận đã được gửi đến hộp thư của bạn"
       );
-      setActiveTab("login");
+      setActiveTab("/login");
     } catch (err) {
       console.error(err);
       setErrors({ general: "Đăng ký thất bại. Vui lòng thử lại." });
@@ -309,7 +309,7 @@ const LoginPage = () => {
           <div className="space-y-4">
             <div className="flex items-center text-white/80">
               <CheckCircle className="h-5 w-5 mr-3 text-green-300" />
-              <span>Kết nối với hàng nghìn chuyên gia</span>
+              <span>Kết nối với các thành viên xuất chúng</span>
             </div>
             <div className="flex items-center text-white/80">
               <CheckCircle className="h-5 w-5 mr-3 text-green-300" />
