@@ -1,9 +1,14 @@
-"use client";
-
 import ViecdauviecdoLogo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/providers/AuthContext";
-import { ChevronDown, LogOut, MessageCircle, Search, Sparkles, User } from "lucide-react";
+import {
+  ChevronDown,
+  LogOut,
+  MessageCircle,
+  Search,
+  Sparkles,
+  User,
+} from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
