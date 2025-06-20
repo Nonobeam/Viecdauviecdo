@@ -15,12 +15,11 @@ import {
 import { getUserById } from "@/utils/userApi"
 import { AnimatePresence, motion } from "framer-motion"
 import {
-  Calendar,
   Edit,
   Heart,
   HeartIcon as HeartFilled,
   Home,
-  Image,
+  ImageIcon,
   MessageCircle,
   MoreVertical,
   Plus,
@@ -52,12 +51,20 @@ const Post = () => {
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [newPostTitle, setNewPostTitle] = useState("")
   const [newPostContent, setNewPostContent] = useState("")
+  const [newPostImage, setNewPostImage] = useState(null)
+  const [newPostImagePreview, setNewPostImagePreview] = useState("")
+  const [newPostSkills, setNewPostSkills] = useState([])
+  const [skillInput, setSkillInput] = useState("")
   const [creating, setCreating] = useState(false)
 
   // Edit post states
   const [editingPost, setEditingPost] = useState(null)
   const [editTitle, setEditTitle] = useState("")
   const [editContent, setEditContent] = useState("")
+  const [editImage, setEditImage] = useState(null)
+  const [editImagePreview, setEditImagePreview] = useState("")
+  const [editSkills, setEditSkills] = useState([])
+  const [editSkillInput, setEditSkillInput] = useState("")
   const [updating, setUpdating] = useState(false)
 
   // Delete states
@@ -148,13 +155,17 @@ const Post = () => {
         user_id: currentUserId,
         title: newPostTitle,
         content: newPostContent,
-        image_url: "",
-        tags: [],
+        image_url: newPostImagePreview || "",
+        tags: newPostSkills,
       })
       setFetch((prev) => prev + 1)
       setPosts((prev) => [newPost, ...prev])
       setNewPostTitle("")
       setNewPostContent("")
+      setNewPostImage(null)
+      setNewPostImagePreview("")
+      setNewPostSkills([])
+      setSkillInput("")
       setShowCreateForm(false)
     } catch (err) {
       setError("Failed to create post")
@@ -168,6 +179,9 @@ const Post = () => {
     setEditingPost(post.id)
     setEditTitle(post.title)
     setEditContent(post.content)
+    setEditImagePreview(post.image_url || "")
+    setEditSkills(post.tags || [])
+    setEditSkillInput("")
     setShowDropdown((prev) => ({ ...prev, [post.id]: false }))
   }
 
@@ -175,6 +189,10 @@ const Post = () => {
     setEditingPost(null)
     setEditTitle("")
     setEditContent("")
+    setEditImage(null)
+    setEditImagePreview("")
+    setEditSkills([])
+    setEditSkillInput("")
   }
 
   const handleUpdatePost = async (postId) => {
@@ -185,12 +203,18 @@ const Post = () => {
       const updatedPost = await updatePost(postId, {
         title: editTitle,
         content: editContent,
+        image_url: editImagePreview,
+        tags: editSkills,
       })
       setPosts((prevPosts) => prevPosts.map((post) => (post.id === postId ? { ...post, ...updatedPost } : post)))
       setFetch((prev) => prev + 1)
       setEditingPost(null)
       setEditTitle("")
       setEditContent("")
+      setEditImage(null)
+      setEditImagePreview("")
+      setEditSkills([])
+      setEditSkillInput("")
     } catch (err) {
       setError("Failed to update post")
       console.error("Error updating post:", err)
@@ -304,6 +328,72 @@ const Post = () => {
     return date.toLocaleString(undefined, options)
   }
 
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      setNewPostImage(file)
+      const reader = new FileReader()
+      reader.onload = (e) => setNewPostImagePreview(e.target.result)
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const removeImage = () => {
+    setNewPostImage(null)
+    setNewPostImagePreview("")
+  }
+
+  const addSkill = () => {
+    if (skillInput.trim() && !newPostSkills.includes(skillInput.trim())) {
+      setNewPostSkills([...newPostSkills, skillInput.trim()])
+      setSkillInput("")
+    }
+  }
+
+  const removeSkill = (skillToRemove) => {
+    setNewPostSkills(newPostSkills.filter((skill) => skill !== skillToRemove))
+  }
+
+  const handleSkillKeyPress = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault()
+      addSkill()
+    }
+  }
+
+  const handleEditImageUpload = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      setEditImage(file)
+      const reader = new FileReader()
+      reader.onload = (e) => setEditImagePreview(e.target.result)
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const removeEditImage = () => {
+    setEditImage(null)
+    setEditImagePreview("")
+  }
+
+  const addEditSkill = () => {
+    if (editSkillInput.trim() && !editSkills.includes(editSkillInput.trim())) {
+      setEditSkills([...editSkills, editSkillInput.trim()])
+      setEditSkillInput("")
+    }
+  }
+
+  const removeEditSkill = (skillToRemove) => {
+    setEditSkills(editSkills.filter((skill) => skill !== skillToRemove))
+  }
+
+  const handleEditSkillKeyPress = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault()
+      addEditSkill()
+    }
+  }
+
   const loadMore = () => {
     if (!loadingMore && hasMore && viewMode === "all") {
       fetchPosts(page + 1)
@@ -396,6 +486,8 @@ const Post = () => {
                           userData[currentUserId]?.image ||
                           "https://www.gravatar.com/avatar/default?s=200&d=mp" ||
                           "/placeholder.svg" ||
+                          "/placeholder.svg" ||
+                          "/placeholder.svg" ||
                           "/placeholder.svg"
                         }
                       />
@@ -407,10 +499,6 @@ const Post = () => {
                       {userInformation[currentUserId]?.full_name || "Người dùng"}
                     </h3>
                     <p className="text-gray-600">{userInformation[currentUserId]?.job_title || "Thành viên"}</p>
-                    <div className="mt-4 flex items-center text-sm text-gray-500">
-                      <Calendar className="h-4 w-4 mr-1" />
-                      <span>Tham gia tháng 6, 2023</span>
-                    </div>
                   </div>
                 </div>
               )}
@@ -419,24 +507,28 @@ const Post = () => {
               <div className="bg-white rounded-2xl shadow-lg p-6 space-y-2">
                 <button
                   onClick={() => switchViewMode("all")}
-                  className={`flex items-center space-x-3 w-full px-4 py-3 rounded-xl transition-all ${viewMode === "all"
+                  className={`flex items-center space-x-3 w-full px-4 py-3 rounded-xl transition-all ${
+                    viewMode === "all"
                       ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white font-medium"
                       : "hover:bg-gray-100 text-gray-700"
-                    }`}
+                  }`}
                 >
                   <Home className={`h-5 w-5 ${viewMode === "all" ? "text-white" : "text-gray-500"}`} />
                   <span>Tất cả bài viết</span>
                 </button>
+                {user && (
                 <button
                   onClick={() => switchViewMode("user")}
-                  className={`flex items-center space-x-3 w-full px-4 py-3 rounded-xl transition-all ${viewMode === "user"
+                  className={`flex items-center space-x-3 w-full px-4 py-3 rounded-xl transition-all ${
+                    viewMode === "user"
                       ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white font-medium"
                       : "hover:bg-gray-100 text-gray-700"
-                    }`}
+                  }`}
                 >
                   <User className={`h-5 w-5 ${viewMode === "user" ? "text-white" : "text-gray-500"}`} />
                   <span>Bài viết của tôi</span>
                 </button>
+                )}
               </div>
             </div>
           </div>
@@ -447,20 +539,22 @@ const Post = () => {
             <div className="lg:hidden flex overflow-x-auto space-x-2 pb-4 scrollbar-hide">
               <button
                 onClick={() => switchViewMode("all")}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-full whitespace-nowrap ${viewMode === "all"
+                className={`flex items-center space-x-2 px-4 py-2 rounded-full whitespace-nowrap ${
+                  viewMode === "all"
                     ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white font-medium"
                     : "bg-white text-gray-700 border border-gray-200"
-                  }`}
+                }`}
               >
                 <Home className="h-4 w-4" />
                 <span>Tất cả</span>
               </button>
               <button
                 onClick={() => switchViewMode("user")}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-full whitespace-nowrap ${viewMode === "user"
+                className={`flex items-center space-x-2 px-4 py-2 rounded-full whitespace-nowrap ${
+                  viewMode === "user"
                     ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white font-medium"
                     : "bg-white text-gray-700 border border-gray-200"
-                  }`}
+                }`}
               >
                 <User className="h-4 w-4" />
                 <span>Của tôi</span>
@@ -468,6 +562,7 @@ const Post = () => {
             </div>
 
             {/* Create Post Button */}
+            {user && (
             <div className="mb-6">
               <div
                 onClick={() => {
@@ -492,6 +587,8 @@ const Post = () => {
                       userData[currentUserId]?.image ||
                       "https://www.gravatar.com/avatar/default?s=200&d=mp" ||
                       "/placeholder.svg" ||
+                      "/placeholder.svg" ||
+                      "/placeholder.svg" ||
                       "/placeholder.svg"
                     }
                   />
@@ -505,6 +602,7 @@ const Post = () => {
                 </Button>
               </div>
             </div>
+            )}
 
             {/* Create post form */}
             <AnimatePresence>
@@ -523,6 +621,10 @@ const Post = () => {
                         setShowCreateForm(false)
                         setNewPostTitle("")
                         setNewPostContent("")
+                        setNewPostImage(null)
+                        setNewPostImagePreview("")
+                        setNewPostSkills([])
+                        setSkillInput("")
                       }}
                       className="text-gray-500 hover:text-gray-700"
                     >
@@ -536,6 +638,8 @@ const Post = () => {
                           src={
                             userData[currentUserId]?.image ||
                             "https://www.gravatar.com/avatar/default?s=200&d=mp" ||
+                            "/placeholder.svg" ||
+                            "/placeholder.svg" ||
                             "/placeholder.svg" ||
                             "/placeholder.svg"
                           }
@@ -567,11 +671,88 @@ const Post = () => {
                       rows={4}
                       className="resize-none border-gray-200 rounded-xl focus:ring-purple-500 p-4 text-gray-700"
                     />
+
+                    {/* Skills Tags Section */}
+                    <div className="space-y-3">
+                      <label className="text-sm font-medium text-gray-700">Tag liên quan</label>
+                      <div className="flex flex-wrap gap-2 mb-2">
+                        {newPostSkills.map((skill, index) => (
+                          <span
+                            key={index}
+                            className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 border border-purple-200"
+                          >
+                            {skill}
+                            <button
+                              onClick={() => removeSkill(skill)}
+                              className="ml-2 text-purple-500 hover:text-purple-700"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                      <div className="flex space-x-2">
+                        <input
+                          type="text"
+                          placeholder="Thêm tag..."
+                          value={skillInput}
+                          onChange={(e) => setSkillInput(e.target.value)}
+                          onKeyPress={handleSkillKeyPress}
+                          className="flex-1 p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                        />
+                        <Button
+                          type="button"
+                          onClick={addSkill}
+                          disabled={!skillInput.trim()}
+                          className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-xl px-4"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Image Upload Section */}
+                    <div className="space-y-3">
+                      <label className="text-sm font-medium text-gray-700">Hình ảnh</label>
+                      {newPostImagePreview ? (
+                        <div className="relative">
+                          <img
+                            src={newPostImagePreview || "/placeholder.svg"}
+                            alt="Preview"
+                            className="w-full h-48 object-cover rounded-xl border border-gray-200"
+                          />
+                          <button
+                            onClick={removeImage}
+                            className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-purple-400 transition-colors">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            className="hidden"
+                            id="image-upload"
+                          />
+                          <label htmlFor="image-upload" className="cursor-pointer flex flex-col items-center space-y-2">
+                            <ImageIcon className="h-8 w-8 text-gray-400" />
+                            <span className="text-sm text-gray-500">Nhấp để tải lên hình ảnh</span>
+                          </label>
+                        </div>
+                      )}
+                    </div>
+
                     <div className="flex items-center justify-between pt-2 border-t border-gray-100">
                       <div className="flex space-x-2">
-                        <button className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors">
-                          <Image className="h-5 w-5" />
-                        </button>
+                        <label
+                          htmlFor="image-upload"
+                          className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors cursor-pointer"
+                        >
+                          <ImageIcon className="h-5 w-5" />
+                        </label>
                         <button className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors">
                           <Smile className="h-5 w-5" />
                         </button>
@@ -583,6 +764,10 @@ const Post = () => {
                             setShowCreateForm(false)
                             setNewPostTitle("")
                             setNewPostContent("")
+                            setNewPostImage(null)
+                            setNewPostImagePreview("")
+                            setNewPostSkills([])
+                            setSkillInput("")
                           }}
                           className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-xl"
                         >
@@ -651,6 +836,8 @@ const Post = () => {
                                 src={
                                   user?.image ||
                                   "https://www.gravatar.com/avatar/default?s=200&d=mp" ||
+                                  "/placeholder.svg" ||
+                                  "/placeholder.svg" ||
                                   "/placeholder.svg" ||
                                   "/placeholder.svg"
                                 }
@@ -731,6 +918,83 @@ const Post = () => {
                                 rows={4}
                                 className="resize-none border-gray-200 rounded-xl focus:ring-purple-500 p-4"
                               />
+
+                              {/* Edit Skills Tags Section */}
+                              <div className="space-y-3">
+                                <label className="text-sm font-medium text-gray-700">Tag liên quan</label>
+                                <div className="flex flex-wrap gap-2 mb-2">
+                                  {editSkills.map((skill, index) => (
+                                    <span
+                                      key={index}
+                                      className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 border border-purple-200"
+                                    >
+                                      {skill}
+                                      <button
+                                        onClick={() => removeEditSkill(skill)}
+                                        className="ml-2 text-purple-500 hover:text-purple-700"
+                                      >
+                                        <X className="h-3 w-3" />
+                                      </button>
+                                    </span>
+                                  ))}
+                                </div>
+                                <div className="flex space-x-2">
+                                  <input
+                                    type="text"
+                                    placeholder="Thêm tags..."
+                                    value={editSkillInput}
+                                    onChange={(e) => setEditSkillInput(e.target.value)}
+                                    onKeyPress={handleEditSkillKeyPress}
+                                    className="flex-1 p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                                  />
+                                  <Button
+                                    type="button"
+                                    onClick={addEditSkill}
+                                    disabled={!editSkillInput.trim()}
+                                    className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-xl px-4"
+                                  >
+                                    <Plus className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </div>
+
+                              {/* Edit Image Upload Section */}
+                              <div className="space-y-3">
+                                <label className="text-sm font-medium text-gray-700">Hình ảnh</label>
+                                {editImagePreview ? (
+                                  <div className="relative">
+                                    <img
+                                      src={editImagePreview || "/placeholder.svg"}
+                                      alt="Preview"
+                                      className="w-full h-48 object-cover rounded-xl border border-gray-200"
+                                    />
+                                    <button
+                                      onClick={removeEditImage}
+                                      className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-purple-400 transition-colors">
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      onChange={handleEditImageUpload}
+                                      className="hidden"
+                                      id={`edit-image-upload-${post.id}`}
+                                    />
+                                    <label
+                                      htmlFor={`edit-image-upload-${post.id}`}
+                                      className="cursor-pointer flex flex-col items-center space-y-2"
+                                    >
+                                      <ImageIcon className="h-8 w-8 text-gray-400" />
+                                      <span className="text-sm text-gray-500">Nhấp để tải lên hình ảnh</span>
+                                    </label>
+                                  </div>
+                                )}
+                              </div>
+
                               <div className="flex space-x-3">
                                 <Button
                                   onClick={() => handleUpdatePost(post.id)}
@@ -752,15 +1016,29 @@ const Post = () => {
                             <>
                               <h2 className="text-xl font-bold text-gray-900 mb-3">{post.title}</h2>
                               <p className="text-gray-700 leading-relaxed whitespace-pre-line">{post.content}</p>
+
+                              {/* Skills Tags Display */}
+                              {post.tags && post.tags.length > 0 && (
+                                <div className="mt-4 flex flex-wrap gap-2">
+                                  {post.tags.map((tag, index) => (
+                                    <span
+                                      key={index}
+                                      className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 border border-purple-200"
+                                    >
+                                      {tag}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
                             </>
                           )}
                         </div>
 
                         {/* Post image */}
-                        {post.image && (
+                        {post.image_url && (
                           <div className="mt-4 rounded-xl overflow-hidden">
                             <img
-                              src={post.image || "/placeholder.svg"}
+                              src={post.image_url || "/placeholder.svg"}
                               alt="Nội dung bài viết"
                               className="w-full h-auto object-cover"
                             />
@@ -793,8 +1071,9 @@ const Post = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleLikePost(post.id)}
-                          className={`flex-1 rounded-xl h-10 ${post.liked ? "text-pink-600" : "text-gray-600 hover:text-pink-600"
-                            }`}
+                          className={`flex-1 rounded-xl h-10 ${
+                            post.liked ? "text-pink-600" : "text-gray-600 hover:text-pink-600"
+                          }`}
                         >
                           {post.liked ? (
                             <HeartFilled className="h-5 w-5 mr-2 text-pink-600" />
@@ -839,6 +1118,8 @@ const Post = () => {
                                   src={
                                     userData[currentUserId]?.image ||
                                     "https://www.gravatar.com/avatar/default?s=200&d=mp" ||
+                                    "/placeholder.svg" ||
+                                    "/placeholder.svg" ||
                                     "/placeholder.svg" ||
                                     "/placeholder.svg"
                                   }
