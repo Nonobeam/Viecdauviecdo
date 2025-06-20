@@ -16,7 +16,9 @@ const Activate = () => {
 
       if (!token) {
         setStatus("error");
-        setMessage("Invalid activation link. No token provided.");
+        setMessage(
+          "Liên kết kích hoạt không hợp lệ. Không tìm thấy mã xác thực."
+        );
         return;
       }
 
@@ -30,14 +32,14 @@ const Activate = () => {
 
         if (response.ok) {
           setStatus("success");
-          setMessage("Your account has been successfully activated!");
+          setMessage("Tài khoản của bạn đã được kích hoạt thành công!");
           setTimeout(() => {
             navigate("/login");
           }, 3000);
         } else if (response.status === 404) {
           setStatus("error");
           setMessage(
-            "You are not authorized to access this page, please return to Registration"
+            "Bạn không có quyền truy cập trang này, vui lòng quay lại trang Đăng ký"
           );
           setTimeout(() => {
             navigate("/login");
@@ -46,14 +48,12 @@ const Activate = () => {
           const data = await response.json();
           setStatus("error");
           setMessage(
-            data.message || "Failed to activate account. Please try again."
+            data.message || "Kích hoạt tài khoản thất bại. Vui lòng thử lại."
           );
         }
       } catch (error) {
         setStatus("error");
-        setMessage(
-          "Network error. Please check your connection and try again."
-        );
+        setMessage("Lỗi mạng. Vui lòng kiểm tra kết nối và thử lại.");
       }
     };
 
@@ -92,17 +92,17 @@ const Activate = () => {
         <div className="text-center">
           <div className="flex justify-center mb-6">{getStatusIcon()}</div>
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Account Activation
+            Kích Hoạt Tài Khoản
           </h2>
           <div className={`text-lg ${getStatusColor()}`}>
-            {status === "loading" && "Activating your account..."}
-            {status === "success" && "Activation Successful!"}
-            {status === "error" && "Activation Failed"}
+            {status === "loading" && "Đang kích hoạt tài khoản của bạn..."}
+            {status === "success" && "Kích hoạt thành công!"}
+            {status === "error" && "Kích hoạt thất bại"}
           </div>
           <p className="mt-4 text-gray-600">{message}</p>
           {status === "success" && (
             <p className="mt-2 text-sm text-gray-500">
-              Redirecting to login page in 3 seconds...
+              Chuyển hướng đến trang đăng nhập sau 3 giây...
             </p>
           )}
           {status === "error" && (
@@ -112,13 +112,13 @@ const Activate = () => {
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                 disabled={status === "loading"}
               >
-                Try Again
+                Thử lại
               </button>
               <button
                 onClick={() => navigate("/login")}
                 className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                Go to Login
+                Đến trang Đăng nhập
               </button>
             </div>
           )}
