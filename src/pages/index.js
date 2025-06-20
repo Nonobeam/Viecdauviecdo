@@ -6,6 +6,8 @@ export { default as InsertCV } from "./account/InsertCV";
 export { default as CompanyProfile } from "./details/CompanyProfile";
 export { default as ProjectDetails } from "./details/ProjectDetails";
 export { default as Profile } from "./details/UserProfile";
+export { default as ChangeInformation } from "./details/ChangeInformation";
+export { default as ChangePassword } from "./details/ChangePassword";
 export { default as AboutUs } from "./homepage/AboutUs";
 export { default as Blog } from "./homepage/Blog";
 export { default as CareerPathBuilder } from "./homepage/CareerPathBuilder";
