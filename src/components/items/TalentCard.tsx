@@ -1,9 +1,9 @@
-import type React from "react"
-import { useState } from "react"
-import { motion } from "framer-motion"
 import { Card } from "@/components/ui/Card"
 import { Button } from "@/components/ui/button"
-import { Users, Filter } from "lucide-react"
+import { motion } from "framer-motion"
+import { Filter, Users } from "lucide-react"
+import type React from "react"
+import { useState } from "react"
 
 interface UserInformation {
   full_name: string
@@ -35,9 +35,9 @@ const TalentCard: React.FC<TalentCardComponentProps> = ({ cards, onCardClick }) 
     return (
       <div className="flex flex-col items-center justify-center h-64 bg-white rounded-2xl shadow-lg p-8 border border-indigo-100">
         <Users className="w-16 h-16 text-indigo-300 mb-4" />
-        <p className="text-lg text-gray-600 mb-4">Chưa có chuyên gia nào</p>
+        <p className="text-lg text-gray-600 mb-4">Chưa có thành viên nào</p>
         <p className="text-sm text-gray-500 text-center max-w-md">
-          Hãy thử điều chỉnh bộ lọc tìm kiếm hoặc quay lại sau để khám phá thêm nhiều chuyên gia tài năng.
+          Hãy thử điều chỉnh bộ lọc tìm kiếm hoặc quay lại sau để khám phá thêm nhiều thành viên hơn.
         </p>
         <Button variant="outline" className="mt-4 border-indigo-200 text-indigo-700 hover:bg-indigo-50">
           <Filter className="w-4 h-4 mr-2" />
@@ -57,14 +57,9 @@ const TalentCard: React.FC<TalentCardComponentProps> = ({ cards, onCardClick }) 
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent">
-            Chuyên Gia Tài Năng
+            Thành viên của Matchlent
           </h2>
-          <p className="text-gray-600 mt-1">Tìm thấy {cards.length} chuyên gia phù hợp với yêu cầu của bạn</p>
         </div>
-        <Button variant="outline" className="border-indigo-200 text-indigo-700 hover:bg-indigo-50">
-          <Filter className="w-4 h-4 mr-2" />
-          Lọc kết quả
-        </Button>
       </div>
 
       {/* Cards Grid */}
@@ -107,4 +102,5 @@ const TalentCard: React.FC<TalentCardComponentProps> = ({ cards, onCardClick }) 
 }
 
 export { TalentCard }
-export type { TalentCardProps, TalentCardComponentProps }
+export type { TalentCardComponentProps, TalentCardProps }
+

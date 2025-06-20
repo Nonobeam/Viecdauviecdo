@@ -10,7 +10,7 @@ const Project = lazy(() => import("@/pages/homepage/module/Project"));
 const Home = () => {
   const tabs = ["talents", "projects", "companies"];
   const labels = {
-    talents: "Tài năng",
+    talents: "Thành viên",
     projects: "Dự án",
     companies: "Công ty",
   };

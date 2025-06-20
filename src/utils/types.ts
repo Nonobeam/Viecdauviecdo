@@ -281,4 +281,8 @@ declare module 'types' {
     data: TransactionData;
   }
 
+  export interface resetPasswordRequest {
+    email: string;
+  }
+
 }
