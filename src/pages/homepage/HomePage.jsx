@@ -1,5 +1,7 @@
 import Loader from "@/components/Loader";
+import LoginNotificationPopup from "@/components/LoginNotificationPopup";
 import TabList from "@/components/TabList";
+import { useLoginNotification } from "@/hooks/useNotificationPopup";
 import SearchFilter from "@/pages/homepage/module/SearchFilter";
 import { Suspense, lazy, useState } from "react";
 
@@ -8,16 +10,22 @@ const Company = lazy(() => import("@/pages/homepage/module/Company"));
 const Project = lazy(() => import("@/pages/homepage/module/Project"));
 
 const Home = () => {
-  const tabs = ["talents", "projects", "companies"];
+  const tabs = ["talents", "projects"];
   const labels = {
     talents: "Thành viên",
     projects: "Dự án",
-    companies: "Công ty",
   };
   const [activeTab, setActiveTab] = useState(tabs[0]);
 
+  // Login notification
+  const {
+    isOpen: showLoginPopup,
+    showLoginNotification,
+    hideLoginNotification,
+  } = useLoginNotification();
+
   // ① Lifted-up filter state
- const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState({
     city: [],
     state: [],
     country: [],
@@ -34,7 +42,7 @@ const Home = () => {
     certificationInput: "",
   });
 
-    const [searchTrigger, setSearchTrigger] = useState(0);
+  const [searchTrigger, setSearchTrigger] = useState(0);
   const handleSearch = () => {
     setSearchTrigger((prev) => prev + 1);
   };
@@ -63,11 +71,15 @@ const Home = () => {
             <Suspense fallback={<Loader />}>
               {activeTab === "talents" && <Talent filters={filters} />}
               {activeTab === "projects" && <Project />}
-              {activeTab === "companies" && <Company />}
+              {/* {activeTab === "companies" && <Company />} */}
             </Suspense>
           </div>
         </main>
       </div>
+      <LoginNotificationPopup
+        isOpen={showLoginPopup}
+        onClose={hideLoginNotification}
+      />
     </div>
   );
 };
