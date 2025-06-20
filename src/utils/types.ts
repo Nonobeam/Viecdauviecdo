@@ -286,12 +286,18 @@ declare module 'types' {
   }
 
   export interface Skill {
-  success: boolean;
-  data: string[];
-}
+    success: boolean;
+    data: string[];
+  }
 
-    export interface SkillRequest {
+  export interface SkillRequest {
     skill: string;
+  }
+
+  export interface RatingRequest {
+    value: number,
+    comment: string,
+    user_id: string
   }
 
 }

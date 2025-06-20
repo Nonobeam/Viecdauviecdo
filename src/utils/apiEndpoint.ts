@@ -72,4 +72,11 @@ CREATE_APPLICATION: '/api/applications',
 UPDATE_APPLICATION: (id: string) => `/api/applications/${id}`,
 DELETE_APPLICATION: (id: string) => `/api/applications/${id}`,
 APPLY_TO_JOB: '/api/applications/apply',
+
+// Rating
+GET_ALL_RATINGS: '/api/ratings',
+GET_RATING_BY_ID: (id: string) => `/api/ratings/${id}`,
+CREATE_RATING: '/api/ratings',
+UPDATE_RATING: (id: string) => `/api/ratings/${id}`,
+DELETE_RATING: (id: string) => `/api/ratings/${id}`,
 };
