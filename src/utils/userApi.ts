@@ -1,4 +1,4 @@
-import { CreateUserRequest, CVItem, EditUserInformationRequest, GetAllUsersParams, Skill, SkillRequest, User } from 'types';
+import { CreateUserRequest, CVItem, EditUserInformationRequest, GetAllUsersParams, RatingRequest, Skill, SkillRequest, User } from 'types';
 import { api, handleRequest } from './apiClient';
 import { ENDPOINTS } from './apiEndpoint';
 
@@ -151,3 +151,8 @@ export const deleteSkill = async (
       }
     })
   );
+
+export const addRating = async (
+  data: RatingRequest
+): Promise<void> =>
+  handleRequest(() => api.post<void>(ENDPOINTS.CREATE_RATING, data));

@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { City, Country, State } from "country-state-city";
 import { motion } from "framer-motion";
 import {
   Calendar,
@@ -8,8 +9,9 @@ import {
   MapPin,
   Plus,
   RefreshCw,
-  X
+  X,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function SearchFilter({
   filters,
@@ -18,6 +20,22 @@ export default function SearchFilter({
   setInputValues,
   onSearch,
 }) {
+  const SEA_COUNTRIES = [
+    "ID",
+    "MY",
+    "PH",
+    "SG",
+    "TH",
+    "VN",
+    "KH",
+    "LA",
+    "MM",
+    "BN",
+    "TL",
+  ];
+  const [availableCountries, setAvailableCountries] = useState([]);
+  const [availableStates, setAvailableStates] = useState([]);
+  const [availableCities, setAvailableCities] = useState([]);
   const addToArray = (field, value) => {
     if (value.trim() && !filters[field].includes(value.trim())) {
       setFilters((prev) => ({
@@ -75,6 +93,60 @@ export default function SearchFilter({
     onSearch();
   };
 
+// 1. Filter for SEA countries (unchanged if SEA_COUNTRIES is ISO codes)
+useEffect(() => {
+  const seaCountries = Country.getAllCountries().filter((c) =>
+    SEA_COUNTRIES.includes(c.isoCode)
+  );
+  setAvailableCountries(seaCountries);
+}, []);
+
+// 2. When country name changes, fetch states
+useEffect(() => {
+  if (inputValues.countryInput) {
+    const selectedCountry = availableCountries.find(
+      (c) => c.name === inputValues.countryInput
+    );
+
+    if (selectedCountry) {
+      const states = State.getStatesOfCountry(selectedCountry.isoCode);
+      setAvailableStates(states);
+    } else {
+      setAvailableStates([]);
+    }
+
+    // Reset state & city selections
+    setAvailableCities([]);
+    setInputValues((prev) => ({ ...prev, stateInput: "", cityInput: "" }));
+  }
+}, [inputValues.countryInput, availableCountries]);
+
+// 3. When state name changes, fetch cities
+useEffect(() => {
+  if (inputValues.countryInput && inputValues.stateInput) {
+    const selectedCountry = availableCountries.find(
+      (c) => c.name === inputValues.countryInput
+    );
+
+    const selectedState = availableStates.find(
+      (s) => s.name === inputValues.stateInput
+    );
+
+    if (selectedCountry && selectedState) {
+      const cities = City.getCitiesOfState(
+        selectedCountry.isoCode,
+        selectedState.isoCode
+      );
+      setAvailableCities(cities);
+    } else {
+      setAvailableCities([]);
+    }
+
+    // Reset city selection
+    setInputValues((prev) => ({ ...prev, cityInput: "" }));
+  }
+}, [inputValues.stateInput, inputValues.countryInput, availableStates]);
+
   return (
     <aside className="w-full md:w-64 bg-white rounded-xl shadow-sm p-5 border border-gray-100 h-fit sticky top-24">
       <div className="flex justify-between items-center mb-5">
@@ -99,28 +171,45 @@ export default function SearchFilter({
           Địa Điểm
         </h3>
 
-        {/* City Filter */}
+        {/* Country Filter */}
         <div className="space-y-2">
-          <label className="text-xs text-gray-600 font-medium">Thành Phố</label>
+          <label className="text-xs text-gray-600 font-medium">Quốc Gia</label>
           <div className="flex gap-2 mb-2">
-            <Input
-              placeholder="Thêm thành phố..."
-              value={inputValues.cityInput}
-              onChange={(e) => handleInputChange("cityInput", e.target.value)}
-              onKeyPress={(e) => handleInputKeyPress(e, "cityInput")}
-              className="text-sm border-gray-200 focus:border-gray-400 focus:ring-gray-400 h-8"
-            />
+            <select
+              value={inputValues.countryInput}
+              onChange={(e) => {
+                const selected = e.target.value;
+                handleInputChange("countryInput", e.target.value);
+                if (!selected) {
+                  setAvailableStates([]);
+                  setAvailableCities([]);
+                  setInputValues((prev) => ({
+                    ...prev,
+                    stateInput: "",
+                    cityInput: "",
+                  }));
+                }
+              }}
+              className="text-sm border-gray-200 focus:border-gray-400 focus:ring-gray-400 h-8 w-full rounded-md"
+            >
+              <option value="">Chọn quốc gia...</option>
+              {availableCountries.map((c) => (
+                <option key={c.isoCode} value={c.name}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
             <Button
               size="icon"
-              onClick={() => addToArray("city", inputValues.cityInput)}
-              disabled={!inputValues.cityInput.trim()}
+              onClick={() => addToArray("country", inputValues.countryInput)}
+              disabled={!inputValues.countryInput.trim()}
               className="bg-gray-700 hover:bg-gray-800 h-8 w-8 p-0"
             >
               <Plus className="h-3.5 w-3.5" />
             </Button>
           </div>
           <div className="flex flex-wrap gap-1.5">
-            {filters.city.map((city, index) => (
+            {filters.country.map((country, index) => (
               <motion.span
                 key={index}
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -128,9 +217,9 @@ export default function SearchFilter({
                 exit={{ opacity: 0, scale: 0.8 }}
                 className="inline-flex items-center px-2.5 py-1 bg-gray-100 text-gray-700 text-xs rounded-md border border-gray-200"
               >
-                {city}
+                {country}
                 <button
-                  onClick={() => removeFromArray("city", city)}
+                  onClick={() => removeFromArray("country", country)}
                   className="ml-1.5 hover:bg-gray-200 rounded-full p-0.5 transition-colors"
                 >
                   <X className="h-3 w-3" />
@@ -146,13 +235,29 @@ export default function SearchFilter({
             Tỉnh/Thành
           </label>
           <div className="flex gap-2 mb-2">
-            <Input
-              placeholder="Thêm tỉnh/thành..."
+            <select
               value={inputValues.stateInput}
-              onChange={(e) => handleInputChange("stateInput", e.target.value)}
-              onKeyPress={(e) => handleInputKeyPress(e, "stateInput")}
-              className="text-sm border-gray-200 focus:border-gray-400 focus:ring-gray-400 h-8"
-            />
+              onChange={(e) => {
+                const selected = e.target.value;
+                handleInputChange("stateInput", selected);
+                if (!selected) {
+                  setAvailableCities([]);
+                  setInputValues((prev) => ({
+                    ...prev,
+                    cityInput: "",
+                  }));
+                }
+              }}
+              disabled={!availableStates.length}
+              className="text-sm border-gray-200 focus:border-gray-400 focus:ring-gray-400 h-8 w-full rounded-md"
+            >
+              <option value="">Chọn tỉnh/thành...</option>
+              {availableStates.map((s) => (
+                <option key={s.isoCode} value={s.name}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
             <Button
               size="icon"
               onClick={() => addToArray("state", inputValues.stateInput)}
@@ -183,30 +288,34 @@ export default function SearchFilter({
           </div>
         </div>
 
-        {/* Country Filter */}
+        {/* City Filter */}
         <div className="space-y-2">
-          <label className="text-xs text-gray-600 font-medium">Quốc Gia</label>
+          <label className="text-xs text-gray-600 font-medium">Thành Phố</label>
           <div className="flex gap-2 mb-2">
-            <Input
-              placeholder="Thêm quốc gia..."
-              value={inputValues.countryInput}
-              onChange={(e) =>
-                handleInputChange("countryInput", e.target.value)
-              }
-              onKeyPress={(e) => handleInputKeyPress(e, "countryInput")}
-              className="text-sm border-gray-200 focus:border-gray-400 focus:ring-gray-400 h-8"
-            />
+            <select
+              value={inputValues.cityInput}
+              onChange={(e) => handleInputChange("cityInput", e.target.value)}
+              disabled={!availableCities.length}
+              className="text-sm border-gray-200 focus:border-gray-400 focus:ring-gray-400 h-8 w-full rounded-md"
+            >
+              <option value="">Chọn thành phố...</option>
+              {availableCities.map((c) => (
+                <option key={c.name} value={c.name}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
             <Button
               size="icon"
-              onClick={() => addToArray("country", inputValues.countryInput)}
-              disabled={!inputValues.countryInput.trim()}
+              onClick={() => addToArray("city", inputValues.cityInput)}
+              disabled={!inputValues.cityInput.trim()}
               className="bg-gray-700 hover:bg-gray-800 h-8 w-8 p-0"
             >
               <Plus className="h-3.5 w-3.5" />
             </Button>
           </div>
           <div className="flex flex-wrap gap-1.5">
-            {filters.country.map((country, index) => (
+            {filters.city.map((city, index) => (
               <motion.span
                 key={index}
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -214,9 +323,9 @@ export default function SearchFilter({
                 exit={{ opacity: 0, scale: 0.8 }}
                 className="inline-flex items-center px-2.5 py-1 bg-gray-100 text-gray-700 text-xs rounded-md border border-gray-200"
               >
-                {country}
+                {city}
                 <button
-                  onClick={() => removeFromArray("country", country)}
+                  onClick={() => removeFromArray("city", city)}
                   className="ml-1.5 hover:bg-gray-200 rounded-full p-0.5 transition-colors"
                 >
                   <X className="h-3 w-3" />

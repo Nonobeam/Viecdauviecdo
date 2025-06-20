@@ -1,90 +1,140 @@
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { ArrowLeft, Heart, MessageSquare, Send, Star } from "lucide-react"
-import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/providers/AuthContext";
+import { addRating } from "@/utils/userApi";
+import { ArrowLeft, Heart, MessageSquare, Send, Star } from "lucide-react";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 const StarRating = ({ rating, onRatingChange }) => {
-  const [hoverRating, setHoverRating] = useState(0)
+  const [hoverRating, setHoverRating] = useState(0);
+
+  const getFillPercentage = (starIndex) => {
+    const activeRating = hoverRating || rating;
+    const fullStars = Math.floor(activeRating);
+    const hasHalfStar = activeRating % 1 >= 0.5;
+
+    if (starIndex < fullStars) return 100;
+    if (starIndex === fullStars && hasHalfStar) return 50;
+    return 0;
+  };
+
+  const handleStarClick = (starIndex, event) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+    const starWidth = rect.width;
+
+    // If clicked on left half, set to half star, otherwise full star
+    const newRating = clickX < starWidth / 2 ? starIndex + 0.5 : starIndex + 1;
+    onRatingChange(newRating);
+  };
+
+  const handleStarHover = (starIndex, event) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const hoverX = event.clientX - rect.left;
+    const starWidth = rect.width;
+
+    // If hovering on left half, show half star, otherwise full star
+    const hoverValue = hoverX < starWidth / 2 ? starIndex + 0.5 : starIndex + 1;
+    setHoverRating(hoverValue);
+  };
 
   return (
     <div className="flex items-center gap-1">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <button
-          key={star}
-          type="button"
-          className="p-1 transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 rounded"
-          onClick={() => onRatingChange(star)}
-          onMouseEnter={() => setHoverRating(star)}
-          onMouseLeave={() => setHoverRating(0)}
-        >
-          <Star
-            className={`h-8 w-8 transition-colors ${
-              star <= (hoverRating || rating)
-                ? "fill-yellow-400 text-yellow-400"
-                : "text-gray-300 hover:text-yellow-300"
-            }`}
-          />
-        </button>
-      ))}
+      {[0, 1, 2, 3, 4].map((starIndex) => {
+        const fillPercent = getFillPercentage(starIndex);
+        return (
+          <button
+            key={starIndex}
+            type="button"
+            onClick={(e) => handleStarClick(starIndex, e)}
+            onMouseMove={(e) => handleStarHover(starIndex, e)}
+            onMouseLeave={() => setHoverRating(0)}
+            className="relative w-8 h-8 p-0.5 transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-1 rounded"
+          >
+            {/* Empty Star Background */}
+            <Star className="absolute inset-0.5 w-7 h-7 text-gray-300 fill-current" />
+
+            {/* Filled Star with clip for partial fill */}
+            <Star
+              className="absolute inset-0.5 w-7 h-7 text-yellow-400 fill-current transition-all duration-200"
+              style={{
+                clipPath: `inset(0 ${100 - fillPercent}% 0 0)`,
+              }}
+            />
+          </button>
+        );
+      })}
     </div>
-  )
-}
+  );
+};
 
 const Feedback = () => {
-  const [rating, setRating] = useState(0)
-  const [feedback, setFeedback] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSubmitted, setIsSubmitted] = useState(false)
+  const [rating, setRating] = useState(0);
+  const [feedback, setFeedback] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (rating === 0) {
-      alert("Vui lòng chọn số sao đánh giá")
-      return
+      alert("Vui lòng chọn số sao đánh giá");
+      return;
     }
 
     if (feedback.trim() === "") {
-      alert("Vui lòng nhập phản hồi của bạn")
-      return
+      alert("Vui lòng nhập phản hồi của bạn");
+      return;
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-
-      // Here you would typically send the feedback to your API
-      console.log("Feedback submitted:", { rating, feedback })
-
-      setIsSubmitted(true)
+      const payload = {
+        value: rating,
+        comment: feedback,
+        user_id: user.user_id,
+      };
+      await addRating(payload);
+      setIsSubmitted(true);
     } catch (error) {
-      console.error("Failed to submit feedback:", error)
-      alert("Có lỗi xảy ra khi gửi phản hồi. Vui lòng thử lại.")
+      console.error("Failed to submit feedback:", error);
+      alert("Có lỗi xảy ra khi gửi phản hồi. Vui lòng thử lại.");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
+      navigate(-1);
     }
-  }
+  };
 
   const getRatingText = (rating) => {
     switch (rating) {
+      case 0.5:
+        return "Rất không hài lòng";
       case 1:
-        return "Rất không hài lòng"
+        return "Rất không hài lòng";
+      case 1.5:
+        return "Không hài lòng";
       case 2:
-        return "Không hài lòng"
+        return "Không hài lòng";
+      case 2.5:
+        return "Bình thường";
       case 3:
-        return "Bình thường"
+        return "Bình thường";
+      case 3.5:
+        return "Hài lòng";
       case 4:
-        return "Hài lòng"
+        return "Hài lòng";
       case 5:
-        return "Rất hài lòng"
+        return "Rất hài lòng";
       default:
-        return "Chọn đánh giá của bạn"
+        return "Chọn đánh giá của bạn";
     }
-  }
+  };
 
+  console.log(user)
   if (isSubmitted) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 flex items-center justify-center">
@@ -96,7 +146,8 @@ const Feedback = () => {
             Cảm ơn bạn!
           </h2>
           <p className="text-gray-600 mb-6 leading-relaxed">
-            Phản hồi của bạn đã được gửi thành công. Chúng tôi sẽ sử dụng ý kiến của bạn để cải thiện sản phẩm.
+            Phản hồi của bạn đã được gửi thành công. Chúng tôi sẽ sử dụng ý kiến
+            của bạn để cải thiện sản phẩm.
           </p>
           <Link to="/">
             <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white">
@@ -105,7 +156,7 @@ const Feedback = () => {
           </Link>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -117,7 +168,10 @@ const Feedback = () => {
 
         <div className="relative max-w-4xl mx-auto px-4 py-16">
           {/* Back Button */}
-          <Link to="/" className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-8 transition-colors">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-8 transition-colors"
+          >
             <ArrowLeft className="h-4 w-4" />
             <span>Quay lại trang chủ</span>
           </Link>
@@ -126,10 +180,13 @@ const Feedback = () => {
             <div className="bg-white/10 rounded-full p-4 w-20 h-20 mx-auto mb-6 backdrop-blur-sm">
               <MessageSquare className="h-12 w-12 text-white mx-auto" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">Chúng tôi muốn nghe đánh giá từ bạn</h1>
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              Chúng tôi muốn nghe đánh giá từ bạn
+            </h1>
             <p className="text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
-              Đánh giá của bạn giúp chúng tôi không ngừng cải thiện sản phẩm của chúng tôi và đưa ra trải nghiệm
-              tốt hơn cho mọi người. Chúng tôi trân trọng từng đánh giá và ý kiện mà bạn chia sẻ cho chúng tôi
+              Đánh giá của bạn giúp chúng tôi không ngừng cải thiện sản phẩm của
+              chúng tôi và đưa ra trải nghiệm tốt hơn cho mọi người. Chúng tôi
+              trân trọng từng đánh giá và ý kiện mà bạn chia sẻ cho chúng tôi
             </p>
           </div>
         </div>
@@ -144,7 +201,9 @@ const Feedback = () => {
               <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-4">
                 Đánh giá trải nghiệm của bạn
               </h2>
-              <p className="text-gray-600 mb-6">Bạn cảm thấy thế nào về sản phẩm của chúng tôi?</p>
+              <p className="text-gray-600 mb-6">
+                Bạn cảm thấy thế nào về sản phẩm của chúng tôi?
+              </p>
 
               <div className="flex flex-col items-center gap-4">
                 <StarRating rating={rating} onRatingChange={setRating} />
@@ -160,11 +219,15 @@ const Feedback = () => {
 
             {/* Feedback Text */}
             <div>
-              <label htmlFor="feedback" className="block text-lg font-semibold text-gray-800 mb-3">
+              <label
+                htmlFor="feedback"
+                className="block text-lg font-semibold text-gray-800 mb-3"
+              >
                 Chia sẻ chi tiết phản hồi của bạn
               </label>
               <p className="text-gray-600 mb-4">
-                Hãy cho chúng tôi biết những gì bạn thích, không thích, hoặc muốn cải thiện
+                Hãy cho chúng tôi biết những gì bạn thích, không thích, hoặc
+                muốn cải thiện
               </p>
               <Textarea
                 id="feedback"
@@ -211,7 +274,9 @@ const Feedback = () => {
             <div className="text-center">
               <Button
                 type="submit"
-                disabled={isSubmitting || rating === 0 || feedback.trim().length < 10}
+                disabled={
+                  isSubmitting || rating === 0 || feedback.trim().length < 10
+                }
                 className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed px-8 py-3 text-lg"
               >
                 {isSubmitting ? (
@@ -227,13 +292,15 @@ const Feedback = () => {
                 )}
               </Button>
 
-              <p className="text-sm text-gray-500 mt-4">Phản hồi của bạn sẽ được xem xét và bảo mật</p>
+              <p className="text-sm text-gray-500 mt-4">
+                Phản hồi của bạn sẽ được xem xét và bảo mật
+              </p>
             </div>
           </form>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Feedback
+export default Feedback;
