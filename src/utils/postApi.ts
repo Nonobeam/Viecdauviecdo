@@ -1,8 +1,9 @@
 import {
   Comment,
+  CommentRequest,
   CreatePostRequest,
   Post,
-  UpdatePostRequest,
+  UpdatePostRequest
 } from 'types';
 import { api, handleRequest } from './apiClient';
 import { ENDPOINTS } from './apiEndpoint';
@@ -41,10 +42,19 @@ export const likePost = async (postId: string): Promise<void> =>
 export const commentOnPost = async (
   postId: string,
   data: { user_id: string; content: string }
-): Promise<Comment> =>
-  handleRequest(() => api.post<Comment>(ENDPOINTS.COMMENT_ON_POST(postId), data));
+): Promise<CommentRequest> =>
+  handleRequest(() => api.post<CommentRequest>(ENDPOINTS.COMMENT_ON_POST(postId), data));
 
 export const getUserPosts = (userId: string): Promise<Post[]> =>
   handleRequest(() =>
     api.get<{ data: { content: Post[] } }>(ENDPOINTS.GET_USER_POSTS(userId))
   ).then(responseData => responseData.data.content);
+
+export const getAllComments = async (
+  postId: string,
+  page = 0,
+  size = 10
+): Promise<Comment[]> =>
+  handleRequest(() =>
+    api.get<Comment[]>(ENDPOINTS.GET_POST_COMMENTS(postId), { params: { page, size } })
+  )

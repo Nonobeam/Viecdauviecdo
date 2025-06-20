@@ -88,11 +88,9 @@ const Members = ({ project }) => {
   const pageSize = 10;
 
   // Fetch project members
-  console.log(project);
   const fetchMembers = async (pageNum = 0, reset = false) => {
     try {
       const memberData = await getProjectMembers(id, pageNum, pageSize);
-        console.log(memberData); 
       if (reset) {
         setMembers(memberData.data.content);
       } else {
@@ -339,7 +337,6 @@ const ProjectDetails = () => {
     try {
       setLoading(true);
       const data = await getProjectById(projectId);
-      console.log(data.data);
       setProject(data.data);
     } catch (err) {
       setError("Failed to fetch project details");
@@ -359,7 +356,6 @@ const ProjectDetails = () => {
   };
 
   const checkUserMembership = async (email) => {
-    console.log(email);
     if (email == null) {
       setCheckingMembership(false);
       return;
@@ -371,7 +367,6 @@ const ProjectDetails = () => {
       const members = memberData.data.content;
 
       const isMember = members.some((member) => member.email === email);
-      console.log(isMember);
 
       setIsUserMember(isMember);
     } catch (error) {
@@ -438,7 +433,7 @@ const ProjectDetails = () => {
   useEffect(() => {
     if (id && user?.user_id) {
       fetchProject(id);
-      checkUserMembership(user.sub);
+      checkUserMembership(user.email);
     }
   }, [id, user, updated]);
 
@@ -564,24 +559,7 @@ const ProjectDetails = () => {
               </div>
             </div>
             <div className="flex gap-3 flex-shrink-0">
-
-              {isUserMember && user && user?.user_id !== project.owner_id && (
-                  <Button
-                    onClick={() => setShowLeaveDialog(true)}
-                    className="flex items-center gap-2 bg-red-600 border-red-700 text-white hover:bg-red-700 backdrop-blur-sm"
-                  >
-                    Rời dự án
-                  </Button>
-              )}
-
-              {!isUserMember && user && (
-                <Button
-                  onClick={applyProject}
-                  className="flex items-center gap-2 bg-black border-black text-white hover:bg-black/80 backdrop-blur-sm"
-                >
-                  Tham gia dự án
-                </Button>
-              )}
+              
               {isUserMember && user && user?.user_id === project.owner_id && (
                 <div className="flex gap-2">
                   <Button
@@ -604,6 +582,24 @@ const ProjectDetails = () => {
                     Xóa dự án
                   </Button>
                 </div>
+              )}
+
+              {isUserMember && user && user?.user_id !== project.owner_id && (
+                  <Button
+                    onClick={() => setShowLeaveDialog(true)}
+                    className="flex items-center gap-2 bg-red-600 border-red-700 text-white hover:bg-red-700 backdrop-blur-sm"
+                  >
+                    Rời dự án
+                  </Button>
+              )}
+
+              {!isUserMember && user && (
+                <Button
+                  onClick={applyProject}
+                  className="flex items-center gap-2 bg-black border-black text-white hover:bg-black/80 backdrop-blur-sm"
+                >
+                  Tham gia dự án
+                </Button>
               )}
             </div>
           </div>

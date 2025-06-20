@@ -1,4 +1,4 @@
-import { CreateUserRequest, CVItem, EditUserInformationRequest, GetAllUsersParams, User } from 'types';
+import { CreateUserRequest, CVItem, EditUserInformationRequest, GetAllUsersParams, RatingRequest, Skill, SkillRequest, User } from 'types';
 import { api, handleRequest } from './apiClient';
 import { ENDPOINTS } from './apiEndpoint';
 
@@ -112,3 +112,47 @@ export const deleteCV = async (
       params: { userId },
     })
   );
+
+export const getSkills = async (
+  userId: string
+): Promise<Skill> =>
+  handleRequest(() => api.get<Skill>(ENDPOINTS.GET_USER_SKILLS(userId)));
+
+export const addSkill = async (
+  userId: string,
+  data: SkillRequest
+): Promise<void> =>
+  handleRequest(() => api.post<void>(ENDPOINTS.ADD_USER_SKILL(userId), data));
+
+export const updateSkill = async (
+  userId: string,
+  oldSkill: string,
+  newSkill: string
+): Promise<void> =>
+  handleRequest(() =>
+    api.put<void>(
+      ENDPOINTS.UPDATE_USER_SKILL(userId), // URL with userId in path
+      {}, // no request body
+      {
+        params: { oldSkill, newSkill } // query params go here
+      }
+    )
+  );
+
+export const deleteSkill = async (
+  userId: string,
+  skillName: string
+): Promise<void> =>
+  handleRequest(() =>
+    api.delete<void>(ENDPOINTS.DELETE_COMPANY(userId), {
+      data: skillName,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+  );
+
+export const addRating = async (
+  data: RatingRequest
+): Promise<void> =>
+  handleRequest(() => api.post<void>(ENDPOINTS.CREATE_RATING, data));

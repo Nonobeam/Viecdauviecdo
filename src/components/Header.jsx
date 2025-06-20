@@ -2,13 +2,12 @@ import ViecdauviecdoLogo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/providers/AuthContext";
 import {
-  BadgeDollarSign,
   ChevronDown,
-  History,
   LogOut,
+  MessageCircle,
   Search,
-  User,
   Sparkles,
+  User,
 } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -66,7 +65,7 @@ const Header = () => {
                   </button>
                 </Link>
 
-                <Link to="/seeking">
+                <Link to="/project">
                   <button
                     className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 flex items-center gap-3 transition-all duration-200"
                     onClick={() => setIsOpen(false)}
@@ -74,11 +73,23 @@ const Header = () => {
                     <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
                       <Search size={16} className="text-blue-600" />
                     </div>
-                    <span className="font-medium">Tìm kiếm việc làm</span>
+                    <span className="font-medium">Tìm kiếm dự án</span>
                   </button>
                 </Link>
 
-                <Link to="/account-plan">
+                <Link to="/feedback">
+                  <button
+                    className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 flex items-center gap-3 transition-all duration-200"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
+                      <MessageCircle size={16} className="text-amber-600" />
+                    </div>
+                    <span className="font-medium">Phản hồi & Góp ý</span>
+                  </button>
+                </Link>
+
+                {/* <Link to="/account-plan">
                   <button
                     className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 flex items-center gap-3 transition-all duration-200"
                     onClick={() => setIsOpen(false)}
@@ -100,7 +111,7 @@ const Header = () => {
                     </div>
                     <span className="font-medium">Lịch sử giao dịch</span>
                   </button>
-                </Link>
+                </Link> */}
               </div>
 
               <div className="border-t border-gray-100 py-2">

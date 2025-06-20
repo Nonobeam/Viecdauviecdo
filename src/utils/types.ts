@@ -27,6 +27,12 @@ declare module 'types' {
     updatedAt: string;
   }
 
+  export interface Comment {
+    content: string,
+    like_count: number,
+    created_at: string
+  }
+
   export interface CreatePostRequest {
     user_id: string;
     title: string;
@@ -42,7 +48,7 @@ declare module 'types' {
     tags?: string[];
   }
 
-  export interface Comment {
+  export interface CommentRequest {
     id: string;
     userId: string;
     content: string;
@@ -218,7 +224,7 @@ declare module 'types' {
     country?: string,
     state?: string,
     city?: string,
-    phone?: string
+    phone?: string,
   }
 
   export interface CVItem {
@@ -283,6 +289,21 @@ declare module 'types' {
 
   export interface resetPasswordRequest {
     email: string;
+  }
+
+  export interface Skill {
+    success: boolean;
+    data: string[];
+  }
+
+  export interface SkillRequest {
+    skill: string;
+  }
+
+  export interface RatingRequest {
+    value: number,
+    comment: string,
+    user_id: string
   }
 
 }

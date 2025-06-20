@@ -12,6 +12,9 @@ import {
   CompanyProfile,
   EditProfile,
   EditProject,
+  ChangeInformation,
+  ChangePassword,
+  Feedback,
   Home,
   InsertCV,
   Job,
@@ -20,12 +23,10 @@ import {
   PaymentPage,
   PremiumPlansPage,
   Profile,
-  ChangeInformation,
   ProjectDetails,
   Seeking,
   SuccessPage,
   TransactionHistory,
-  ChangePassword,
   SkillsAndLinks,
 } from "./pages";
 import Project from "./pages/homepage/module/Project";
@@ -151,6 +152,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ApplicationForm />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/feedback"
+              element={
+                <ProtectedRoute>
+                  <Feedback />
                 </ProtectedRoute>
               }
             />

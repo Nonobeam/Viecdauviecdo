@@ -1,11 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/providers/AuthContext";
 import { changeUserInformation } from "@/utils/userApi";
+import { City, Country, State } from "country-state-city";
 import {
   AlertCircle,
   ArrowLeft,
   Briefcase,
   Building,
+  Calendar,
   CheckCircle,
   FileText,
   MapPin,
@@ -35,6 +37,24 @@ const EditProfile = () => {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [saveError, setSaveError] = useState("");
 
+  const [availableCountries, setAvailableCountries] = useState([]);
+  const [availableStates, setAvailableStates] = useState([]);
+  const [availableCities, setAvailableCities] = useState([]);
+
+  const SEA_COUNTRIES = [
+    "ID", // Indonesia
+    "MY", // Malaysia
+    "PH", // Philippines
+    "SG", // Singapore
+    "TH", // Thailand
+    "VN", // Vietnam
+    "KH", // Cambodia
+    "LA", // Laos
+    "MM", // Myanmar
+    "BN", // Brunei
+    "TL", // Timor-Leste
+  ];
+
   const handleSave = async () => {
     setIsSaving(true);
     setSaveError("");
@@ -47,6 +67,7 @@ const EditProfile = () => {
         state: state,
         city: city,
         phone: phone,
+        // date_of_birth: dateOfBirth
       });
       setSaveSuccess(true);
       setTimeout(() => navigate("/profile"), 1000);
@@ -70,6 +91,54 @@ const EditProfile = () => {
       setDateOfBirth(userInformation.date_of_birth || "");
     }
   }, [userInformation]);
+
+  useEffect(() => {
+    const all = Country.getAllCountries();
+    const filtered = all.filter((c) => SEA_COUNTRIES.includes(c.isoCode));
+    setAvailableCountries(filtered);
+  }, []);
+
+  useEffect(() => {
+    if (country) {
+      const selectedCountry = Country.getAllCountries().find(
+        (c) => c.name === country
+      );
+
+      if (selectedCountry) {
+        const states = State.getStatesOfCountry(selectedCountry.isoCode);
+        setAvailableStates(states);
+        setState("");
+        setCity("");
+      }
+    } else {
+      setAvailableStates([]);
+      setState("");
+      setCity("");
+    }
+  }, [country]);
+
+  useEffect(() => {
+    if (country && state) {
+      const selectedCountry = Country.getAllCountries().find(
+        (c) => c.name === country
+      );
+      const selectedState = State.getStatesOfCountry(
+        selectedCountry?.isoCode
+      ).find((s) => s.name === state);
+
+      if (selectedCountry && selectedState) {
+        const cities = City.getCitiesOfState(
+          selectedCountry.isoCode,
+          selectedState.isoCode
+        );
+        setAvailableCities(cities);
+        setCity("");
+      }
+    } else {
+      setAvailableCities([]);
+      setCity("");
+    }
+  }, [state, country]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50">
@@ -112,7 +181,7 @@ const EditProfile = () => {
             <div className="flex items-center">
               <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
               <p className="text-sm text-green-800">
-                Profile saved! Redirecting...
+                Lưu lại thông tin, chờ chuyển hướng
               </p>
             </div>
           </div>
@@ -122,7 +191,7 @@ const EditProfile = () => {
         <div className="space-y-6">
           <div className="relative">
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Full Name
+              Họ tên
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -139,7 +208,7 @@ const EditProfile = () => {
 
           <div className="relative">
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Job Title
+              Chức danh công việc
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -156,7 +225,7 @@ const EditProfile = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              About Me
+              Thông tin về tôi
             </label>
             <div className="relative">
               <div className="absolute top-3 left-3 flex items-start pointer-events-none">
@@ -174,35 +243,60 @@ const EditProfile = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="relative">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Country
+                Đất nước
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <MapPin className="h-4 w-4 text-purple-500" />
                 </div>
-                <input
-                  type="text"
+                <select
                   value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  className="pl-10 block w-full rounded-lg border-gray-200 shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80"
-                />
+                  onChange={(e) => {
+                    const selected = e.target.value;
+                    setCountry(selected);
+                    if (!selected) {
+                      setAvailableStates([]);
+                      setAvailableCities([]);
+                    }
+                  }}
+                  className="pl-10 block w-full rounded-lg border-gray-200 shadow-sm focus:ring-2 focus:ring-purple-500 bg-white/80"
+                >
+                  <option value="">Chọn quốc gia</option>
+                  {availableCountries.map((c) => (
+                    <option key={c.isoCode} value={c.name}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
             <div className="relative">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                State
+                Tỉnh thành
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Building className="h-4 w-4 text-purple-500" />
                 </div>
-                <input
-                  type="text"
+                <select
                   value={state}
-                  onChange={(e) => setState(e.target.value)}
-                  className="pl-10 block w-full rounded-lg border-gray-200 shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80"
-                />
+                  onChange={(e) => {
+                    const selected = e.target.value;
+                    setState(selected);
+                    if (!selected) {
+                      setAvailableCities([]);
+                    }
+                  }}
+                  className="pl-10 block w-full rounded-lg border-gray-200 shadow-sm focus:ring-2 focus:ring-purple-500 bg-white/80"
+                >
+                  <option value="">Chọn tỉnh/thành</option>
+                  {availableStates.map((s) => (
+                    <option key={s.isoCode} value={s.name}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>
@@ -216,18 +310,24 @@ const EditProfile = () => {
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Building className="h-4 w-4 text-purple-500" />
                 </div>
-                <input
-                  type="text"
+                <select
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  className="pl-10 block w-full rounded-lg border-gray-200 shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80"
-                />
+                  className="pl-10 block w-full rounded-lg border-gray-200 shadow-sm focus:ring-2 focus:ring-purple-500 bg-white/80"
+                >
+                  <option value="">Chọn thành phố</option>
+                  {availableCities.map((city) => (
+                    <option key={city.name} value={city.name}>
+                      {city.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
             <div className="relative">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Phone
+                Số diện thoại
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -237,6 +337,21 @@ const EditProfile = () => {
                   type="text"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
+                  className="pl-10 block w-full rounded-lg border-gray-200 shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80"
+                />
+              </div>
+
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Ngày tháng năm sinh
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Calendar className="h-4 w-4 text-purple-500" />
+                </div>
+                <input
+                  type="date"
+                  value={dateOfBirth}
+                  onChange={(e) => setDateOfBirth(e.target.value)}
                   className="pl-10 block w-full rounded-lg border-gray-200 shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80"
                 />
               </div>
@@ -251,7 +366,7 @@ const EditProfile = () => {
             onClick={handleSave}
             disabled={isSaving || saveSuccess}
           >
-            {isSaving ? "Saving..." : saveSuccess ? "Saved!" : "Save Profile"}
+            {isSaving ? "Saving..." : saveSuccess ? "Saved!" : "Lưu profile"}
           </Button>
           <Button
             variant="outline"
@@ -259,7 +374,7 @@ const EditProfile = () => {
             disabled={isSaving}
             onClick={() => navigate("/profile")}
           >
-            Cancel
+            Hủy
           </Button>
         </div>
       </div>

@@ -6,6 +6,7 @@ import {
   commentOnPost,
   createPost,
   deletePost,
+  getAllComments,
   getAllPosts,
   getUserPosts,
   likePost,
@@ -31,12 +32,10 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import LoginNotificationPopup from "../../components/LoginNotificationPopup";
 import { useLoginNotification } from "../../hooks/useNotificationPopup";
 
 const Post = () => {
-  const nav = useNavigate();
   const [posts, setPosts] = useState([]);
   const [waitLoading, setWaitLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -80,6 +79,13 @@ const Post = () => {
   const [commentInputs, setCommentInputs] = useState({});
   const [commenting, setCommenting] = useState({});
   const [showComments, setShowComments] = useState({});
+  const [toggleComment, setToggleComment] = useState({});
+
+  // Add these new states for fetched comments
+  const [postComments, setPostComments] = useState({});
+  const [loadingComments, setLoadingComments] = useState({});
+  const [commentPages, setCommentPages] = useState({});
+  const [hasMoreComments, setHasMoreComments] = useState({});
 
   // Dropdown menu states
   const [showDropdown, setShowDropdown] = useState({});
@@ -108,8 +114,6 @@ const Post = () => {
       }
     }
   };
-
-  console.log(userData);
 
   const fetchPosts = async (pageNum = 0, reset = false) => {
     try {
@@ -317,11 +321,53 @@ const Post = () => {
         )
       );
       setCommentInputs((prev) => ({ ...prev, [postId]: "" }));
+
+      // Refresh comments if they're currently being displayed
+      if (postComments[postId]) {
+        fetchPostComments(postId, 0, true);
+      }
     } catch (err) {
       console.error("Error commenting on post:", err);
     } finally {
       setCommenting((prev) => ({ ...prev, [postId]: false }));
     }
+  };
+
+  const fetchPostComments = async (postId, page = 0, reset = false) => {
+    try {
+      setLoadingComments((prev) => ({ ...prev, [postId]: true }));
+      const comments = await getAllComments(postId, page, 10);
+      if (reset || page === 0) {
+        setPostComments((prev) => ({ ...prev, [postId]: comments.data }));
+      } else {
+        setPostComments((prev) => ({
+          ...prev,
+          [postId]: [...(prev[postId] || []), ...comments.data],
+        }));
+      }
+
+      setCommentPages((prev) => ({ ...prev, [postId]: page }));
+      setHasMoreComments((prev) => ({
+        ...prev,
+        [postId]: comments.data.length === 10,
+      }));
+    } catch (err) {
+      console.error("Error fetching comments:", err);
+    } finally {
+      setLoadingComments((prev) => ({ ...prev, [postId]: false }));
+    }
+  };
+
+  const loadMoreComments = (postId) => {
+    const currentPage = commentPages[postId] || 0;
+    fetchPostComments(postId, currentPage + 1);
+  };
+
+  const handleViewAllComments = (postId) => {
+    if (!postComments[postId]) {
+      fetchPostComments(postId, 0, true);
+    }
+    setShowComments((prev) => ({ ...prev, [postId]: true }));
   };
 
   const toggleCommentInput = (postId) => {
@@ -510,11 +556,7 @@ const Post = () => {
                       <AvatarImage
                         src={
                           userData[currentUserId]?.image ||
-                          "https://www.gravatar.com/avatar/default?s=200&d=mp" ||
-                          "/placeholder.svg" ||
-                          "/placeholder.svg" ||
-                          "/placeholder.svg" ||
-                          "/placeholder.svg"
+                          "https://www.gravatar.com/avatar/default?s=200&d=mp"
                         }
                       />
                       <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white text-xl">
@@ -574,6 +616,7 @@ const Post = () => {
           </div>
 
           {/* Main Content */}
+
           <div className="lg:col-span-6">
             {/* Mobile Navigation */}
             <div className="lg:hidden flex overflow-x-auto space-x-2 pb-4 scrollbar-hide">
@@ -588,17 +631,19 @@ const Post = () => {
                 <Home className="h-4 w-4" />
                 <span>Tất cả</span>
               </button>
-              <button
-                onClick={() => switchViewMode("user")}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-full whitespace-nowrap ${
-                  viewMode === "user"
-                    ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white font-medium"
-                    : "bg-white text-gray-700 border border-gray-200"
-                }`}
-              >
-                <User className="h-4 w-4" />
-                <span>Của tôi</span>
-              </button>
+              {user && (
+                <button
+                  onClick={() => switchViewMode("user")}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-full whitespace-nowrap ${
+                    viewMode === "user"
+                      ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white font-medium"
+                      : "bg-white text-gray-700 border border-gray-200"
+                  }`}
+                >
+                  <User className="h-4 w-4" />
+                  <span>Của tôi</span>
+                </button>
+              )}
             </div>
 
             {/* Create Post Button */}
@@ -625,11 +670,7 @@ const Post = () => {
                     <AvatarImage
                       src={
                         userData[currentUserId]?.image ||
-                        "https://www.gravatar.com/avatar/default?s=200&d=mp" ||
-                        "/placeholder.svg" ||
-                        "/placeholder.svg" ||
-                        "/placeholder.svg" ||
-                        "/placeholder.svg"
+                        "https://www.gravatar.com/avatar/default?s=200&d=mp"
                       }
                     />
                     <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white">
@@ -649,233 +690,230 @@ const Post = () => {
             )}
 
             {/* Create post form */}
-            <AnimatePresence>
-              {showCreateForm && (
-                <motion.div
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                  className="bg-white rounded-2xl shadow-lg p-6 mb-6"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-bold text-gray-800">
-                      Tạo bài viết mới
-                    </h3>
-                    <button
-                      onClick={() => {
-                        setShowCreateForm(false);
-                        setNewPostTitle("");
-                        setNewPostContent("");
-                        setNewPostImage(null);
-                        setNewPostImagePreview("");
-                        setNewPostSkills([]);
-                        setSkillInput("");
-                      }}
-                      className="text-gray-500 hover:text-gray-700"
-                    >
-                      <X className="h-5 w-5" />
-                    </button>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-3">
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage
-                          src={
-                            userData[currentUserId]?.image ||
-                            "https://www.gravatar.com/avatar/default?s=200&d=mp" ||
-                            "/placeholder.svg" ||
-                            "/placeholder.svg" ||
-                            "/placeholder.svg" ||
-                            "/placeholder.svg"
-                          }
-                        />
-                        <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white">
-                          {userInformation[
-                            currentUserId
-                          ]?.full_name?.[0]?.toUpperCase() || "U"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium text-gray-900">
-                          {userInformation[currentUserId]?.full_name ||
-                            "Người dùng"}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {userInformation[currentUserId]?.job_title ||
-                            "Thành viên"}
-                        </p>
-                      </div>
+            {user && (
+              <AnimatePresence>
+                {showCreateForm && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="bg-white rounded-2xl shadow-lg p-6 mb-6"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-xl font-bold text-gray-800">
+                        Tạo bài viết mới
+                      </h3>
+                      <button
+                        onClick={() => {
+                          setShowCreateForm(false);
+                          setNewPostTitle("");
+                          setNewPostContent("");
+                          setNewPostImage(null);
+                          setNewPostImagePreview("");
+                          setNewPostSkills([]);
+                          setSkillInput("");
+                        }}
+                        className="text-gray-500 hover:text-gray-700"
+                      >
+                        <X className="h-5 w-5" />
+                      </button>
                     </div>
-                    <input
-                      type="text"
-                      placeholder="Tiêu đề bài viết..."
-                      value={newPostTitle}
-                      onChange={(e) => setNewPostTitle(e.target.value)}
-                      className="w-full p-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg font-medium"
-                    />
-                    <Textarea
-                      placeholder="Chia sẻ suy nghĩ của bạn..."
-                      value={newPostContent}
-                      onChange={(e) => setNewPostContent(e.target.value)}
-                      rows={4}
-                      className="resize-none border-gray-200 rounded-xl focus:ring-purple-500 p-4 text-gray-700"
-                    />
-
-                    {/* Skills Tags Section */}
-                    <div className="space-y-3">
-                      <label className="text-sm font-medium text-gray-700">
-                        Tag liên quan
-                      </label>
-                      <div className="flex flex-wrap gap-2 mb-2">
-                        {newPostSkills.map((skill, index) => (
-                          <span
-                            key={index}
-                            className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 border border-purple-200"
-                          >
-                            {skill}
-                            <button
-                              onClick={() => removeSkill(skill)}
-                              className="ml-2 text-purple-500 hover:text-purple-700"
-                            >
-                              <X className="h-3 w-3" />
-                            </button>
-                          </span>
-                        ))}
-                      </div>
-                      <div className="flex space-x-2">
-                        <input
-                          type="text"
-                          placeholder="Thêm tag..."
-                          value={skillInput}
-                          onChange={(e) => setSkillInput(e.target.value)}
-                          onKeyPress={handleSkillKeyPress}
-                          className="flex-1 p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
-                        />
-                        <Button
-                          type="button"
-                          onClick={addSkill}
-                          disabled={!skillInput.trim()}
-                          className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-xl px-4"
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-
-                    {/* Image Upload Section */}
-                    <div className="space-y-3">
-                      <label className="text-sm font-medium text-gray-700">
-                        Hình ảnh
-                      </label>
-                      {newPostImagePreview ? (
-                        <div className="relative">
-                          <img
-                            src={newPostImagePreview || "/placeholder.svg"}
-                            alt="Preview"
-                            className="w-full h-48 object-cover rounded-xl border border-gray-200"
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-3">
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage
+                            src={
+                              userData[currentUserId]?.image ||
+                              "https://www.gravatar.com/avatar/default?s=200&d=mp"
+                            }
                           />
-                          <button
-                            onClick={removeImage}
-                            className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                          >
-                            <X className="h-4 w-4" />
-                          </button>
+                          <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white">
+                            {userInformation[
+                              currentUserId
+                            ]?.full_name?.[0]?.toUpperCase() || "U"}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium text-gray-900">
+                            {userInformation[currentUserId]?.full_name ||
+                              "Người dùng"}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {userInformation[currentUserId]?.job_title ||
+                              "Thành viên"}
+                          </p>
                         </div>
-                      ) : (
-                        <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-purple-400 transition-colors">
+                      </div>
+                      <input
+                        type="text"
+                        placeholder="Tiêu đề bài viết..."
+                        value={newPostTitle}
+                        onChange={(e) => setNewPostTitle(e.target.value)}
+                        className="w-full p-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg font-medium"
+                      />
+                      <Textarea
+                        placeholder="Chia sẻ suy nghĩ của bạn..."
+                        value={newPostContent}
+                        onChange={(e) => setNewPostContent(e.target.value)}
+                        rows={4}
+                        className="resize-none border-gray-200 rounded-xl focus:ring-purple-500 p-4 text-gray-700"
+                      />
+
+                      {/* Skills Tags Section */}
+                      <div className="space-y-3">
+                        <label className="text-sm font-medium text-gray-700">
+                          Tag liên quan
+                        </label>
+                        <div className="flex flex-wrap gap-2 mb-2">
+                          {newPostSkills.map((skill, index) => (
+                            <span
+                              key={index}
+                              className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 border border-purple-200"
+                            >
+                              {skill}
+                              <button
+                                onClick={() => removeSkill(skill)}
+                                className="ml-2 text-purple-500 hover:text-purple-700"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                        <div className="flex space-x-2">
                           <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImageUpload}
-                            className="hidden"
-                            id="image-upload"
+                            type="text"
+                            placeholder="Thêm tag..."
+                            value={skillInput}
+                            onChange={(e) => setSkillInput(e.target.value)}
+                            onKeyPress={handleSkillKeyPress}
+                            className="flex-1 p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
                           />
+                          <Button
+                            type="button"
+                            onClick={addSkill}
+                            disabled={!skillInput.trim()}
+                            className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-xl px-4"
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Image Upload Section */}
+                      <div className="space-y-3">
+                        <label className="text-sm font-medium text-gray-700">
+                          Hình ảnh
+                        </label>
+                        {newPostImagePreview ? (
+                          <div className="relative">
+                            <img
+                              src={newPostImagePreview || "/placeholder.svg"}
+                              alt="Preview"
+                              className="w-full h-48 object-cover rounded-xl border border-gray-200"
+                            />
+                            <button
+                              onClick={removeImage}
+                              className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-purple-400 transition-colors">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleImageUpload}
+                              className="hidden"
+                              id="image-upload"
+                            />
+                            <label
+                              htmlFor="image-upload"
+                              className="cursor-pointer flex flex-col items-center space-y-2"
+                            >
+                              <ImageIcon className="h-8 w-8 text-gray-400" />
+                              <span className="text-sm text-gray-500">
+                                Nhấp để tải lên hình ảnh
+                              </span>
+                            </label>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                        <div className="flex space-x-2">
                           <label
                             htmlFor="image-upload"
-                            className="cursor-pointer flex flex-col items-center space-y-2"
+                            className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors cursor-pointer"
                           >
-                            <ImageIcon className="h-8 w-8 text-gray-400" />
-                            <span className="text-sm text-gray-500">
-                              Nhấp để tải lên hình ảnh
-                            </span>
+                            <ImageIcon className="h-5 w-5" />
                           </label>
+                          <button className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors">
+                            <Smile className="h-5 w-5" />
+                          </button>
                         </div>
-                      )}
-                    </div>
-
-                    <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                      <div className="flex space-x-2">
-                        <label
-                          htmlFor="image-upload"
-                          className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors cursor-pointer"
-                        >
-                          <ImageIcon className="h-5 w-5" />
-                        </label>
-                        <button className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors">
-                          <Smile className="h-5 w-5" />
-                        </button>
-                      </div>
-                      <div className="flex space-x-3">
-                        <Button
-                          variant="outline"
-                          onClick={() => {
-                            setShowCreateForm(false);
-                            setNewPostTitle("");
-                            setNewPostContent("");
-                            setNewPostImage(null);
-                            setNewPostImagePreview("");
-                            setNewPostSkills([]);
-                            setSkillInput("");
-                          }}
-                          className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-xl"
-                        >
-                          Hủy
-                        </Button>
-                        <Button
-                          onClick={handleCreatePost}
-                          disabled={
-                            creating ||
-                            !newPostTitle.trim() ||
-                            !newPostContent.trim()
-                          }
-                          className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-xl"
-                        >
-                          {creating ? (
-                            <span className="flex items-center">
-                              <svg
-                                className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                              >
-                                <circle
-                                  className="opacity-25"
-                                  cx="12"
-                                  cy="12"
-                                  r="10"
-                                  stroke="currentColor"
-                                  strokeWidth="4"
-                                ></circle>
-                                <path
-                                  className="opacity-75"
-                                  fill="currentColor"
-                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                ></path>
-                              </svg>
-                              Đang đăng...
-                            </span>
-                          ) : (
-                            "Đăng bài"
-                          )}
-                        </Button>
+                        <div className="flex space-x-3">
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              setShowCreateForm(false);
+                              setNewPostTitle("");
+                              setNewPostContent("");
+                              setNewPostImage(null);
+                              setNewPostImagePreview("");
+                              setNewPostSkills([]);
+                              setSkillInput("");
+                            }}
+                            className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-xl"
+                          >
+                            Hủy
+                          </Button>
+                          <Button
+                            onClick={handleCreatePost}
+                            disabled={
+                              creating ||
+                              !newPostTitle.trim() ||
+                              !newPostContent.trim()
+                            }
+                            className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-xl"
+                          >
+                            {creating ? (
+                              <span className="flex items-center">
+                                <svg
+                                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                  ></circle>
+                                  <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                  ></path>
+                                </svg>
+                                Đang đăng...
+                              </span>
+                            ) : (
+                              "Đăng bài"
+                            )}
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            )}
             {/* Posts list */}
             {posts.length > 0 ? (
               <div className="space-y-6">
@@ -898,11 +936,7 @@ const Post = () => {
                               <AvatarImage
                                 src={
                                   user?.image ||
-                                  "https://www.gravatar.com/avatar/default?s=200&d=mp" ||
-                                  "/placeholder.svg" ||
-                                  "/placeholder.svg" ||
-                                  "/placeholder.svg" ||
-                                  "/placeholder.svg"
+                                  "https://www.gravatar.com/avatar/default?s=200&d=mp"
                                 }
                               />
                               <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white text-lg">
@@ -1206,11 +1240,7 @@ const Post = () => {
                                 <AvatarImage
                                   src={
                                     userData[currentUserId]?.image ||
-                                    "https://www.gravatar.com/avatar/default?s=200&d=mp" ||
-                                    "/placeholder.svg" ||
-                                    "/placeholder.svg" ||
-                                    "/placeholder.svg" ||
-                                    "/placeholder.svg"
+                                    "https://www.gravatar.com/avatar/default?s=200&d=mp"
                                   }
                                 />
                                 <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white">
@@ -1256,10 +1286,102 @@ const Post = () => {
                             </div>
 
                             {post.comment_count > 0 && (
-                              <div className="mt-4 text-center">
-                                <button className="text-sm text-purple-600 font-medium hover:text-purple-700">
+                              <div className="mt-4">
+                                <button
+                                  onClick={() => handleViewAllComments(post.id)}
+                                  className="text-sm text-purple-600 font-medium hover:text-purple-700 mb-4"
+                                >
                                   Xem tất cả {post.comment_count} bình luận
                                 </button>
+
+                                {/* Display fetched comments */}
+                                {postComments[post.id] && (
+                                  <div className="space-y-3 mt-4">
+                                    {postComments[post.id].map(
+                                      (comment, index) => (
+                                        <div
+                                          key={index}
+                                          className="flex space-x-3"
+                                        >
+                                          <Avatar className="h-9 w-9">
+                                            <AvatarImage
+                                              src={
+                                                userData[currentUserId]
+                                                  ?.image ||
+                                                "https://www.gravatar.com/avatar/default?s=200&d=mp"
+                                              }
+                                            />
+                                            <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white">
+                                              {userInformation[
+                                                currentUserId
+                                              ]?.full_name?.[0]?.toUpperCase() ||
+                                                "U"}
+                                            </AvatarFallback>
+                                          </Avatar>
+                                          <div className="flex-1">
+                                            <div className="bg-white rounded-2xl px-4 py-2 border border-gray-200">
+                                              <p className="text-sm text-gray-800">
+                                                {comment.content}
+                                              </p>
+                                            </div>
+                                            {/* <div className="flex items-center space-x-4 mt-1 text-xs text-gray-500">
+                                            <span>{formatTime(comment.created_at)}</span>
+                                            <button className="hover:text-purple-600">
+                                              <Heart className="h-3 w-3 inline mr-1" />
+                                              {comment.like_count}
+                                            </button>
+                                          </div> */}
+                                          </div>
+                                        </div>
+                                      )
+                                    )}
+
+                                    {/* Load more comments button */}
+                                    {hasMoreComments[post.id] && (
+                                      <div className="text-center">
+                                        <button
+                                          onClick={() =>
+                                            loadMoreComments(post.id)
+                                          }
+                                          disabled={loadingComments[post.id]}
+                                          className="text-sm text-purple-600 font-medium hover:text-purple-700"
+                                        >
+                                          {loadingComments[post.id]
+                                            ? "Đang tải..."
+                                            : "Xem thêm bình luận"}
+                                        </button>
+                                      </div>
+                                    )}
+
+                                    {loadingComments[post.id] && (
+                                      <div className="text-center py-2">
+                                        <div className="inline-flex items-center text-sm text-gray-500">
+                                          <svg
+                                            className="animate-spin -ml-1 mr-2 h-4 w-4"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                          >
+                                            <circle
+                                              className="opacity-25"
+                                              cx="12"
+                                              cy="12"
+                                              r="10"
+                                              stroke="currentColor"
+                                              strokeWidth="4"
+                                            ></circle>
+                                            <path
+                                              className="opacity-75"
+                                              fill="currentColor"
+                                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                            ></path>
+                                          </svg>
+                                          Đang tải bình luận...
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
                               </div>
                             )}
                           </motion.div>
