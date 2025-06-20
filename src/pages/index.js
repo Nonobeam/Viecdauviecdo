@@ -11,6 +11,7 @@ export { default as Blog } from "./homepage/Blog";
 export { default as CareerPathBuilder } from "./homepage/CareerPathBuilder";
 export { default as Feedback } from "./homepage/Feedback";
 export { default as Home } from "./homepage/HomePage";
+export { default as Activate } from "./activate/Activate";
 export { default as ApplicationForm } from "./homepage/module/ApplicationForm";
 export { default as Job } from "./homepage/module/Job";
 export { default as PremiumPlansPage } from "./homepage/PremiumPlansPage";
