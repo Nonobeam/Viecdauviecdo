@@ -1,5 +1,6 @@
 export const ENDPOINTS = {
   // Posts
+  GET_POST_COMMENTS: (id: string) => `/api/posts/${id}/comments`, 
   GET_POST_BY_ID: (id: string) => `/api/posts/${id}`,
   UPDATE_POST: (id: string) => `/api/posts/${id}`,
   DELETE_POST: (id: string) => `/api/posts/${id}`,

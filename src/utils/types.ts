@@ -27,6 +27,12 @@ declare module 'types' {
     updatedAt: string;
   }
 
+  export interface Comment {
+    content: string,
+    like_count: number,
+    created_at: string
+  }
+
   export interface CreatePostRequest {
     user_id: string;
     title: string;
@@ -42,7 +48,7 @@ declare module 'types' {
     tags?: string[];
   }
 
-  export interface Comment {
+  export interface CommentRequest {
     id: string;
     userId: string;
     content: string;

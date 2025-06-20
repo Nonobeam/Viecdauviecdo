@@ -6,6 +6,7 @@ import {
   commentOnPost,
   createPost,
   deletePost,
+  getAllComments,
   getAllPosts,
   getUserPosts,
   likePost,
@@ -78,6 +79,13 @@ const Post = () => {
   const [commentInputs, setCommentInputs] = useState({});
   const [commenting, setCommenting] = useState({});
   const [showComments, setShowComments] = useState({});
+  const [toggleComment, setToggleComment] = useState({});
+
+  // Add these new states for fetched comments
+  const [postComments, setPostComments] = useState({});
+  const [loadingComments, setLoadingComments] = useState({});
+  const [commentPages, setCommentPages] = useState({});
+  const [hasMoreComments, setHasMoreComments] = useState({});
 
   // Dropdown menu states
   const [showDropdown, setShowDropdown] = useState({});
@@ -313,11 +321,53 @@ const Post = () => {
         )
       );
       setCommentInputs((prev) => ({ ...prev, [postId]: "" }));
+
+      // Refresh comments if they're currently being displayed
+      if (postComments[postId]) {
+        fetchPostComments(postId, 0, true);
+      }
     } catch (err) {
       console.error("Error commenting on post:", err);
     } finally {
       setCommenting((prev) => ({ ...prev, [postId]: false }));
     }
+  };
+
+  const fetchPostComments = async (postId, page = 0, reset = false) => {
+    try {
+      setLoadingComments((prev) => ({ ...prev, [postId]: true }));
+      const comments = await getAllComments(postId, page, 10);
+      if (reset || page === 0) {
+        setPostComments((prev) => ({ ...prev, [postId]: comments.data }));
+      } else {
+        setPostComments((prev) => ({
+          ...prev,
+          [postId]: [...(prev[postId] || []), ...comments.data],
+        }));
+      }
+
+      setCommentPages((prev) => ({ ...prev, [postId]: page }));
+      setHasMoreComments((prev) => ({
+        ...prev,
+        [postId]: comments.data.length === 10,
+      }));
+    } catch (err) {
+      console.error("Error fetching comments:", err);
+    } finally {
+      setLoadingComments((prev) => ({ ...prev, [postId]: false }));
+    }
+  };
+
+  const loadMoreComments = (postId) => {
+    const currentPage = commentPages[postId] || 0;
+    fetchPostComments(postId, currentPage + 1);
+  };
+
+  const handleViewAllComments = (postId) => {
+    if (!postComments[postId]) {
+      fetchPostComments(postId, 0, true);
+    }
+    setShowComments((prev) => ({ ...prev, [postId]: true }));
   };
 
   const toggleCommentInput = (postId) => {
@@ -506,11 +556,7 @@ const Post = () => {
                       <AvatarImage
                         src={
                           userData[currentUserId]?.image ||
-                          "https://www.gravatar.com/avatar/default?s=200&d=mp" ||
-                          "/placeholder.svg" ||
-                          "/placeholder.svg" ||
-                          "/placeholder.svg" ||
-                          "/placeholder.svg"
+                          "https://www.gravatar.com/avatar/default?s=200&d=mp"
                         }
                       />
                       <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white text-xl">
@@ -624,11 +670,7 @@ const Post = () => {
                     <AvatarImage
                       src={
                         userData[currentUserId]?.image ||
-                        "https://www.gravatar.com/avatar/default?s=200&d=mp" ||
-                        "/placeholder.svg" ||
-                        "/placeholder.svg" ||
-                        "/placeholder.svg" ||
-                        "/placeholder.svg"
+                        "https://www.gravatar.com/avatar/default?s=200&d=mp"
                       }
                     />
                     <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white">
@@ -683,11 +725,7 @@ const Post = () => {
                           <AvatarImage
                             src={
                               userData[currentUserId]?.image ||
-                              "https://www.gravatar.com/avatar/default?s=200&d=mp" ||
-                              "/placeholder.svg" ||
-                              "/placeholder.svg" ||
-                              "/placeholder.svg" ||
-                              "/placeholder.svg"
+                              "https://www.gravatar.com/avatar/default?s=200&d=mp"
                             }
                           />
                           <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white">
@@ -898,11 +936,7 @@ const Post = () => {
                               <AvatarImage
                                 src={
                                   user?.image ||
-                                  "https://www.gravatar.com/avatar/default?s=200&d=mp" ||
-                                  "/placeholder.svg" ||
-                                  "/placeholder.svg" ||
-                                  "/placeholder.svg" ||
-                                  "/placeholder.svg"
+                                  "https://www.gravatar.com/avatar/default?s=200&d=mp"
                                 }
                               />
                               <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white text-lg">
@@ -1206,11 +1240,7 @@ const Post = () => {
                                 <AvatarImage
                                   src={
                                     userData[currentUserId]?.image ||
-                                    "https://www.gravatar.com/avatar/default?s=200&d=mp" ||
-                                    "/placeholder.svg" ||
-                                    "/placeholder.svg" ||
-                                    "/placeholder.svg" ||
-                                    "/placeholder.svg"
+                                    "https://www.gravatar.com/avatar/default?s=200&d=mp"
                                   }
                                 />
                                 <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white">
@@ -1256,10 +1286,102 @@ const Post = () => {
                             </div>
 
                             {post.comment_count > 0 && (
-                              <div className="mt-4 text-center">
-                                <button className="text-sm text-purple-600 font-medium hover:text-purple-700">
+                              <div className="mt-4">
+                                <button
+                                  onClick={() => handleViewAllComments(post.id)}
+                                  className="text-sm text-purple-600 font-medium hover:text-purple-700 mb-4"
+                                >
                                   Xem tất cả {post.comment_count} bình luận
                                 </button>
+
+                                {/* Display fetched comments */}
+                                {postComments[post.id] && (
+                                  <div className="space-y-3 mt-4">
+                                    {postComments[post.id].map(
+                                      (comment, index) => (
+                                        <div
+                                          key={index}
+                                          className="flex space-x-3"
+                                        >
+                                          <Avatar className="h-9 w-9">
+                                            <AvatarImage
+                                              src={
+                                                userData[currentUserId]
+                                                  ?.image ||
+                                                "https://www.gravatar.com/avatar/default?s=200&d=mp"
+                                              }
+                                            />
+                                            <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white">
+                                              {userInformation[
+                                                currentUserId
+                                              ]?.full_name?.[0]?.toUpperCase() ||
+                                                "U"}
+                                            </AvatarFallback>
+                                          </Avatar>
+                                          <div className="flex-1">
+                                            <div className="bg-white rounded-2xl px-4 py-2 border border-gray-200">
+                                              <p className="text-sm text-gray-800">
+                                                {comment.content}
+                                              </p>
+                                            </div>
+                                            {/* <div className="flex items-center space-x-4 mt-1 text-xs text-gray-500">
+                                            <span>{formatTime(comment.created_at)}</span>
+                                            <button className="hover:text-purple-600">
+                                              <Heart className="h-3 w-3 inline mr-1" />
+                                              {comment.like_count}
+                                            </button>
+                                          </div> */}
+                                          </div>
+                                        </div>
+                                      )
+                                    )}
+
+                                    {/* Load more comments button */}
+                                    {hasMoreComments[post.id] && (
+                                      <div className="text-center">
+                                        <button
+                                          onClick={() =>
+                                            loadMoreComments(post.id)
+                                          }
+                                          disabled={loadingComments[post.id]}
+                                          className="text-sm text-purple-600 font-medium hover:text-purple-700"
+                                        >
+                                          {loadingComments[post.id]
+                                            ? "Đang tải..."
+                                            : "Xem thêm bình luận"}
+                                        </button>
+                                      </div>
+                                    )}
+
+                                    {loadingComments[post.id] && (
+                                      <div className="text-center py-2">
+                                        <div className="inline-flex items-center text-sm text-gray-500">
+                                          <svg
+                                            className="animate-spin -ml-1 mr-2 h-4 w-4"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                          >
+                                            <circle
+                                              className="opacity-25"
+                                              cx="12"
+                                              cy="12"
+                                              r="10"
+                                              stroke="currentColor"
+                                              strokeWidth="4"
+                                            ></circle>
+                                            <path
+                                              className="opacity-75"
+                                              fill="currentColor"
+                                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                            ></path>
+                                          </svg>
+                                          Đang tải bình luận...
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
                               </div>
                             )}
                           </motion.div>
