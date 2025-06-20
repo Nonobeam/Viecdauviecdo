@@ -2,28 +2,30 @@ import { Route, BrowserRouter as Router, Routes } from "react-router-dom"
 import PaymentLayout from "./layout/PaymentLayout"
 import ProtectedRoute from "./components/protectedRoute"
 import {
-  AboutUs,
-  AddProject,
+    AboutUs,
+    AddProject,
     Activate,
-  ApplicationForm,
-  Blog,
-  CancelPage,
-  CareerPathBuilder,
-  CompanyProfile,
-  EditProfile,
-  EditProject,
-  Home,
-  InsertCV,
-  Job,
-  Login,
-  MainLayout,
-  PaymentPage,
-  PremiumPlansPage,
-  Profile,
-  ProjectDetails,
-  Seeking,
-  SuccessPage,
-  TransactionHistory,
+    ApplicationForm,
+    Blog,
+    CancelPage,
+    CareerPathBuilder,
+    CompanyProfile,
+    EditProfile,
+    EditProject,
+    Home,
+    InsertCV,
+    Job,
+    Login,
+    MainLayout,
+    PaymentPage,
+    PremiumPlansPage,
+    Profile,
+    ChangeInformation,
+    ProjectDetails,
+    Seeking,
+    SuccessPage,
+    TransactionHistory,
+    ChangePassword,
 } from "./pages"
 import Project from "./pages/homepage/module/Project"
 
@@ -88,6 +90,24 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+
+                <Route
+                    path="/change-profile"
+                    element={
+                        <ProtectedRoute>
+                            <ChangeInformation />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/change-password"
+                    element={
+                        <ProtectedRoute>
+                            <ChangePassword />
+                        </ProtectedRoute>
+                    }
+                />
 
               <Route
                 path="/insert-cv"
