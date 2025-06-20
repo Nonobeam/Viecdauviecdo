@@ -2,14 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import {
-  Award,
   Calendar,
   Code,
   Filter,
   MapPin,
   Plus,
   RefreshCw,
-  X,
+  X
 } from "lucide-react";
 
 export default function SearchFilter({
@@ -291,7 +290,7 @@ export default function SearchFilter({
       </div>
 
       {/* Certifications Section */}
-      <div className="space-y-2 mb-6">
+      {/* <div className="space-y-2 mb-6">
         <h3 className="text-sm font-medium text-gray-800 flex items-center">
           <Award className="h-3.5 w-3.5 mr-2 text-gray-600" />
           Chứng Chỉ
@@ -338,7 +337,7 @@ export default function SearchFilter({
             ))}
           </div>
         </div>
-      </div>
+      </div> */}
     </aside>
   );
 }
