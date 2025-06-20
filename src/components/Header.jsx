@@ -1,18 +1,24 @@
-"use client"
-
-import ViecdauviecdoLogo from "@/components/Logo"
-import { Button } from "@/components/ui/button"
-import { useAuth } from "@/providers/AuthContext"
-import { BadgeDollarSign, ChevronDown, History, LogOut, Search, User, Sparkles } from "lucide-react"
-import { useState } from "react"
-import { Link, useLocation } from "react-router-dom"
+import ViecdauviecdoLogo from "@/components/Logo";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/providers/AuthContext";
+import {
+  BadgeDollarSign,
+  ChevronDown,
+  History,
+  LogOut,
+  Search,
+  User,
+  Sparkles,
+} from "lucide-react";
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 const Header = () => {
-  const { user, logout } = useAuth()
-  const location = useLocation()
+  const { user, logout } = useAuth();
+  const location = useLocation();
 
   const UserDropdown = ({ logout }) => {
-    const [isOpen, setIsOpen] = useState(false)
+    const [isOpen, setIsOpen] = useState(false);
     return (
       <div className="relative">
         <Button
@@ -26,7 +32,9 @@ const Header = () => {
           <span className="font-medium text-gray-700">Menu</span>
           <ChevronDown
             size={16}
-            className={`transition-transform duration-300 text-gray-600 ${isOpen ? "rotate-180" : ""}`}
+            className={`transition-transform duration-300 text-gray-600 ${
+              isOpen ? "rotate-180" : ""
+            }`}
           />
         </Button>
 
@@ -100,8 +108,8 @@ const Header = () => {
                   <button
                     className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 flex items-center gap-3 transition-all duration-200"
                     onClick={() => {
-                      setIsOpen(false)
-                      logout()
+                      setIsOpen(false);
+                      logout();
                     }}
                   >
                     <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center">
@@ -115,8 +123,8 @@ const Header = () => {
           </div>
         )}
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <header className="relative bg-white/80 backdrop-blur-md border-b border-white/50 shadow-lg">
@@ -251,7 +259,7 @@ const Header = () => {
         </nav>
       </div>
     </header>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;
