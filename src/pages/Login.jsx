@@ -27,6 +27,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../providers/AuthContext";
 import TermsSection from "./Term&Services";
 
+import { decodeJWT } from "@/utils/tokenUtils";
+import { getUserById } from "@/utils/userApi";
+
 const InputField = ({
   icon: Icon,
   error,
@@ -103,27 +106,26 @@ const LoginPage = () => {
   const [showPrivacy, setShowPrivacy] = useState(false);
   const { login } = useAuth();
 
-   const resetFormFields = () => {
-    setEmail("")
-    setPassword("")
-    setName("")
-    setConfirmPassword("")
-    setAgreeTerms(false)
-    setShowPassword(false)
-    setShowConfirmPassword(false)
-    setErrors({})
-  }
+  const resetFormFields = () => {
+    setEmail("");
+    setPassword("");
+    setName("");
+    setConfirmPassword("");
+    setAgreeTerms(false);
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+    setErrors({});
+  };
 
   // Reset fields when tab changes
   useEffect(() => {
-    resetFormFields()
-  }, [activeTab])
+    resetFormFields();
+  }, [activeTab]);
 
   // Reset fields on component mount (page reload)
   useEffect(() => {
-    resetFormFields()
-  }, [])
-
+    resetFormFields();
+  }, []);
 
   const validateForm = () => {
     const newErrors = {};
@@ -166,7 +168,20 @@ const LoginPage = () => {
       const { token } = await apiLogin({ username: email, password });
       Cookies.set("token", token, { expires: 7 });
       login(token);
-      navigate("/");
+
+      const payload = decodeJWT(token);
+      const user_id = payload?.user_id;
+
+      if (!user_id) throw new Error("Không tìm thấy user_id trong token");
+
+      const res = await getUserById(user_id);
+      const phone = res?.data?.user_information?.phone_number;
+
+      if (!phone) {
+        navigate("/change-profile");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       console.error(err);
       setErrors({

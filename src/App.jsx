@@ -1,19 +1,19 @@
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import ProtectedRoute from "./components/protectedRoute";
 import PaymentLayout from "./layout/PaymentLayout";
+import ProtectedRoute from "./components/protectedRoute";
 import {
   AboutUs,
-  Activate,
   AddProject,
+  Activate,
   ApplicationForm,
   Blog,
   CancelPage,
   CareerPathBuilder,
-  ChangeInformation,
-  ChangePassword,
   CompanyProfile,
   EditProfile,
   EditProject,
+  ChangeInformation,
+  ChangePassword,
   Feedback,
   Home,
   InsertCV,
@@ -27,6 +27,7 @@ import {
   Seeking,
   SuccessPage,
   TransactionHistory,
+  SkillsAndLinks,
 } from "./pages";
 import Project from "./pages/homepage/module/Project";
 
@@ -97,6 +98,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ChangeInformation />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/skills-links"
+              element={
+                <ProtectedRoute>
+                  <SkillsAndLinks />
                 </ProtectedRoute>
               }
             />
