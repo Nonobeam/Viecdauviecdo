@@ -2,25 +2,23 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/providers/AuthContext";
 import { getProjectByUserId } from "@/utils/projectAPI";
 import { ExternalLink, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const JoinedProjects = () => {
+const JoinedProjects = ({ userId }) => {
   const [joinedProjects, setJoinedProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const pageSize = 10;
-  const { user } = useAuth();
   const navigate = useNavigate();
 
   const fetchJoinedProjects = async (pageNum = 0, reset = false) => {
     try {
-      const data = await getProjectByUserId(user.user_id, "MEMBER", pageNum, pageSize);
+      const data = await getProjectByUserId(userId, "MEMBER", pageNum, pageSize);
       setJoinedProjects(data.data.content);
       setLoading(false);
       setError(null)
