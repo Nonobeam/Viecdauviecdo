@@ -1,9 +1,10 @@
-import { Card } from "@/components/Card";
-import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
-import { Filter, Users } from "lucide-react";
-import type React from "react";
-import { useState } from "react";
+import { Card } from "@/components/ui/Card"
+import { Button } from "@/components/ui/button"
+import { motion } from "framer-motion"
+import { Filter, Users } from "lucide-react"
+import type React from "react"
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 interface UserInformation {
   full_name: string;
@@ -17,10 +18,11 @@ interface UserInformation {
 }
 
 interface TalentCardProps {
-  email: string;
-  image: string;
-  fallback: string;
-  user_information?: UserInformation;
+  user_id: string
+  email: string
+  image: string
+  fallback: string
+  user_information?: UserInformation
 }
 
 interface TalentCardComponentProps {
@@ -28,11 +30,14 @@ interface TalentCardComponentProps {
   onCardClick?: (card: TalentCardProps) => void;
 }
 
-const TalentCard: React.FC<TalentCardComponentProps> = ({
-  cards,
-  onCardClick,
-}) => {
-  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+const TalentCard: React.FC<TalentCardComponentProps> = ({ cards, onCardClick }) => {
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null)
+  const navigate = useNavigate()
+
+  const handleCardClick = (card: TalentCardProps) => {
+    onCardClick?.(card)
+    navigate(`/profile/${card.user_id}`)
+  }
 
   if (cards.length === 0) {
     return (
@@ -54,22 +59,14 @@ const TalentCard: React.FC<TalentCardComponentProps> = ({
     );
   }
 
-  const handleCardClick = (card: TalentCardProps) => {
-    onCardClick?.(card);
-  };
-
   return (
     <div className="w-full">
-      {/* Header */}
       <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent">
-            Thành viên của Matchlent
-          </h2>
-        </div>
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent">
+          Thành viên của Matchlent
+        </h2>
       </div>
 
-      {/* Cards Grid */}
       <motion.div
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto w-full"
         initial={{ opacity: 0 }}
@@ -78,7 +75,7 @@ const TalentCard: React.FC<TalentCardComponentProps> = ({
       >
         {cards.map((card, index) => (
           <motion.div
-            key={`${card.email}-${index}`}
+            key={`${card.user_id}-${index}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -95,7 +92,6 @@ const TalentCard: React.FC<TalentCardComponentProps> = ({
         ))}
       </motion.div>
 
-      {/* Load More Section */}
       {cards.length > 0 && (
         <div className="mt-12 text-center">
           <p className="text-gray-500 mb-4">
@@ -113,5 +109,6 @@ const TalentCard: React.FC<TalentCardComponentProps> = ({
   );
 };
 
-export { TalentCard };
-export type { TalentCardComponentProps, TalentCardProps };
+export { TalentCard }
+export type { TalentCardComponentProps, TalentCardProps }
+
