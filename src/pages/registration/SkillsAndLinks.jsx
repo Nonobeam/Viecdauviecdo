@@ -23,6 +23,7 @@ const SkillsAndLinks = () => {
   // Skills state
   const [skills, setSkills] = useState([]);
   const [skillInput, setSkillInput] = useState("");
+  const [skillsError, setSkillsError] = useState("");
   // Form status
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -32,11 +33,15 @@ const SkillsAndLinks = () => {
     if (skillInput.trim() && !skills.includes(skillInput.trim())) {
       setSkills([...skills, skillInput.trim()]);
       setSkillInput("");
+      setSkillsError("");
     }
   };
 
   const handleRemoveSkill = (skillToRemove) => {
-    setSkills(skills.filter((skill) => skill !== skillToRemove));
+    const updatedSkills = skills.filter((skill) => skill !== skillToRemove);
+    setSkills(updatedSkills);
+    if (updatedSkills.length === 0)
+      setSkillsError("Vui lòng thêm ít nhất một kỹ năng.");
   };
 
   const handleSkillKeyDown = (e) => {
@@ -49,6 +54,14 @@ const SkillsAndLinks = () => {
   const handleSave = async () => {
     setIsSaving(true);
     setSaveError("");
+    setSkillsError("");
+
+    // Validation: Require at least one skill
+    if (skills.length === 0) {
+      setSkillsError("Vui lòng thêm ít nhất một kỹ năng.");
+      setIsSaving(false);
+      return;
+    }
 
     try {
       const token = user?.token || localStorage.getItem("authToken");
@@ -136,7 +149,7 @@ const SkillsAndLinks = () => {
             <span className="text-sm font-medium text-purple-600">
               Bước 2 của 2
             </span>
-            <span className="text-sm text-gray-500">Kỹ năng & Liên kết</span>
+            <span className="text-sm text-gray-500">Kỹ năng</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div className="bg-gradient-to-r from-purple-600 to-blue-600 h-2 rounded-full w-full"></div>
@@ -154,8 +167,14 @@ const SkillsAndLinks = () => {
             Quay lại bước trước
           </Button>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-            Kỹ năng & Liên kết
+            Kỹ năng
           </h1>
+
+          {/* Show validation error */}
+          {skillsError && (
+            <div className="text-red-600 text-xs mt-1">{skillsError}</div>
+          )}
+
           <p className="text-gray-600 mt-2">
             Thêm kỹ năng và các liên kết quan trọng để hoàn thiện hồ sơ của bạn.
           </p>
