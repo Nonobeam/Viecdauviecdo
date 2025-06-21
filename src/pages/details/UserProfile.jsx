@@ -40,7 +40,7 @@ const ProjectTabs = () => {
   const [activeTab, setActiveTab] = useState(tabs[0]);
 
   return (
-    <div className="p-4">
+    <div className="p-8">
       {/* Tab Navigation */}
       <div className="flex space-x-1 bg-gray-100 rounded-lg p-1 mb-6">
         {activeTab === "talents"}
@@ -189,27 +189,12 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50">
-      {/* Token Expiration Warning */}
-      <TokenExpirationWarning />
-
       <div className="container mx-auto px-4 py-8">
-        {/* Session Status Banner */}
-        {isExpiringSoon && (
-          <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
-            <div className="flex items-center gap-2 text-orange-800">
-              <AlertCircle className="h-4 w-4" />
-              <span className="text-sm">
-                Phiên đăng nhập sẽ hết hạn trong {formattedTimeUntilExpiration}
-              </span>
-            </div>
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Left Sidebar - Profile Info */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Sidebar */}
           <div className="lg:col-span-1">
-            <div className="shadow-xl p-6 mb-6">
-              <div className="space-y-6">
+            <div className="bg-gradient-to-br from-white to-purple-50/50 rounded-2xl shadow-xl p-8">
+              <div className="space-y-8">
                 {/* Profile Info */}
                 <div className="flex flex-col items-center text-center">
                   <div
@@ -223,13 +208,20 @@ const Profile = () => {
                           src={userData.image || "/placeholder.svg"}
                         />
                       ) : (
-                          <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white text-xl font-bold rounded-full">
-                            {userInformation?.full_name?.charAt(0) || "U"}
-                          </AvatarFallback>
+                        <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white text-2xl font-bold">
+                          JD
+                        </AvatarFallback>
                       )}
                     </Avatar>
                   </div>
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    style={{ display: "none" }}
+                    onChange={handleFileChange}
+                  />
+                  <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                     {userInformation?.full_name || "N/A"}
                   </h1>
                   <p className="text-lg text-gray-600 font-medium">
@@ -245,24 +237,17 @@ const Profile = () => {
                     </h2>
                     {isOwner && (
                       <Button
-                        variant="outline"
-                        className="w-full justify-start border-purple-200 text-purple-700 hover:bg-purple-50"
+                        variant="ghost"
+                        size="sm"
+                        className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
                         onClick={() =>
-                          navigate("/change-profile", {
+                          navigate("/edit-profile", {
                             state: { userInformation },
                           })
                         }
                       >
                         <Edit className="h-4 w-4 mr-2" />
-                        Chỉnh sửa hồ sơ
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start border-blue-200 text-blue-700 hover:bg-blue-50"
-                        onClick={() => navigate("/change-password")}
-                      >
-                        <Award className="h-4 w-4 mr-2" />
-                        Đổi mật khẩu
+                        Chỉnh sửa
                       </Button>
                     )}
                   </div>
@@ -399,53 +384,15 @@ const Profile = () => {
                     ))}
                   </div>
                 </div>
-                <div className="flex items-center gap-3 text-sm">
-                  <Phone className="h-4 w-4 text-purple-500" />
-                  <span className="text-gray-600">
-                    {userInformation?.phone_number || "N/A"}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
 
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* About Section */}
-            <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-center">
-                  <CardTitle className="text-xl font-bold text-gray-800">
-                    Giới thiệu
-                  </CardTitle>
-                  {isOwner && isTokenValid && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-purple-600 hover:text-purple-700"
-                      onClick={() =>
-                        navigate("/change-profile", {
-                          state: { userInformation },
-                        })
-                      }
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 leading-relaxed">
-                  {userInformation?.summary ||
-                    userInformation?.about_me ||
-                    "Chưa có thông tin giới thiệu."}
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Projects Section */}
-            <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
-              <CardHeader className="pb-3">
+          {/* Main Content - Projects */}
+          <div className="lg:col-span-2">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl">
+              {/* Header */}
+              <div className="p-8 pb-6 border-b border-gray-100">
                 <div className="flex justify-between items-center">
                   <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                     Các dự án
@@ -461,113 +408,24 @@ const Profile = () => {
                         Thêm Dự Án
                       </Link>
                     </Button>
-                  )}
+                  </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <ProjectTabs />
-              </CardContent>
-            </Card>
+              </div>
+              <ProjectTabs />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Profile Image Popup */}
-      <ProfileImagePopup
-        isOpen={isProfilePopupOpen}
-        onClose={() => setIsProfilePopupOpen(false)}
-        userData={userInformation}
-        onAvatarChange={handleAvatarChange}
-        isOwner={isOwner}
-      />
-
-      {/* Add Skill Modal */}
-      <Dialog open={isAddSkillOpen} onOpenChange={setIsAddSkillOpen}>
-        <DialogContent className="bg-white rounded-xl border-0 shadow-xl p-6 max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-gray-800 flex items-center">
-              <Award className="h-5 w-5 text-purple-600 mr-2" />
-              Thêm kỹ năng mới
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="new-skill" className="text-sm font-medium text-gray-700">
-                Tên kỹ năng
-              </Label>
-              <Input
-                  id="new-skill"
-                  value={newSkillName}
-                  onChange={(e) => setNewSkillName(e.target.value)}
-                  placeholder="Ví dụ: React, Node.js, UX Design..."
-                  className="border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  onKeyDown={handleSkillKeyDown}
-                  disabled={!isTokenValid}
-              />
-            </div>
-
-            {/* Add preview section */}
-            {previewSkill && (
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500">Xem trước:</span>
-                  <Badge className="bg-purple-100 text-purple-800 border-0 shadow-sm px-2 py-1 text-xs">
-                    {previewSkill}
-                  </Badge>
-                </div>
-            )}
-
-            <div className="flex justify-end gap-3">
-              <Button
-                  variant="outline"
-                  onClick={() => {
-                    setIsAddSkillOpen(false);
-                    setPreviewSkill(null);
-                  }}
-                  className="border-purple-200 text-purple-700 hover:bg-purple-50"
-              >
-                Hủy
-              </Button>
-              <Button
-                  onClick={() => {
-                    if (!previewSkill) {
-                      // If no preview, set one first
-                      setPreviewSkill(newSkillName.trim());
-                    } else {
-                      // If preview exists, confirm addition
-                      handleAddSkill();
-                    }
-                  }}
-                  disabled={!newSkillName.trim() || !isTokenValid}
-                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-md"
-              >
-                {previewSkill ? (
-                    "Xác nhận"
-                ) : (
-                    <>
-                      <Plus className="h-4 w-4 mr-1" />
-                      Thêm
-                    </>
-                )}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
       {/* Edit Skill Modal */}
       <Dialog open={isEditSkillOpen} onOpenChange={setIsEditSkillOpen}>
-        <DialogContent className="bg-white rounded-xl border-0 shadow-xl p-6 max-w-md">
+        <DialogContent className="bg-white">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-gray-800 flex items-center">
-              <Edit className="h-5 w-5 text-purple-600 mr-2" />
-              Chỉnh sửa kỹ năng
-            </DialogTitle>
+            <DialogTitle>Chỉnh sửa kỹ năng</DialogTitle>
           </DialogHeader>
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="edit-skill" className="text-sm font-medium text-gray-700">
-                Tên kỹ năng mới
-              </Label>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="edit-skill">Tên kỹ năng</Label>
               <Input
                 id="edit-skill"
                 value={editSkillName}
@@ -580,7 +438,7 @@ const Profile = () => {
                 }}
               />
             </div>
-            <div className="flex justify-end gap-3">
+            <div className="flex justify-end gap-2">
               <Button
                 variant="outline"
                 onClick={() => {
@@ -591,11 +449,7 @@ const Profile = () => {
               >
                 Hủy
               </Button>
-              <Button
-                  onClick={handleEditSkill}
-                  disabled={!editSkillName.trim() || !isTokenValid}
-                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-md"
-              >
+              <Button onClick={handleEditSkill} disabled={!editSkillName}>
                 Cập nhật
               </Button>
             </div>
