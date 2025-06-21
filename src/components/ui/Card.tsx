@@ -16,6 +16,7 @@ type UserInformation = {
 };
 
   type Talent  = {
+    user_id: string;
     email: string;
     image: string;
     fallback: string;
