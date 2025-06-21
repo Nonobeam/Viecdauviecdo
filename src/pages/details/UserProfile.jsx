@@ -38,8 +38,6 @@ const ProjectTabs = () => {
     joinedProjects: "Dự án tham gia",
   };
   const [activeTab, setActiveTab] = useState(tabs[0]);
-  };
-  const [activeTab, setActiveTab] = useState(tabs[0]);
 
   return (
     <div className="p-4">
@@ -607,9 +605,5 @@ const Profile = () => {
     </div>
   );
 };
-  );
-};
-
-export default Profile;
 
 export default Profile;

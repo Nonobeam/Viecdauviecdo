@@ -56,7 +56,7 @@ const TalentCard: React.FC<TalentCardComponentProps> = ({ cards, onCardClick }) 
           Điều chỉnh bộ lọc
         </Button>
       </div>
-    );
+    )
   }
 
   return (

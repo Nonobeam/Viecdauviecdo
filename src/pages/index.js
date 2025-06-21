@@ -5,7 +5,7 @@ export { default as EditProject } from "./account/EditProject";
 export { default as InsertCV } from "./account/InsertCV";
 export { default as Activate } from "./activate/Activate";
 export { default as ChangeInformation } from "./details/ChangeInformation";
-export { default as ChangePassword, default as ChangePassword } from "./details/ChangePassword";
+export { default as ChangePassword } from "./details/ChangePassword";
 export { default as CompanyProfile } from "./details/CompanyProfile";
 export { default as ProfileViewer } from "./details/ProfileViewer";
 export { default as ProjectDetails } from "./details/ProjectDetails";
