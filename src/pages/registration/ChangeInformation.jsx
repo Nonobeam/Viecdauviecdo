@@ -44,6 +44,9 @@ const ChangeInformation = () => {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [saveError, setSaveError] = useState("");
 
+  // Validation state
+  const [fieldErrors, setFieldErrors] = useState({});
+
   // Fetch user data on mount
   useEffect(() => {
     if (userInformation) {
@@ -102,10 +105,31 @@ const ChangeInformation = () => {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  // Validation function
+  const validateForm = () => {
+    const errors = {};
+
+    if (!fullName.trim()) errors.fullName = "Họ và tên là bắt buộc";
+    if (!jobTitle.trim()) errors.jobTitle = "Chức danh là bắt buộc";
+    if (!aboutMe.trim()) errors.aboutMe = "Giới thiệu bản thân là bắt buộc";
+    if (!country.trim()) errors.country = "Quốc gia là bắt buộc";
+    if (!state.trim()) errors.state = "Tỉnh/Thành phố là bắt buộc";
+    if (!city.trim()) errors.city = "Quận/Huyện là bắt buộc";
+    if (!phone.trim()) errors.phone = "Số điện thoại là bắt buộc";
+    else if (!/^[0-9+\-\s]{8,15}$/.test(phone.trim()))
+      errors.phone = "Số điện thoại không hợp lệ";
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   // Handle save action
   const handleSave = async () => {
-    setIsSaving(true);
     setSaveError("");
+    setFieldErrors({});
+    if (!validateForm()) return;
+
+    setIsSaving(true);
 
     try {
       const token = user?.token;
@@ -283,6 +307,11 @@ const ChangeInformation = () => {
                     required
                   />
                 </div>
+                {fieldErrors.fullName && (
+                  <div className="text-red-600 text-xs mt-1">
+                    {fieldErrors.fullName}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -329,6 +358,11 @@ const ChangeInformation = () => {
                     required
                   />
                 </div>
+                {fieldErrors.aboutMe && (
+                  <div className="text-red-600 text-xs mt-1">
+                    {fieldErrors.aboutMe}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -414,6 +448,22 @@ const ChangeInformation = () => {
                   </div>
                 </div>
               </div>
+
+              {fieldErrors.country && (
+                <div className="text-red-600 text-xs mt-1">
+                  {fieldErrors.country}
+                </div>
+              )}
+              {fieldErrors.state && (
+                <div className="text-red-600 text-xs mt-1">
+                  {fieldErrors.state}
+                </div>
+              )}
+              {fieldErrors.city && (
+                <div className="text-red-600 text-xs mt-1">
+                  {fieldErrors.city}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -429,6 +479,8 @@ const ChangeInformation = () => {
               !jobTitle ||
               !aboutMe ||
               !country ||
+              !state ||
+              !city ||
               !phone
             }
           >

@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSwipeable } from "react-swipeable";
-import { Card } from "@/components/ui/Card";
+import { Card } from "@/components/Card";
 import { useMotionValue, useTransform, useAnimation } from "framer-motion";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import { Frame } from "./ui/Frame";
 
 const SwipeView = ({ cards, initialCard }) => {
@@ -55,7 +55,7 @@ const SwipeView = ({ cards, initialCard }) => {
   return (
     <div {...swipeHandlers} className="h-fit flex items-center justify-center">
       <div className="relative w-2/3 flex justify-center items-center overflow-hidden">
-      <button
+        <button
           onClick={() => handleSwipe("right")}
           className="absolute left-4 z-20 text-gray-500 hover:text-gray-700 transition-colors"
         >
@@ -92,7 +92,7 @@ const SwipeView = ({ cards, initialCard }) => {
           animate={anim}
           rotate={rotate}
           opacity={opacity}
-          onDragEnd={function(_, info) {
+          onDragEnd={function (_, info) {
             if (Math.abs(info.point.x) < 100) {
               anim.start({ x: 0 });
             } else {
@@ -100,14 +100,14 @@ const SwipeView = ({ cards, initialCard }) => {
             }
           }}
         >
-        <div className="current flex-none w-2/3 z-10 h-96 md:h-160">
-          <Card
-            card={cards[currentIndex]}
-            index={currentIndex}
-            hovered={null}
-            setHovered={() => {}}
-          />
-        </div>
+          <div className="current flex-none w-2/3 z-10 h-96 md:h-160">
+            <Card
+              card={cards[currentIndex]}
+              index={currentIndex}
+              hovered={null}
+              setHovered={() => {}}
+            />
+          </div>
         </Frame>
         <div className="next flex-none w-2/3 opacity-50 scale-90 h-80 md:h-112">
           <Card

@@ -116,12 +116,10 @@ const LoginPage = () => {
     setErrors({});
   };
 
-  // Reset fields when tab changes
   useEffect(() => {
     resetFormFields();
   }, [activeTab]);
 
-  // Reset fields on component mount (page reload)
   useEffect(() => {
     resetFormFields();
   }, []);
@@ -129,12 +127,14 @@ const LoginPage = () => {
   const validateForm = () => {
     const newErrors = {};
 
+    // Email validation
     if (!email) {
       newErrors.email = "Email là bắt buộc";
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       newErrors.email = "Email không hợp lệ";
     }
 
+    // Password validation
     if (!password) {
       newErrors.password = "Mật khẩu là bắt buộc";
     } else if (password.length < 6) {
@@ -142,14 +142,21 @@ const LoginPage = () => {
     }
 
     if (activeTab === "signup") {
+      // Name validation
       if (!full_name) {
         newErrors.full_name = "Họ tên là bắt buộc";
+      } else if (full_name.length < 2) {
+        newErrors.full_name = "Họ tên phải có ít nhất 2 ký tự";
       }
 
-      if (password !== confirmPassword) {
+      // Confirm password validation
+      if (!confirmPassword) {
+        newErrors.confirmPassword = "Vui lòng xác nhận mật khẩu";
+      } else if (password !== confirmPassword) {
         newErrors.confirmPassword = "Mật khẩu xác nhận không khớp";
       }
 
+      // Terms validation
       if (!agreeTerms) {
         newErrors.terms = "Bạn phải đồng ý với điều khoản";
       }
