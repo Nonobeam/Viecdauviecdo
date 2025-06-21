@@ -64,7 +64,7 @@ const SkillsAndLinks = () => {
     }
 
     try {
-      const token = user?.token || localStorage.getItem("authToken");
+      const token = user?.token;
 
       if (!token) {
         throw new Error("Không tìm thấy token xác thực");
