@@ -113,7 +113,7 @@ const SkillsAndLinks = () => {
   };
 
   const handleBack = () => {
-    navigate("/registration/change-information", {
+    navigate("/change-profile", {
       state: {
         userInformation,
         isRegistration: true,
