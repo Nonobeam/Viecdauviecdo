@@ -24,3 +24,4 @@ export { default as Login } from "./Login";
 export { default as CancelPage } from "./payment/CancelPage";
 export { default as PaymentPage } from "./payment/PaymentPage";
 export { default as SuccessPage } from "./payment/SuccessPage";
+export { default as ErrorPage } from "./ErrorPage";

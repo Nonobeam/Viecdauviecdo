@@ -28,6 +28,7 @@ import {
   SuccessPage,
   TransactionHistory,
   SkillsAndLinks,
+  ErrorPage,
 } from "./pages";
 import Project from "./pages/homepage/module/Project";
 
@@ -165,7 +166,7 @@ function App() {
               }
             />
 
-            <Route path="*" element={<div>404 Not Found</div>} />
+            <Route path="*" element={<ErrorPage />} />
           </Route>
 
           <Route

@@ -1,7 +1,7 @@
 export { Avatar, AvatarImage, AvatarFallback } from "./avatar";
 export { Badge } from "./badge";
 export { Button } from "./button";
-export { Card } from "./Card";
+export { Card } from "../Card";
 export { Checkbox } from "./checkbox";
 export { FileUpload } from "./file-upload";
 export { Frame } from "./Frame";

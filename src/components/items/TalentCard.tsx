@@ -1,35 +1,38 @@
-import { Card } from "@/components/ui/Card"
-import { Button } from "@/components/ui/button"
-import { motion } from "framer-motion"
-import { Filter, Users } from "lucide-react"
-import type React from "react"
-import { useState } from "react"
+import { Card } from "@/components/Card";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { Filter, Users } from "lucide-react";
+import type React from "react";
+import { useState } from "react";
 
 interface UserInformation {
-  full_name: string
-  job_title?: string
-  location?: string
-  city?: string
-  state?: string
-  country?: string
-  skills?: string[]
-  certifications?: string[]
+  full_name: string;
+  job_title?: string;
+  location?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  skills?: string[];
+  certifications?: string[];
 }
 
 interface TalentCardProps {
-  email: string
-  image: string
-  fallback: string
-  user_information?: UserInformation
+  email: string;
+  image: string;
+  fallback: string;
+  user_information?: UserInformation;
 }
 
 interface TalentCardComponentProps {
-  cards: TalentCardProps[]
-  onCardClick?: (card: TalentCardProps) => void
+  cards: TalentCardProps[];
+  onCardClick?: (card: TalentCardProps) => void;
 }
 
-const TalentCard: React.FC<TalentCardComponentProps> = ({ cards, onCardClick }) => {
-  const [hoveredCard, setHoveredCard] = useState<number | null>(null)
+const TalentCard: React.FC<TalentCardComponentProps> = ({
+  cards,
+  onCardClick,
+}) => {
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
 
   if (cards.length === 0) {
     return (
@@ -37,19 +40,23 @@ const TalentCard: React.FC<TalentCardComponentProps> = ({ cards, onCardClick }) 
         <Users className="w-16 h-16 text-indigo-300 mb-4" />
         <p className="text-lg text-gray-600 mb-4">Chưa có thành viên nào</p>
         <p className="text-sm text-gray-500 text-center max-w-md">
-          Hãy thử điều chỉnh bộ lọc tìm kiếm hoặc quay lại sau để khám phá thêm nhiều thành viên hơn.
+          Hãy thử điều chỉnh bộ lọc tìm kiếm hoặc quay lại sau để khám phá thêm
+          nhiều thành viên hơn.
         </p>
-        <Button variant="outline" className="mt-4 border-indigo-200 text-indigo-700 hover:bg-indigo-50">
+        <Button
+          variant="outline"
+          className="mt-4 border-indigo-200 text-indigo-700 hover:bg-indigo-50"
+        >
           <Filter className="w-4 h-4 mr-2" />
           Điều chỉnh bộ lọc
         </Button>
       </div>
-    )
+    );
   }
 
   const handleCardClick = (card: TalentCardProps) => {
-    onCardClick?.(card)
-  }
+    onCardClick?.(card);
+  };
 
   return (
     <div className="w-full">
@@ -91,16 +98,20 @@ const TalentCard: React.FC<TalentCardComponentProps> = ({ cards, onCardClick }) 
       {/* Load More Section */}
       {cards.length > 0 && (
         <div className="mt-12 text-center">
-          <p className="text-gray-500 mb-4">Hiển thị {cards.length} chuyên gia đầu tiên</p>
-          <Button variant="outline" className="border-indigo-200 text-indigo-700 hover:bg-indigo-50 px-8">
+          <p className="text-gray-500 mb-4">
+            Hiển thị {cards.length} chuyên gia đầu tiên
+          </p>
+          <Button
+            variant="outline"
+            className="border-indigo-200 text-indigo-700 hover:bg-indigo-50 px-8"
+          >
             Xem thêm chuyên gia
           </Button>
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export { TalentCard }
-export type { TalentCardComponentProps, TalentCardProps }
-
+export { TalentCard };
+export type { TalentCardComponentProps, TalentCardProps };

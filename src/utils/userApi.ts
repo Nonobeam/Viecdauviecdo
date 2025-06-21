@@ -144,7 +144,7 @@ export const deleteSkill = async (
   skillName: string
 ): Promise<void> =>
   handleRequest(() =>
-    api.delete<void>(ENDPOINTS.DELETE_COMPANY(userId), {
+    api.delete<void>(ENDPOINTS.DELETE_USER_SKILL(userId), {
       data: skillName,
       headers: {
         "Content-Type": "application/json"
