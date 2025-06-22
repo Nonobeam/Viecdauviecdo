@@ -2,6 +2,7 @@
 
 import ChangeColorToggle from "@/components/ChangeColorToggle"
 import Header from "@/components/Header"
+import Footer from "@/components/aboutus/Footer"
 import { Outlet } from "react-router-dom"
 import { createContext, useContext, useState } from "react"
 
@@ -11,7 +12,7 @@ const ModalContext = createContext()
 export const useModal = () => {
   const context = useContext(ModalContext)
   if (!context) {
-    throw new Error('useModal must be used within ModalProvider')
+    throw new Error("useModal must be used within ModalProvider")
   }
   return context
 }
@@ -41,6 +42,11 @@ const MainLayout = () => {
         <main className="relative z-10">
           <Outlet />
         </main>
+
+        {/* Footer */}
+        <div className="relative z-10">
+          <Footer />
+        </div>
 
         {/* Decorative Elements - Only show when no modal is open */}
         {!isModalOpen && (
