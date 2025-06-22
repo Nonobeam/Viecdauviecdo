@@ -34,7 +34,7 @@ import {
 } from "@/utils/userApi";
 import ProfileImagePopup from "@/components/Profile/ProfileImagePopup";
 import TokenExpirationWarning from "@/components/Profile/TokenExpirationWarning";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { AlertCircle } from "lucide-react";
 import TabList from "@/components/TabList";
 
