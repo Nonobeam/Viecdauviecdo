@@ -1,23 +1,25 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/providers/AuthContext";
 import { getProjectByUserId } from "@/utils/projectAPI";
 import { ExternalLink, FolderOpen, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const UserProjects = ({ userId }) => {
+const UserProjects = () => {
   const [userProjects, setUserProjects] = useState([]);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
   const navigate = useNavigate();
   const pageSize = 10;
 
   const fetchUserProjects = async (pageNum = 0, reset = false) => {
     try {
       const data = await getProjectByUserId(
-        userId,
+        user.user_id,
         "OWNER",
         pageNum,
         pageSize
@@ -53,7 +55,7 @@ const UserProjects = ({ userId }) => {
   useEffect(() => {
     fetchUserProjects(0, true);
     setPage(0);
-  }, [userId]);
+  }, [user]);
 
   const handleCardClick = (id) => {
     navigate(`/project/${id}`);

@@ -23,7 +23,6 @@ import {
   PaymentPage,
   PremiumPlansPage,
   Profile,
-  ProfileViewer,
   ProjectDetails,
   Seeking,
   SuccessPage,
@@ -82,15 +81,6 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Profile />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/profile/:id"
-              element={
-                <ProtectedRoute>
-                  <ProfileViewer />
                 </ProtectedRoute>
               }
             />
