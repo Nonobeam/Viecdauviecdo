@@ -161,7 +161,7 @@ const EditProfile = () => {
             </Button>
           </Link>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-            Edit Profile
+            Điều chỉnh trang cá nhân
           </h1>
         </div>
 
