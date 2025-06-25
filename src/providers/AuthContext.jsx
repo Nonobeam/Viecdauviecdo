@@ -6,14 +6,17 @@ import {
   isTokenExpired,
   getTimeUntilExpiration,
   getUserIdFromToken,
-  getEmailFromToken
+  getEmailFromToken,
+  handleTokenResponse
 } from "@/utils/tokenUtils"
+import { login as apiLogin } from "@/utils/authApi"
+import { getUserById } from "@/utils/userApi"
 
 const AuthContext = createContext({
   user: null,
   loading: true,
-  login: () => { },
-  logout: () => { },
+  login: () => {},
+  logout: () => {},
   isAuthenticated: false,
 })
 
@@ -143,22 +146,19 @@ export const AuthProvider = ({ children }) => {
     initializeAuth()
   }, [])
 
-  const login = async (token, password) => {
+  const login = async (email, password) => {
     try {
       setLoading(true)
 
-      // Check if provided token is expired
-      if (isTokenExpired(token, TOKEN_BUFFER_MINUTES)) {
-        throw new Error("Token is expired")
-      }
-
+      const { token } = await apiLogin({ username: email, password })
+      
       const decodedToken = jwtDecode(token)
       const userId = getUserIdFromToken(token)
-      const email = getEmailFromToken(token)
+      const emailFromToken = getEmailFromToken(token)
       const name = decodedToken.name
 
       const userData = {
-        email: email,
+        email: emailFromToken,
         name: name,
         id: userId,
         user_id: userId,
@@ -170,7 +170,13 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("user", JSON.stringify(userData))
       localStorage.setItem("token", userData.token)
 
-      return userData
+      // Check if user needs to update profile
+      const res = await getUserById(userId)
+      const phone = res?.data?.user_information?.phone_number
+
+      return {
+        requiresProfileUpdate: !phone
+      }
     } catch (error) {
       console.error("Login error:", error)
       throw error

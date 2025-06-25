@@ -73,3 +73,19 @@ export const getEmailFromToken = (token) => {
     return null
   }
 }
+
+export const handleTokenResponse = (token) => {
+  try {
+    const decoded = decodeJWT(token);
+    return {
+      token,
+      userId: getUserIdFromToken(token),
+      email: getEmailFromToken(token),
+      name: decoded?.name || null,
+      expiresAt: decoded?.exp ? new Date(decoded.exp * 1000) : null
+    };
+  } catch (error) {
+    console.error("Error handling token response:", error);
+    return null;
+  }
+};

@@ -149,18 +149,9 @@ const LoginPage = () => {
 
     setIsLoading(true)
     try {
-      const { token } = await apiLogin({ username: email, password })
-      Cookies.set("token", token, { expires: COOKIE_EXPIRES_DAYS })
-      login(token)
-
-      const user_id = getUserIdFromToken(token)
-
-      if (!user_id) throw new Error("Không tìm thấy user_id trong token")
-
-      const res = await getUserById(user_id)
-      const phone = res?.data?.user_information?.phone_number
-
-      if (!phone) {
+      const { requiresProfileUpdate } = await login(email, password)
+      
+      if (requiresProfileUpdate) {
         navigate("/change-profile")
       } else {
         navigate("/")
