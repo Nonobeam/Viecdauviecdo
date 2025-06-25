@@ -54,3 +54,22 @@ export const getTimeUntilExpiration = (token) => {
     return null
   }
 }
+
+// Additional utility functions
+export const getUserIdFromToken = (token) => {
+  try {
+    const decoded = decodeJWT(token)
+    return decoded?.user_id || decoded?.sub || null
+  } catch (error) {
+    return null
+  }
+}
+
+export const getEmailFromToken = (token) => {
+  try {
+    const decoded = decodeJWT(token)
+    return decoded?.email || decoded?.sub || null
+  } catch (error) {
+    return null
+  }
+}
