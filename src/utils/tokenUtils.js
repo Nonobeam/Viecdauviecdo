@@ -54,3 +54,38 @@ export const getTimeUntilExpiration = (token) => {
     return null
   }
 }
+
+// Additional utility functions
+export const getUserIdFromToken = (token) => {
+  try {
+    const decoded = decodeJWT(token)
+    return decoded?.user_id || decoded?.sub || null
+  } catch (error) {
+    return null
+  }
+}
+
+export const getEmailFromToken = (token) => {
+  try {
+    const decoded = decodeJWT(token)
+    return decoded?.email || decoded?.sub || null
+  } catch (error) {
+    return null
+  }
+}
+
+export const handleTokenResponse = (token) => {
+  try {
+    const decoded = decodeJWT(token);
+    return {
+      token,
+      userId: getUserIdFromToken(token),
+      email: getEmailFromToken(token),
+      name: decoded?.name || null,
+      expiresAt: decoded?.exp ? new Date(decoded.exp * 1000) : null
+    };
+  } catch (error) {
+    console.error("Error handling token response:", error);
+    return null;
+  }
+};

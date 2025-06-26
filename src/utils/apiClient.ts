@@ -1,22 +1,20 @@
 import axios, { AxiosResponse } from 'axios';
-import Cookies from 'js-cookie';
 
-// Create an axios instance with default base URL
 export const api = axios.create({
   baseURL: 'https://backend.matchlent.xyz',
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Add interceptor to include Authorization header from cookies
 api.interceptors.request.use((config) => {
-  const token = Cookies.get('token');
-  if (token) {
-    config.headers['Authorization'] = `Bearer ${token}`;
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
   }
   return config;
 });
 
-// Generic helper to handle requests
 export async function handleRequest<T>(
   requestFn: () => Promise<AxiosResponse<T>>
 ): Promise<T> {

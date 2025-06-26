@@ -1,42 +1,31 @@
-import { Logo } from "@/components/icons/Logo";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import Swal from "sweetalert2";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { login as apiLogin } from "@/utils/authApi";
-import { createUser as apiRegister } from "@/utils/userApi";
-import { AnimatePresence, motion } from "framer-motion";
-import Cookies from "js-cookie";
-import {
-  AlertCircle,
-  ArrowRight,
-  CheckCircle,
-  Eye,
-  EyeOff,
-  Lock,
-  Mail,
-  Shield,
-  Sparkles,
-  User,
-} from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../providers/AuthContext";
-import TermsSection from "./Term&Services";
+"use client"
 
-import { decodeJWT } from "@/utils/tokenUtils";
-import { getUserById } from "@/utils/userApi";
+import { Logo } from "@/components/icons/Logo"
+import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import Swal from "sweetalert2"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { login as apiLogin } from "@/utils/authApi"
+import { createUser as apiRegister } from "@/utils/userApi"
+import { AnimatePresence, motion } from "framer-motion"
+import Cookies from "js-cookie"
+import { AlertCircle, ArrowRight, CheckCircle, Eye, EyeOff, Lock, Mail, Shield, Sparkles, User } from "lucide-react"
+import { useCallback, useEffect, useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { useAuth } from "../providers/AuthContext"
+import TermsSection from "./Term&Services"
 
-const InputField = ({
-  icon: Icon,
-  error,
-  type = "text",
-  showPasswordToggle,
-  onTogglePassword,
-  ...props
-}) => (
+import { getUserIdFromToken } from "@/utils/tokenUtils"
+import { getUserById } from "@/utils/userApi"
+
+// Configuration constants
+const MIN_PASSWORD_LENGTH = 6
+const MIN_NAME_LENGTH = 2
+const COOKIE_EXPIRES_DAYS = 7
+
+const InputField = ({ icon: Icon, error, type = "text", showPasswordToggle, onTogglePassword, ...props }) => (
   <div className="space-y-2">
     <Label htmlFor={props.id} className="text-sm font-medium text-gray-700">
       {props.label}
@@ -47,23 +36,13 @@ const InputField = ({
       </div>
       <Input
         {...props}
-        type={
-          showPasswordToggle
-            ? type === "password" && !showPasswordToggle
-              ? "password"
-              : "text"
-            : type
-        }
+        type={showPasswordToggle ? (type === "password" && !showPasswordToggle ? "password" : "text") : type}
         className={`pl-10 h-12 border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 transition-all duration-300 ${
           error ? "border-red-300 focus:border-red-500 focus:ring-red-500" : ""
         }`}
       />
       {type === "password" && (
-        <button
-          type="button"
-          className="absolute inset-y-0 right-0 pr-3 flex items-center"
-          onClick={onTogglePassword}
-        >
+        <button type="button" className="absolute inset-y-0 right-0 pr-3 flex items-center" onClick={onTogglePassword}>
           {showPasswordToggle ? (
             <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
           ) : (
@@ -86,132 +65,119 @@ const InputField = ({
       )}
     </AnimatePresence>
   </div>
-);
+)
 
 const LoginPage = () => {
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("login");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState({});
+  const navigate = useNavigate()
+  const [activeTab, setActiveTab] = useState("login")
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [errors, setErrors] = useState({})
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [full_name, setName] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [agreeTerms, setAgreeTerms] = useState(false);
-  const [showTerms, setShowTerms] = useState(false);
-  const [showPrivacy, setShowPrivacy] = useState(false);
-  const { login } = useAuth();
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [full_name, setName] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [agreeTerms, setAgreeTerms] = useState(false)
+  const { login } = useAuth()
 
-  const resetFormFields = () => {
-    setEmail("");
-    setPassword("");
-    setName("");
-    setConfirmPassword("");
-    setAgreeTerms(false);
-    setShowPassword(false);
-    setShowConfirmPassword(false);
-    setErrors({});
-  };
+  const resetFormFields = useCallback(() => {
+    setEmail("")
+    setPassword("")
+    setName("")
+    setConfirmPassword("")
+    setAgreeTerms(false)
+    setShowPassword(false)
+    setShowConfirmPassword(false)
+    setErrors({})
+  }, [])
 
   useEffect(() => {
-    resetFormFields();
-  }, [activeTab]);
+    resetFormFields()
+  }, [activeTab, resetFormFields])
 
-  useEffect(() => {
-    resetFormFields();
-  }, []);
+  const validateEmail = (email) => {
+    const emailRegex = /\S+@\S+\.\S+/
+    return emailRegex.test(email)
+  }
 
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors = {}
 
     // Email validation
     if (!email) {
-      newErrors.email = "Email là bắt buộc";
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = "Email không hợp lệ";
+      newErrors.email = "Email là bắt buộc"
+    } else if (!validateEmail(email)) {
+      newErrors.email = "Email không hợp lệ"
     }
 
     // Password validation
     if (!password) {
-      newErrors.password = "Mật khẩu là bắt buộc";
-    } else if (password.length < 6) {
-      newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự";
+      newErrors.password = "Mật khẩu là bắt buộc"
+    } else if (password.length < MIN_PASSWORD_LENGTH) {
+      newErrors.password = `Mật khẩu phải có ít nhất ${MIN_PASSWORD_LENGTH} ký tự`
     }
 
     if (activeTab === "signup") {
       // Name validation
       if (!full_name) {
-        newErrors.full_name = "Họ tên là bắt buộc";
-      } else if (full_name.length < 2) {
-        newErrors.full_name = "Họ tên phải có ít nhất 2 ký tự";
+        newErrors.full_name = "Họ tên là bắt buộc"
+      } else if (full_name.length < MIN_NAME_LENGTH) {
+        newErrors.full_name = `Họ tên phải có ít nhất ${MIN_NAME_LENGTH} ký tự`
       }
 
       // Confirm password validation
       if (!confirmPassword) {
-        newErrors.confirmPassword = "Vui lòng xác nhận mật khẩu";
+        newErrors.confirmPassword = "Vui lòng xác nhận mật khẩu"
       } else if (password !== confirmPassword) {
-        newErrors.confirmPassword = "Mật khẩu xác nhận không khớp";
+        newErrors.confirmPassword = "Mật khẩu xác nhận không khớp"
       }
 
       // Terms validation
       if (!agreeTerms) {
-        newErrors.terms = "Bạn phải đồng ý với điều khoản";
+        newErrors.terms = "Bạn phải đồng ý với điều khoản"
       }
     }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
 
   const handleLogin = async () => {
-    if (!validateForm()) return;
+    if (!validateForm()) return
 
-    setIsLoading(true);
+    setIsLoading(true)
     try {
-      const { token } = await apiLogin({ username: email, password });
-      Cookies.set("token", token, { expires: 7 });
-      login(token);
-
-      const payload = decodeJWT(token);
-      const user_id = payload?.user_id;
-
-      if (!user_id) throw new Error("Không tìm thấy user_id trong token");
-
-      const res = await getUserById(user_id);
-      const phone = res?.data?.user_information?.phone_number;
-
-      if (!phone) {
-        navigate("/change-profile");
+      const { requiresProfileUpdate } = await login(email, password)
+      
+      if (requiresProfileUpdate) {
+        navigate("/change-profile")
       } else {
-        navigate("/");
+        navigate("/")
       }
     } catch (err) {
-      console.error(err);
+      console.error("Login error:", err)
       setErrors({
         general: "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.",
-      });
+      })
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   const handleGoogle = useCallback(async () => {
     try {
-      window.location.href =
-        "https://backend.matchlent.xyz/oauth2/authorization/google";
+      window.location.href = "https://backend.matchlent.xyz/oauth2/authorization/google"
     } catch (err) {
-      console.error(err);
-    } finally {
+      console.error("Google login error:", err)
     }
-  }, []);
+  }, [])
 
   const handleRegister = async () => {
-    if (!validateForm()) return;
+    if (!validateForm()) return
 
-    setIsLoading(true);
+    setIsLoading(true)
     try {
       await apiRegister({
         email,
@@ -219,45 +185,38 @@ const LoginPage = () => {
         password,
         role_name: "TALENT",
         image: undefined,
-      });
-      setErrors({});
+      })
+      setErrors({})
       Swal.fire({
-        title:
-          "Đăng ký thành công — email xác nhận đã được gửi đến hộp thư của bạn",
+        title: "Đăng ký thành công — email xác nhận đã được gửi đến hộp thư của bạn",
         icon: "success",
         draggable: true,
         timer: 3000,
         timerProgressBar: true,
-      });
-      setActiveTab("/login");
+      })
+      setActiveTab("login")
     } catch (err) {
-      console.error(err);
+      console.error("Registration error:", err)
       Swal.fire({
         title: "Đăng ký thất bại. Vui lòng thử lại",
         icon: "error",
         timer: 2500,
         timerProgressBar: true,
-      });
-      setErrors({ general: "Đăng ký thất bại. Vui lòng thử lại." });
+      })
+      setErrors({ general: "Đăng ký thất bại. Vui lòng thử lại." })
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   const renderSocialLogins = () => (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.3 }}
-    >
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
       <div className="relative my-8">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t border-gray-200"></span>
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="bg-white px-4 text-gray-500 font-medium">
-            Hoặc tiếp tục với
-          </span>
+          <span className="bg-white px-4 text-gray-500 font-medium">Hoặc tiếp tục với</span>
         </div>
       </div>
       <div className="grid grid-cols-3 gap-3">
@@ -268,9 +227,7 @@ const LoginPage = () => {
         >
           <div className="flex items-center justify-center">
             {Logo.google}
-            <span className="ml-2 text-sm font-medium group-hover:text-indigo-600">
-              Google
-            </span>
+            <span className="ml-2 text-sm font-medium group-hover:text-indigo-600">Google</span>
           </div>
         </Button>
         <Button
@@ -279,9 +236,7 @@ const LoginPage = () => {
         >
           <div className="flex items-center justify-center">
             {Logo.linkedIn}
-            <span className="ml-2 text-sm font-medium group-hover:text-indigo-600">
-              LinkedIn
-            </span>
+            <span className="ml-2 text-sm font-medium group-hover:text-indigo-600">LinkedIn</span>
           </div>
         </Button>
         <Button
@@ -290,14 +245,12 @@ const LoginPage = () => {
         >
           <div className="flex items-center justify-center">
             {Logo.github}
-            <span className="ml-2 text-sm font-medium group-hover:text-indigo-600">
-              GitHub
-            </span>
+            <span className="ml-2 text-sm font-medium group-hover:text-indigo-600">GitHub</span>
           </div>
         </Button>
       </div>
     </motion.div>
-  );
+  )
 
   return (
     <div className="flex min-h-screen w-full bg-gradient-to-br from-indigo-50 via-white to-purple-50">
@@ -324,17 +277,14 @@ const LoginPage = () => {
             <h1 className="text-5xl font-bold mb-6 leading-tight">
               Chào Mừng Đến Với
               <br />
-              <Link
-                to="/"
-                className="hover:text-indigo-200 transition-colors duration-300 inline-flex items-center"
-              >
+              <Link to="/" className="hover:text-indigo-200 transition-colors duration-300 inline-flex items-center">
                 Matchlent
                 <ArrowRight className="ml-2 h-8 w-8" />
               </Link>
             </h1>
             <p className="text-xl opacity-90 leading-relaxed mb-8">
-              "Kết nối, hợp tác và hiện thực hóa những dự án độc đáo của
-              bạn—vượt ra ngoài công việc, vượt qua mọi giới hạn."
+              "Kết nối, hợp tác và hiện thực hóa những dự án độc đáo của bạn—vượt ra ngoài công việc, vượt qua mọi giới
+              hạn."
             </p>
           </div>
 
@@ -394,11 +344,7 @@ const LoginPage = () => {
             )}
           </AnimatePresence>
 
-          <Tabs
-            value={activeTab}
-            onValueChange={(v) => setActiveTab(v)}
-            className="w-full"
-          >
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v)} className="w-full">
             <TabsList className="grid w-full grid-cols-2 h-12 bg-gray-100 rounded-xl p-1 mb-8">
               <TabsTrigger
                 value="login"
@@ -448,17 +394,11 @@ const LoginPage = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <Checkbox id="remember" className="border-gray-300" />
-                    <Label
-                      htmlFor="remember"
-                      className="ml-2 text-sm text-gray-600"
-                    >
+                    <Label htmlFor="remember" className="ml-2 text-sm text-gray-600">
                       Ghi nhớ đăng nhập
                     </Label>
                   </div>
-                  <a
-                    href="#"
-                    className="text-sm text-indigo-600 hover:text-indigo-500 font-medium"
-                  >
+                  <a href="#" className="text-sm text-indigo-600 hover:text-indigo-500 font-medium">
                     Quên mật khẩu?
                   </a>
                 </div>
@@ -537,59 +477,10 @@ const LoginPage = () => {
                   placeholder="Nhập lại mật khẩu"
                   error={errors.confirmPassword}
                   showPasswordToggle={showConfirmPassword}
-                  onTogglePassword={() =>
-                    setShowConfirmPassword(!showConfirmPassword)
-                  }
+                  onTogglePassword={() => setShowConfirmPassword(!showConfirmPassword)}
                 />
 
-                <TermsSection
-                  errors={errors}
-                  agreeTerms={agreeTerms}
-                  setAgreeTerms={setAgreeTerms}
-                />
-
-                {/* <div className="space-y-2">
-                  <div className="flex items-start space-x-3">
-                    <Checkbox
-                      id="terms"
-                      checked={agreeTerms}
-                      onCheckedChange={(checked) => setAgreeTerms(!!checked)}
-                      className="mt-1 border-gray-300"
-                    />
-                    <Label
-                      htmlFor="terms"
-                      className="text-sm text-gray-600 leading-relaxed"
-                    >
-                      Tôi đồng ý với{" "}
-                      <span
-                        onClick={() => setShowTerms(true)}
-                        className="cursor-pointer text-indigo-600 hover:text-indigo-500 font-medium"
-                      >
-                        Điều khoản dịch vụ
-                      </span>{" "}
-                      và{" "}
-                      <span
-                        onClick={() => setShowPrivacy(true)}
-                        className="cursor-pointer text-indigo-600 hover:text-indigo-500 font-medium"
-                      >
-                        Chính sách bảo mật
-                      </span>
-                    </Label>
-                  </div>
-                  <AnimatePresence>
-                    {errors.terms && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="flex items-center text-red-600 text-sm ml-6"
-                      >
-                        <AlertCircle className="h-4 w-4 mr-1" />
-                        {errors.terms}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div> */}
+                <TermsSection errors={errors} agreeTerms={agreeTerms} setAgreeTerms={setAgreeTerms} />
 
                 <Button
                   className="w-full h-12 text-base bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
@@ -617,13 +508,9 @@ const LoginPage = () => {
           {/* Footer */}
           <div className="mt-8 text-center text-sm text-gray-500">
             <p>
-              {activeTab === "login"
-                ? "Chưa có tài khoản?"
-                : "Đã có tài khoản?"}{" "}
+              {activeTab === "login" ? "Chưa có tài khoản?" : "Đã có tài khoản?"}{" "}
               <button
-                onClick={() =>
-                  setActiveTab(activeTab === "login" ? "signup" : "login")
-                }
+                onClick={() => setActiveTab(activeTab === "login" ? "signup" : "login")}
                 className="text-indigo-600 hover:text-indigo-500 font-medium"
               >
                 {activeTab === "login" ? "Đăng ký ngay" : "Đăng nhập"}
@@ -633,7 +520,7 @@ const LoginPage = () => {
         </motion.div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default LoginPage;
+export default LoginPage
