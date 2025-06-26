@@ -1,5 +1,3 @@
-"use client";
-
 import DeletePopup from "@/components/DeletePopup";
 import Loader from "@/components/Loader";
 import TabList from "@/components/TabList";
@@ -18,8 +16,8 @@ import {
 import { getUserById } from "@/utils/userApi";
 import {
   ArrowLeft,
-  Github,
   Globe,
+  LinkIcon,
   Loader2,
   Mail,
   NotebookPen,
@@ -213,7 +211,7 @@ const Contact = ({ project }) => {
   };
   useEffect(() => {
     fetchOwner(project.owner_id);
-    console.log(project.owner_id)
+    console.log(project.owner_id);
   }, []);
 
   return (
@@ -238,7 +236,7 @@ const Contact = ({ project }) => {
                   <span className="text-gray-700">{owner?.email}</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Github className="h-5 w-5 text-purple-500" />
+                  <LinkIcon className="h-5 w-5 text-purple-500" />
                   <span className="text-gray-700">{project.external_link}</span>
                 </div>
               </div>
@@ -257,8 +255,8 @@ const Contact = ({ project }) => {
                     variant="outline"
                     className="w-full border-purple-200 text-purple-600 hover:bg-purple-50"
                   >
-                    <Github className="w-4 h-4 mr-2" />
-                    Xem GitHub
+                    <LinkIcon className="w-4 h-4 mr-2" />
+                    Điều hướng đến trang dự án
                   </Button>
                 </a>
               </div>
@@ -398,6 +396,7 @@ const ProjectDetails = () => {
 
   const onConfirmDelete = async () => {
     try {
+      console.log("Delete");
       setIsDeleting(true);
       await deleteProject(project.id);
       navigate("/"); // Redirect to home
@@ -410,12 +409,11 @@ const ProjectDetails = () => {
     }
   };
 
-    const onConfirmLeave = async (member_id) => {
+  const onConfirmLeave = async (member_id) => {
     try {
-
       const leaveProjectRequest = {
         project_id: id,
-        user_id: member_id
+        user_id: member_id,
       };
 
       setIsLeaving(true);
@@ -492,7 +490,7 @@ const ProjectDetails = () => {
       <DeletePopup
         isOpen={showDeleteDialog}
         onClose={() => setShowDeleteDialog(false)}
-        onConfirm={() => onConfirmDelete}
+        onConfirm={() => onConfirmDelete()}
         title="Xác nhận xóa dự án"
         message="Bạn có chắc chắn muốn xóa dự án này? Hành động này không thể hoàn tác."
         itemName={project.name}
@@ -559,7 +557,6 @@ const ProjectDetails = () => {
               </div>
             </div>
             <div className="flex gap-3 flex-shrink-0">
-              
               {isUserMember && user && user?.user_id === project.owner_id && (
                 <div className="flex gap-2">
                   <Button
@@ -585,12 +582,12 @@ const ProjectDetails = () => {
               )}
 
               {isUserMember && user && user?.user_id !== project.owner_id && (
-                  <Button
-                    onClick={() => setShowLeaveDialog(true)}
-                    className="flex items-center gap-2 bg-red-600 border-red-700 text-white hover:bg-red-700 backdrop-blur-sm"
-                  >
-                    Rời dự án
-                  </Button>
+                <Button
+                  onClick={() => setShowLeaveDialog(true)}
+                  className="flex items-center gap-2 bg-red-600 border-red-700 text-white hover:bg-red-700 backdrop-blur-sm"
+                >
+                  Rời dự án
+                </Button>
               )}
 
               {!isUserMember && user && (

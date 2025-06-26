@@ -4,7 +4,6 @@ import { cn } from "@/lib/utils";
 import React, { useRef } from "react";
 
 type UserInformation = {
-  // If your backend eventually returns these, keep them here.
   location?: string;
   job_title?: string;
   full_name: string;
@@ -16,6 +15,7 @@ type UserInformation = {
 };
 
   type Talent  = {
+    user_id: string;
     email: string;
     image: string;
     fallback: string;

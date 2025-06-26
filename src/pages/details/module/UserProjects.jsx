@@ -1,29 +1,24 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/providers/AuthContext";
 import { getProjectByUserId } from "@/utils/projectAPI";
 import { ExternalLink, FolderOpen, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const UserProjects = () => {
+const UserProjects = ({ userId }) => {
   const [userProjects, setUserProjects] = useState([]);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
   const navigate = useNavigate();
   const pageSize = 10;
 
   const fetchUserProjects = async (pageNum = 0, reset = false) => {
     try {
-      const data = await getProjectByUserId(
-        user.user_id,
-        "OWNER",
-        pageNum,
-        pageSize
-      );
+      console.log("userId:", userId);
+      console.log("typeof userId:", typeof userId);
+      const data = await getProjectByUserId(userId, "OWNER", pageNum, pageSize);
       setUserProjects(data.data.content);
       setLoading(false);
       setError(null);
@@ -55,7 +50,7 @@ const UserProjects = () => {
   useEffect(() => {
     fetchUserProjects(0, true);
     setPage(0);
-  }, [user]);
+  }, []);
 
   const handleCardClick = (id) => {
     navigate(`/project/${id}`);
@@ -82,7 +77,7 @@ const UserProjects = () => {
         </p>
         <Button
           className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
-          onClick={() => navigate('/insert-project', { state: { user } })}
+          onClick={() => navigate("/insert-project", { state: { user } })}
         >
           Thêm dự án mới
         </Button>
