@@ -18,7 +18,6 @@ const JoinedProjects = ({ userId }) => {
 
   const fetchJoinedProjects = async (pageNum = 0, reset = false) => {
     try {
-      console.log(userId);
       const data = await getProjectByUserId(userId, "MEMBER", pageNum, pageSize);
       setJoinedProjects(data.data.content);
       setLoading(false);

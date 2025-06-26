@@ -16,8 +16,6 @@ const UserProjects = ({ userId }) => {
 
   const fetchUserProjects = async (pageNum = 0, reset = false) => {
     try {
-      console.log("userId:", userId);
-      console.log("typeof userId:", typeof userId);
       const data = await getProjectByUserId(userId, "OWNER", pageNum, pageSize);
       setUserProjects(data.data.content);
       setLoading(false);
