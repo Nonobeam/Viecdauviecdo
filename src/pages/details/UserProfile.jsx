@@ -1,42 +1,43 @@
 "use client";
 
-import { useState, useEffect, lazy, Suspense } from "react";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import ProfileImagePopup from "@/components/Profile/ProfileImagePopup";
+import TokenExpirationWarning from "@/components/Profile/TokenExpirationWarning";
+import TabList from "@/components/TabList";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useTokenExpiration } from "@/hooks/useTokenExpiration";
+import { useUser } from "@/hooks/useUser";
 import {
+  addSkill,
+  deleteSkill,
+  getSkills,
+  getUserById,
+  updateSkill,
+  uploadAvatar,
+} from "@/utils/userApi";
+import {
+  AlertCircle,
+  Award,
   Edit,
-  MapPin,
+  Loader2,
   Mail,
+  MapPin,
   Phone,
   Plus,
   X,
-  Award,
-  Loader2,
 } from "lucide-react";
-import { useUser } from "@/hooks/useUser";
-import { useTokenExpiration } from "@/hooks/useTokenExpiration";
-import { useNavigate, Link } from "react-router-dom";
-import {
-  uploadAvatar,
-  getUserById,
-  deleteSkill,
-  addSkill,
-  updateSkill,
-} from "@/utils/userApi";
-import ProfileImagePopup from "@/components/Profile/ProfileImagePopup";
-import TokenExpirationWarning from "@/components/Profile/TokenExpirationWarning";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { AlertCircle } from "lucide-react";
-import TabList from "@/components/TabList";
+import { lazy, Suspense, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 // Lazy load project components (from your original code)
 const CV = lazy(() => import("@/pages/details/module/CV"));
@@ -46,14 +47,14 @@ const JoinedProjects = lazy(() =>
 );
 
 // Project Tabs Component (from your original code)
-const ProjectTabs = () => {
+const ProjectTabs = (userId) => {
   const tabs = ["userProjects", "joinedProjects"];
   const labels = {
     userProjects: "Dự án của mình",
     joinedProjects: "Dự án tham gia",
   };
   const [activeTab, setActiveTab] = useState(tabs[0]);
-
+  const actualUserId = userId.userId;
   return (
     <div className="p-4">
       {/* Tab Navigation */}
@@ -72,8 +73,12 @@ const ProjectTabs = () => {
               </div>
             }
           >
-            {activeTab === "userProjects" && <UserProjects />}
-            {activeTab === "joinedProjects" && <JoinedProjects />}
+            {activeTab === "userProjects" && (
+              <UserProjects userId={actualUserId} />
+            )}
+            {activeTab === "joinedProjects" && (
+              <JoinedProjects userId={actualUserId} />
+            )}
           </Suspense>
         </div>
       </main>
@@ -123,11 +128,10 @@ const Profile = () => {
   const [previewSkill, setPreviewSkill] = useState(null);
 
   const isOwner = user?.user_id === userData?.user_id;
-
   useEffect(() => {
     if (userData) {
       setUserInformation(userData.user_information || userData);
-      setSkills(userData.skills || []);
+      fetchSkills();
     }
   }, [userData]);
 
@@ -199,6 +203,18 @@ const Profile = () => {
     return colors[index % colors.length];
   };
 
+  const fetchSkills = async () => {
+    if (!user.user_id) return;
+
+    try {
+      const userSkills = await getSkills(user.user_id);
+      setSkills(userSkills.data || []);
+    } catch (error) {
+      console.error("Failed to fetch skills:", error);
+      setSkills([]);
+    }
+  };
+
   const handleAddSkill = async () => {
     if (!previewSkill || !isTokenValid) return;
 
@@ -217,10 +233,10 @@ const Profile = () => {
     } catch (error) {
       console.error("Thêm kỹ năng thất bại:", error);
       showToast(
-          error.status === 401
-              ? "Phiên đăng nhập đã hết hạn."
-              : "Đã có lỗi xảy ra khi thêm kỹ năng. Vui lòng thử lại.",
-          "error"
+        error.status === 401
+          ? "Phiên đăng nhập đã hết hạn."
+          : "Đã có lỗi xảy ra khi thêm kỹ năng. Vui lòng thử lại.",
+        "error"
       );
     }
   };
@@ -348,14 +364,14 @@ const Profile = () => {
                     <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-300" />
                     <Avatar className="relative h-24 w-24 border-0">
                       {userData?.image ? (
-                          <AvatarImage
-                              src={userData.image || "/placeholder.svg"}
-                              className="rounded-full object-cover w-full h-full"
-                          />
+                        <AvatarImage
+                          src={userData.image || "/placeholder.svg"}
+                          className="rounded-full object-cover w-full h-full"
+                        />
                       ) : (
-                          <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white text-xl font-bold rounded-full">
-                            {userInformation?.full_name?.charAt(0) || "U"}
-                          </AvatarFallback>
+                        <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white text-xl font-bold rounded-full">
+                          {userInformation?.full_name?.charAt(0) || "U"}
+                        </AvatarFallback>
                       )}
                     </Avatar>
                   </div>
@@ -556,7 +572,7 @@ const Profile = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                <ProjectTabs />
+                <ProjectTabs userId={user?.user_id} />
               </CardContent>
             </Card>
           </div>
@@ -583,61 +599,64 @@ const Profile = () => {
           </DialogHeader>
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="new-skill" className="text-sm font-medium text-gray-700">
+              <Label
+                htmlFor="new-skill"
+                className="text-sm font-medium text-gray-700"
+              >
                 Tên kỹ năng
               </Label>
               <Input
-                  id="new-skill"
-                  value={newSkillName}
-                  onChange={(e) => setNewSkillName(e.target.value)}
-                  placeholder="Ví dụ: React, Node.js, UX Design..."
-                  className="border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  onKeyDown={handleSkillKeyDown}
-                  disabled={!isTokenValid}
+                id="new-skill"
+                value={newSkillName}
+                onChange={(e) => setNewSkillName(e.target.value)}
+                placeholder="Ví dụ: React, Node.js, UX Design..."
+                className="border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                onKeyDown={handleSkillKeyDown}
+                disabled={!isTokenValid}
               />
             </div>
 
             {/* Add preview section */}
             {previewSkill && (
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500">Xem trước:</span>
-                  <Badge className="bg-purple-100 text-purple-800 border-0 shadow-sm px-2 py-1 text-xs">
-                    {previewSkill}
-                  </Badge>
-                </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-500">Xem trước:</span>
+                <Badge className="bg-purple-100 text-purple-800 border-0 shadow-sm px-2 py-1 text-xs">
+                  {previewSkill}
+                </Badge>
+              </div>
             )}
 
             <div className="flex justify-end gap-3">
               <Button
-                  variant="outline"
-                  onClick={() => {
-                    setIsAddSkillOpen(false);
-                    setPreviewSkill(null);
-                  }}
-                  className="border-purple-200 text-purple-700 hover:bg-purple-50"
+                variant="outline"
+                onClick={() => {
+                  setIsAddSkillOpen(false);
+                  setPreviewSkill(null);
+                }}
+                className="border-purple-200 text-purple-700 hover:bg-purple-50"
               >
                 Hủy
               </Button>
               <Button
-                  onClick={() => {
-                    if (!previewSkill) {
-                      // If no preview, set one first
-                      setPreviewSkill(newSkillName.trim());
-                    } else {
-                      // If preview exists, confirm addition
-                      handleAddSkill();
-                    }
-                  }}
-                  disabled={!newSkillName.trim() || !isTokenValid}
-                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-md"
+                onClick={() => {
+                  if (!previewSkill) {
+                    // If no preview, set one first
+                    setPreviewSkill(newSkillName.trim());
+                  } else {
+                    // If preview exists, confirm addition
+                    handleAddSkill();
+                  }
+                }}
+                disabled={!newSkillName.trim() || !isTokenValid}
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-md"
               >
                 {previewSkill ? (
-                    "Xác nhận"
+                  "Xác nhận"
                 ) : (
-                    <>
-                      <Plus className="h-4 w-4 mr-1" />
-                      Thêm
-                    </>
+                  <>
+                    <Plus className="h-4 w-4 mr-1" />
+                    Thêm
+                  </>
                 )}
               </Button>
             </div>
@@ -656,31 +675,34 @@ const Profile = () => {
           </DialogHeader>
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="edit-skill" className="text-sm font-medium text-gray-700">
+              <Label
+                htmlFor="edit-skill"
+                className="text-sm font-medium text-gray-700"
+              >
                 Tên kỹ năng mới
               </Label>
               <Input
-                  id="edit-skill"
-                  value={editSkillName}
-                  onChange={(e) => setEditSkillName(e.target.value)}
-                  placeholder="Nhập tên kỹ năng mới..."
-                  className="border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  onKeyDown={(e) => e.key === "Enter" && handleEditSkill()}
-                  disabled={!isTokenValid}
+                id="edit-skill"
+                value={editSkillName}
+                onChange={(e) => setEditSkillName(e.target.value)}
+                placeholder="Nhập tên kỹ năng mới..."
+                className="border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                onKeyDown={(e) => e.key === "Enter" && handleEditSkill()}
+                disabled={!isTokenValid}
               />
             </div>
             <div className="flex justify-end gap-3">
               <Button
-                  variant="outline"
-                  onClick={() => setIsEditSkillOpen(false)}
-                  className="border-purple-200 text-purple-700 hover:bg-purple-50"
+                variant="outline"
+                onClick={() => setIsEditSkillOpen(false)}
+                className="border-purple-200 text-purple-700 hover:bg-purple-50"
               >
                 Hủy
               </Button>
               <Button
-                  onClick={handleEditSkill}
-                  disabled={!editSkillName.trim() || !isTokenValid}
-                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-md"
+                onClick={handleEditSkill}
+                disabled={!editSkillName.trim() || !isTokenValid}
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-md"
               >
                 Cập nhật
               </Button>
