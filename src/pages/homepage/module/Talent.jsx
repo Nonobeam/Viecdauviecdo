@@ -66,15 +66,6 @@ export default function Talent({ filters }) {
     filters.certification.join(","),
   ]);
 
-   // Debug render conditions
-  console.log('Render conditions:', {
-    hasMore,
-    talentsLength: talents.length,
-    loading,
-    showLoadMore: hasMore && talents.length > 0
-  });
-
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-blue-50 py-8">
       <div className="container mx-auto px-4 sm:px-6">
@@ -108,12 +99,7 @@ export default function Talent({ filters }) {
             )}
           </div>
         ) : (
-          <TalentCard
-            cards={talents}
-            hasMore={hasMore}
-            loading={loading}
-            onLoadMore={loadMore}
-          />
+          <TalentCard cards={talents}/>
         )}
 
         {/* Load More Button */}
