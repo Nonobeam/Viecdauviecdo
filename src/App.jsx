@@ -1,19 +1,20 @@
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import PaymentLayout from "./layout/PaymentLayout";
 import ProtectedRoute from "./components/protectedRoute";
+import PaymentLayout from "./layout/PaymentLayout";
 import {
   AboutUs,
-  AddProject,
   Activate,
+  AddProject,
   ApplicationForm,
   Blog,
   CancelPage,
   CareerPathBuilder,
+  ChangeInformation,
+  ChangePassword,
   CompanyProfile,
   EditProfile,
   EditProject,
-  ChangeInformation,
-  ChangePassword,
+  ErrorPage,
   Feedback,
   Home,
   InsertCV,
@@ -23,12 +24,12 @@ import {
   PaymentPage,
   PremiumPlansPage,
   Profile,
+  ProfileViewer,
   ProjectDetails,
   Seeking,
+  SkillsAndLinks,
   SuccessPage,
   TransactionHistory,
-  SkillsAndLinks,
-  ErrorPage,
 } from "./pages";
 import Project from "./pages/homepage/module/Project";
 
@@ -81,6 +82,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/profile/:id"
+              element={
+                <ProtectedRoute>
+                  <ProfileViewer />
                 </ProtectedRoute>
               }
             />

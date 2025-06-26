@@ -4,35 +4,40 @@ import { motion } from "framer-motion";
 import { Filter, Users } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface UserInformation {
-  full_name: string;
-  job_title?: string;
-  location?: string;
-  city?: string;
-  state?: string;
-  country?: string;
-  skills?: string[];
-  certifications?: string[];
+  full_name: string
+  job_title?: string
+  location?: string
+  city?: string
+  state?: string
+  country?: string
+  skills?: string[]
+  certifications?: string[]
 }
 
 interface TalentCardProps {
-  email: string;
-  image: string;
-  fallback: string;
-  user_information?: UserInformation;
+  user_id: string
+  email: string
+  image: string
+  fallback: string
+  user_information?: UserInformation
 }
 
 interface TalentCardComponentProps {
-  cards: TalentCardProps[];
-  onCardClick?: (card: TalentCardProps) => void;
+  cards: TalentCardProps[]
+  onCardClick?: (card: TalentCardProps) => void
 }
 
-const TalentCard: React.FC<TalentCardComponentProps> = ({
-  cards,
-  onCardClick,
-}) => {
-  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+const TalentCard: React.FC<TalentCardComponentProps> = ({ cards, onCardClick }) => {
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null)
+  const navigate = useNavigate() // ✅ Init navigate
+
+  const handleCardClick = (card: TalentCardProps) => {
+    onCardClick?.(card)
+    navigate(`/profile/${card.user_id}`) // ✅ Navigate to profile page
+  }
 
   if (cards.length === 0) {
     return (
@@ -53,10 +58,6 @@ const TalentCard: React.FC<TalentCardComponentProps> = ({
       </div>
     );
   }
-
-  const handleCardClick = (card: TalentCardProps) => {
-    onCardClick?.(card);
-  };
 
   return (
     <div className="w-full">
@@ -115,3 +116,4 @@ const TalentCard: React.FC<TalentCardComponentProps> = ({
 
 export { TalentCard };
 export type { TalentCardComponentProps, TalentCardProps };
+
