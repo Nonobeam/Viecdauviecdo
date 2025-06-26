@@ -25,11 +25,10 @@ import {
   MoreVertical,
   Plus,
   Send,
-  Share2,
   Smile,
   Trash2,
   User,
-  X,
+  X
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import LoginNotificationPopup from "../../components/LoginNotificationPopup";
@@ -1181,7 +1180,7 @@ const Post = () => {
                           </div>
                           <div className="flex space-x-4">
                             <span>{post.comment_count} bình luận</span>
-                            <span>{post.share_count} chia sẻ</span>
+                            {/* <span>{post.share_count} chia sẻ</span> */}
                           </div>
                         </div>
                       </div>
@@ -1214,7 +1213,7 @@ const Post = () => {
                           <MessageCircle className="h-5 w-5 mr-2" />
                           <span>Bình luận</span>
                         </Button>
-                        <Button
+                        {/* <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => handleSharePost(post.id)}
@@ -1222,7 +1221,7 @@ const Post = () => {
                         >
                           <Share2 className="h-5 w-5 mr-2" />
                           <span>Chia sẻ</span>
-                        </Button>
+                        </Button> */}
                       </div>
 
                       {/* Comment section */}

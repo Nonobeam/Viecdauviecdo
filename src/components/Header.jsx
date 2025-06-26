@@ -173,7 +173,7 @@ const Header = () => {
               >
                 Về chúng tôi
               </Link>
-              <Link
+              {/* <Link
                 to="/career"
                 className={`px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
                   location.pathname === "/career"
@@ -182,7 +182,7 @@ const Header = () => {
                 }`}
               >
                 Định hướng nghề nghiệp
-              </Link>
+              </Link> */}
               <Link
                 to="/job"
                 className={`px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
