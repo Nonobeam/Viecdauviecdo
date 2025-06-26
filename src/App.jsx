@@ -192,15 +192,8 @@ function App() {
             <Route path="success" element={<SuccessPage />} />
             <Route path="cancel" element={<CancelPage />} />
           </Route>
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute>
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          >
-          </Route>
+          
+          <Route path="/admin" element={<AdminDashboard />}></Route>
         </Routes>
       </Router>
     </div>
