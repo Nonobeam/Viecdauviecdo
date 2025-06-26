@@ -7,12 +7,11 @@ import {
   ArrowLeft,
   Briefcase,
   Building,
-  Calendar,
   CheckCircle,
   FileText,
   MapPin,
   Phone,
-  User,
+  User
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -341,7 +340,7 @@ const EditProfile = () => {
                 />
               </div>
 
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              {/* <label className="block text-sm font-medium text-gray-700 mb-1">
                 Ngày tháng năm sinh
               </label>
               <div className="relative">
@@ -354,7 +353,7 @@ const EditProfile = () => {
                   onChange={(e) => setDateOfBirth(e.target.value)}
                   className="pl-10 block w-full rounded-lg border-gray-200 shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/80"
                 />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

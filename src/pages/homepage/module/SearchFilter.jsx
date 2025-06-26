@@ -3,13 +3,12 @@ import { Input } from "@/components/ui/input";
 import { City, Country, State } from "country-state-city";
 import { motion } from "framer-motion";
 import {
-  Calendar,
   Code,
   Filter,
   MapPin,
   Plus,
   RefreshCw,
-  X,
+  X
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -93,7 +92,6 @@ export default function SearchFilter({
     onSearch();
   };
 
-// 1. Filter for SEA countries (unchanged if SEA_COUNTRIES is ISO codes)
 useEffect(() => {
   const seaCountries = Country.getAllCountries().filter((c) =>
     SEA_COUNTRIES.includes(c.isoCode)
@@ -103,9 +101,11 @@ useEffect(() => {
 
 // 2. When country name changes, fetch states
 useEffect(() => {
-  if (inputValues.countryInput) {
+  console.log(availableCountries.length);
+    console.log("Triggered");
+  if (availableCountries.length > 0) {
     const selectedCountry = availableCountries.find(
-      (c) => c.name === inputValues.countryInput
+      (c) => c.name === availableCountries
     );
 
     if (selectedCountry) {
@@ -118,24 +118,27 @@ useEffect(() => {
     // Reset state & city selections
     setAvailableCities([]);
     setInputValues((prev) => ({ ...prev, stateInput: "", cityInput: "" }));
+  } else {
+    setAvailableStates([]);
   }
-}, [inputValues.countryInput, availableCountries]);
+}, [availableCountries]);
 
 // 3. When state name changes, fetch cities
 useEffect(() => {
-  if (inputValues.countryInput && inputValues.stateInput) {
+  if (inputValues.stateInput && availableStates.length > 0) {
+    // Find the selected country from availableCountries
     const selectedCountry = availableCountries.find(
       (c) => c.name === inputValues.countryInput
     );
 
+    // Find the selected state from availableStates (not from input)
     const selectedState = availableStates.find(
-      (s) => s.name === inputValues.stateInput
+      (s) => s.name === availableStates
     );
-
     if (selectedCountry && selectedState) {
       const cities = City.getCitiesOfState(
-        selectedCountry.isoCode,
-        selectedState.isoCode
+        availableCountries.isoCode,
+        availableStates.isoCode
       );
       setAvailableCities(cities);
     } else {
@@ -144,8 +147,10 @@ useEffect(() => {
 
     // Reset city selection
     setInputValues((prev) => ({ ...prev, cityInput: "" }));
+  } else {
+    setAvailableCities([]);
   }
-}, [inputValues.stateInput, inputValues.countryInput, availableStates]);
+}, [availableCountries, availableStates]);
 
   return (
     <aside className="w-full md:w-64 bg-white rounded-xl shadow-sm p-5 border border-gray-100 h-fit sticky top-24">
@@ -337,7 +342,7 @@ useEffect(() => {
       </div>
 
       {/* Date of Birth */}
-      <div className="space-y-2 mb-5">
+      {/* <div className="space-y-2 mb-5">
         <h3 className="text-sm font-medium text-gray-800 flex items-center">
           <Calendar className="h-3.5 w-3.5 mr-2 text-gray-600" />
           Ngày Sinh
@@ -350,7 +355,7 @@ useEffect(() => {
           }
           className="text-sm border-gray-200 focus:border-gray-400 focus:ring-gray-400 h-8"
         />
-      </div>
+      </div> */}
 
       {/* Skills Section */}
       <div className="space-y-2 mb-5">

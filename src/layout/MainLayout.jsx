@@ -1,10 +1,8 @@
-"use client"
-
 import ChangeColorToggle from "@/components/ChangeColorToggle"
 import Header from "@/components/Header"
 import Footer from "@/components/aboutus/Footer"
-import { Outlet } from "react-router-dom"
 import { createContext, useContext, useState } from "react"
+import { Outlet } from "react-router-dom"
 
 // Create context for modal state
 const ModalContext = createContext()

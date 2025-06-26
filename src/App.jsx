@@ -31,6 +31,7 @@ import {
   SuccessPage,
   TransactionHistory,
 } from "./pages";
+import AdminDashboard from "./pages/admin/adminDashboard";
 import Project from "./pages/homepage/module/Project";
 
 function App() {
@@ -190,6 +191,15 @@ function App() {
             <Route index element={<PaymentPage />} />
             <Route path="success" element={<SuccessPage />} />
             <Route path="cancel" element={<CancelPage />} />
+          </Route>
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          >
           </Route>
         </Routes>
       </Router>
