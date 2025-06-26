@@ -5,6 +5,7 @@ import {
   AboutUs,
   Activate,
   AddProject,
+  AdminDashboard,
   ApplicationForm,
   Blog,
   CancelPage,
@@ -31,7 +32,6 @@ import {
   SuccessPage,
   TransactionHistory,
 } from "./pages";
-import AdminDashboard from "./pages/admin/adminDashboard";
 import Project from "./pages/homepage/module/Project";
 
 function App() {
