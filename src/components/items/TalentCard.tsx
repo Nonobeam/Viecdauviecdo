@@ -97,7 +97,7 @@ const TalentCard: React.FC<TalentCardComponentProps> = ({ cards, onCardClick }) 
       </motion.div>
 
       {/* Load More Section */}
-      {cards.length > 0 && (
+      {/* {cards.length > 0 && (
         <div className="mt-12 text-center">
           <p className="text-gray-500 mb-4">
             Hiển thị {cards.length} chuyên gia đầu tiên
@@ -109,7 +109,7 @@ const TalentCard: React.FC<TalentCardComponentProps> = ({ cards, onCardClick }) 
             Xem thêm chuyên gia
           </Button>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

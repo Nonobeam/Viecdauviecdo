@@ -4,6 +4,7 @@ export { default as EditProfile } from "./account/EditProfile";
 export { default as EditProject } from "./account/EditProject";
 export { default as InsertCV } from "./account/InsertCV";
 export { default as Activate } from "./activate/Activate";
+export { default as AdminDashboard } from "./admin/AdminDashboard";
 export { default as ChangePassword } from "./details/ChangePassword";
 export { default as CompanyProfile } from "./details/CompanyProfile";
 export { default as ProfileViewer } from "./details/ProfileViewer";
