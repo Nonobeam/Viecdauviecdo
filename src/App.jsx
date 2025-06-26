@@ -5,6 +5,7 @@ import {
   AboutUs,
   Activate,
   AddProject,
+  AdminDashboard,
   ApplicationForm,
   Blog,
   CancelPage,
@@ -190,6 +191,15 @@ function App() {
             <Route index element={<PaymentPage />} />
             <Route path="success" element={<SuccessPage />} />
             <Route path="cancel" element={<CancelPage />} />
+          </Route>
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          >
           </Route>
         </Routes>
       </Router>
