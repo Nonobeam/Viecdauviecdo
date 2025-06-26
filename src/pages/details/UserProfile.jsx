@@ -408,7 +408,7 @@ const Profile = () => {
                         variant="outline"
                         className="w-full justify-start border-purple-200 text-purple-700 hover:bg-purple-50"
                         onClick={() =>
-                          navigate("/edit-profile", {
+                          navigate("/change-profile", {
                             state: { userInformation },
                           })
                         }
