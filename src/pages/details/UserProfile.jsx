@@ -8,6 +8,7 @@ import TokenExpirationWarning from "@/components/Profile/TokenExpirationWarning"
 import SkillModal from "@/components/Profile/SkillModal";
 import ProfileInfo from "@/components/Profile/ProfileInfo";
 import MainContent from "@/components/Profile/MainContent";
+import CompactSubscriptionCard from "@/components/Subscription/CompactSubscriptionCard";
 import Loader from "@/components/Loader";
 import Swal from "sweetalert2";
 
@@ -43,6 +44,9 @@ const Profile = () => {
   const [hoveredSkill, setHoveredSkill] = useState(null);
   const [isProfilePopupOpen, setIsProfilePopupOpen] = useState(false);
   const [avatarLoading, setAvatarLoading] = useState(false);
+
+  // Subscription state
+  const [currentPlan, setCurrentPlan] = useState("free");
 
   const isOwner = user?.user_id === userData?.user_id;
   useEffect(() => {
@@ -196,6 +200,12 @@ const Profile = () => {
     }
   };
 
+  const handlePlanSelect = (planId) => {
+    setCurrentPlan(planId);
+    // Here you would typically update the user's subscription in your backend
+    // updateUserSubscription(user.user_id, planId);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50">
       {/* Token Expiration Warning */}
@@ -244,6 +254,17 @@ const Profile = () => {
             isTokenValid={isTokenValid}
             user={user}
           />
+
+          {/* Right Sidebar - Subscription */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-8">
+              <CompactSubscriptionCard
+                currentPlan={currentPlan}
+                isTokenValid={isTokenValid}
+                onPlanSelect={handlePlanSelect}
+              />
+            </div>
+          </div>
         </div>
       </div>
 
