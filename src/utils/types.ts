@@ -306,4 +306,11 @@ declare module 'types' {
     user_id: string
   }
 
+  export interface Rating {
+    id: string,
+    value: number,
+    comment: string,
+    user_id: string
+  }
+
 }

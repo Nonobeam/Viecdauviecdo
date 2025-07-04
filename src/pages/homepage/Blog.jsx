@@ -382,20 +382,23 @@ const Post = () => {
     setShowDropdown((prev) => ({ ...prev, [postId]: !prev[postId] }));
   };
 
-  const formatTime = (isoString) => {
-    const date = new Date(isoString);
-    if (isNaN(date)) return "Invalid date";
+const formatTime = (isoString) => {
+  const date = new Date(isoString);
+  if (isNaN(date)) return "Invalid date";
 
-    const options = {
-      year: "numeric",
-      month: "short",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    };
-
-    return date.toLocaleString(undefined, options);
+  const options = {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "Asia/Ho_Chi_Minh",
   };
+
+  return date.toLocaleString("vi-VN", options);
+};
+
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
