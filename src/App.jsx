@@ -5,7 +5,6 @@ import {
   AboutUs,
   Activate,
   AddProject,
-  AdminDashboard,
   ApplicationForm,
   Blog,
   CancelPage,
@@ -30,7 +29,7 @@ import {
   Seeking,
   SkillsAndLinks,
   SuccessPage,
-  TransactionHistory,
+  TransactionHistory
 } from "./pages";
 import Project from "./pages/homepage/module/Project";
 
@@ -41,10 +40,10 @@ function App() {
     <div className="overflow-y-auto h-screen">
       <Router>
         <Routes>
-          {isBusinessSubdomain ? (
+          {/* {isBusinessSubdomain ? (
             <Route path="/" element={<AdminDashboard />} />
           ) : (
-          <>
+          <> */}
           <Route element={<MainLayout />}>
             <Route path="/" element={<Blog />} />
             <Route path="/login" element={<Login />} />
@@ -200,8 +199,8 @@ function App() {
           </Route>
           
           {/* <Route path="/admin" element={<AdminDashboard />}></Route> */}
-          </>
-          )}
+          {/* </>
+          )} */}
         </Routes>
       </Router>
     </div>
