@@ -1,3 +1,5 @@
+"use client";
+
 import { useAuth } from "@/providers/AuthContext";
 import { createTransaction } from "@/utils/transactionAPI";
 import { Check, Crown, Eye, Star, Target, Zap } from "lucide-react";
@@ -8,34 +10,43 @@ function PremiumPlansPage() {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const navigate = useNavigate();
   const { user, loading } = useAuth();
-  const generateOrderCode = () => {
-    return Math.floor(100000 + Math.random() * 900000); // Random 6-digit number
-  };
 
-  const createTransactionPayload = async (payload) => {
-    const transactionData = await createTransaction(payload);
-    return transactionData;
+  useEffect(() => {
+    if (!loading && user) {
+      const userTypeFromUser = user.userType || "free";
+      const parsedUserTypeFromUser =
+        typeof userTypeFromUser === "string" &&
+        userTypeFromUser.startsWith('"') &&
+        userTypeFromUser.endsWith('"')
+          ? JSON.parse(userTypeFromUser)
+          : userTypeFromUser;
+      const finalUserType = parsedUserTypeFromUser.toLowerCase();
+      setSelectedPlan(finalUserType === "premium" ? "premium" : "free");
+    } else if (!loading && !user) {
+      setSelectedPlan("free");
+    }
+  }, [loading, user]);
+
+  const generateOrderCode = () => {
+    return Math.floor(100000 + Math.random() * 900000);
   };
 
   const handleSelectPlan = async (planId) => {
-    if (planId === "free") {
-      setSelectedPlan(planId);
-      console.log(`Selected plan: ${planId}`);
-      return;
-    }
+    if (planId === selectedPlan) return;
+
+    setSelectedPlan(planId);
+
+    if (planId === "free") return;
 
     const plan = plans.find((p) => p.id === planId);
     if (!plan) return;
 
-
     try {
       const orderCode = generateOrderCode();
-
-      // Create transaction payload with all required and optional fields
       const transactionRequest = {
         order_code: orderCode,
-        amount: plan.price,
-        holder_id: user.user_id,
+        amount: parseInt(plan.price), // Convert price to number since TransactionRequest expects number
+        holder_id: user?.user_id || "",
         description: plan.name,
         buyer_name: undefined,
         buyer_email: undefined,
@@ -43,9 +54,9 @@ function PremiumPlansPage() {
         buyer_address: undefined,
         items: [
           {
-            name: user.user_id,
+            name: user?.user_id || "unknown",
             quantity: 1,
-            price: plan.price,
+            price: parseInt(plan.price), // Convert price to number
           },
         ],
         cancel_url: undefined,
@@ -55,16 +66,11 @@ function PremiumPlansPage() {
       };
 
       console.log("Creating transaction with payload:", transactionRequest);
+      const transactionData = await createTransaction(transactionRequest); // Direct API call
+      console.log("Transaction created successfully:", transactionData);
 
-      const transactionData = await createTransactionPayload(
-        transactionRequest
-      );
-      
-
-      console.log("Transaction created successfully:", transactionData.payos_response.data);
-
-      // Navigate to payment page with transaction data
-     navigate(`/payment`,{state: transactionData.payos_response.data });
+      // Navigate with the transaction data
+      navigate("/payment", { state: transactionData });
     } catch (err) {
       console.error("Error creating transaction:", err);
     }
@@ -91,7 +97,7 @@ function PremiumPlansPage() {
     {
       id: "premium",
       name: "Premium",
-      price: "99000",
+      price: "59000",
       period: "mỗi tháng",
       description: "Mở khóa tiềm năng nghề nghiệp",
       popular: true,
@@ -112,24 +118,11 @@ function PremiumPlansPage() {
     },
   ];
 
-useEffect(() => {
-  if (!loading) {
-    if (user) {
-      console.log('User fetched:', user.user_id);
-    } else {
-      console.log('No user');
-    }
-  }
-}, [loading]);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-      {/* Header */}
       <div className="bg-indigo-600 h-28 shadow-lg"></div>
-
       <div className="flex justify-center items-center min-h-[calc(100vh-7rem)] py-12 px-4">
         <div className="w-full max-w-6xl">
-          {/* Page Title */}
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
               Chọn gói của bạn
@@ -139,8 +132,6 @@ useEffect(() => {
               được công việc mơ ước
             </p>
           </div>
-
-          {/* Plans Grid */}
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {plans.map((plan) => (
               <div
@@ -154,7 +145,6 @@ useEffect(() => {
                   }
                 `}
               >
-                {/* Popular Badge */}
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                     <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-2 rounded-full text-sm font-semibold flex items-center gap-2 shadow-lg">
@@ -163,14 +153,11 @@ useEffect(() => {
                     </div>
                   </div>
                 )}
-
-                {/* Plan Header */}
                 <div className="text-center mb-8">
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">
                     {plan.name}
                   </h3>
                   <p className="text-gray-600 mb-4">{plan.description}</p>
-
                   <div className="flex items-baseline justify-center gap-1">
                     <span className="text-4xl font-bold text-gray-900">
                       {plan.price === "0" ? "Miễn phí" : `${plan.price}₫`}
@@ -182,16 +169,14 @@ useEffect(() => {
                     )}
                   </div>
                 </div>
-
-                {/* Benefits List */}
                 <div className="space-y-4 mb-8">
                   {plan.benefits.map((benefit, index) => (
                     <div key={index} className="flex items-start gap-3">
                       <div
                         className={`
-                        flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-0.5
-                        ${plan.popular ? "bg-indigo-100" : "bg-gray-100"}
-                      `}
+                          flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-0.5
+                          ${plan.popular ? "bg-indigo-100" : "bg-gray-100"}
+                        `}
                       >
                         <Check
                           className={`w-4 h-4 ${
@@ -205,9 +190,7 @@ useEffect(() => {
                     </div>
                   ))}
                 </div>
-
-                {/* CTA Button or Current Plan */}
-                {plan.id === "free" ? (
+                {selectedPlan === plan.id ? (
                   <div className="w-full py-4 px-6 rounded-xl font-semibold text-lg text-center bg-gray-100 text-gray-600 border-2 border-gray-200">
                     Gói hiện tại
                   </div>
@@ -226,13 +209,10 @@ useEffect(() => {
               </div>
             ))}
           </div>
-
-          {/* Feature Highlights */}
           <div className="mt-16 bg-white rounded-2xl shadow-xl p-8 max-w-4xl mx-auto">
             <h3 className="text-2xl font-bold text-center text-gray-900 mb-8">
               Tại sao chọn Premium?
             </h3>
-
             <div className="grid md:grid-cols-3 gap-6">
               <div className="text-center">
                 <div className="bg-indigo-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -243,7 +223,6 @@ useEffect(() => {
                   Để AI tối ưu hóa CV và tìm kiếm công việc phù hợp nhất
                 </p>
               </div>
-
               <div className="text-center">
                 <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Eye className="w-8 h-8 text-purple-600" />
@@ -255,7 +234,6 @@ useEffect(() => {
                   Được chú ý bởi nhà tuyển dụng với trạng thái ứng tuyển ưu tiên
                 </p>
               </div>
-
               <div className="text-center">
                 <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Target className="w-8 h-8 text-green-600" />
@@ -269,8 +247,6 @@ useEffect(() => {
               </div>
             </div>
           </div>
-
-          {/* Money Back Guarantee */}
           <div className="text-center mt-8">
             <p className="text-gray-600">
               <Star className="w-5 h-5 inline text-yellow-500 mr-2" />
