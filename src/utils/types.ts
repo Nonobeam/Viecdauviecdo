@@ -1,5 +1,4 @@
-declare module 'types' {
-
+declare module "types" {
   export interface Location {
     country?: string;
     state?: string;
@@ -28,9 +27,9 @@ declare module 'types' {
   }
 
   export interface Comment {
-    content: string,
-    like_count: number,
-    created_at: string
+    content: string;
+    like_count: number;
+    created_at: string;
   }
 
   export interface CreatePostRequest {
@@ -67,7 +66,7 @@ declare module 'types' {
     address?: string;
     phone?: string;
     email?: string;
-    status: 'ACT' | 'ARC' | 'INA';
+    status: "ACT" | "ARC" | "INA";
     socialLinks?: CompanySocialRequest[];
   }
 
@@ -83,7 +82,7 @@ declare module 'types' {
     address?: string;
     phone?: string;
     email?: string;
-    status: 'ACT' | 'ARC' | 'INA';
+    status: "ACT" | "ARC" | "INA";
     socialLinks?: CompanySocialRequest[];
   }
 
@@ -105,20 +104,20 @@ declare module 'types' {
   };
 
   export interface CreateProjectRequest {
-    name: string,
-    description: string,
-    summary: string,
-    start_at: string,
-    external_link: string,
-    user_id: string,
-    tags: string[]
+    name: string;
+    description: string;
+    summary: string;
+    start_at: string;
+    external_link: string;
+    user_id: string;
+    tags: string[];
   }
 
   export type AddProjectMemRequest = {
     user_id: string;
     project_id: string;
     project_role: string;
-  }
+  };
 
   export interface LeaveProjectRequest {
     project_id: string;
@@ -126,20 +125,20 @@ declare module 'types' {
   }
 
   export interface Job {
-    id: string,
-    company_id: string,
-    title?: string,
-    department?: string,
-    type?: string,
-    level?: string,
-    working_time?: string,
-    salary?: string,
-    description?: string,
-    requirements?: string,
-    benefits?: string[],
-    status?: string,
-    posted: string,
-    deadline: string
+    id: string;
+    company_id: string;
+    title?: string;
+    department?: string;
+    type?: string;
+    level?: string;
+    working_time?: string;
+    salary?: string;
+    description?: string;
+    requirements?: string;
+    benefits?: string[];
+    status?: string;
+    posted: string;
+    deadline: string;
   }
 
   export interface UserApplyJobRequest {
@@ -177,7 +176,6 @@ declare module 'types' {
     skills?: string[];
     certifications?: string[];
   }
-
 
   export interface ApplicationUpdateRequest {
     university?: string;
@@ -218,13 +216,13 @@ declare module 'types' {
   }
 
   export interface EditUserInformationRequest {
-    full_name?: string,
-    job_title?: string,
-    about_me?: string,
-    country?: string,
-    state?: string,
-    city?: string,
-    phone?: string,
+    full_name?: string;
+    job_title?: string;
+    about_me?: string;
+    country?: string;
+    state?: string;
+    city?: string;
+    phone?: string;
   }
 
   export interface CVItem {
@@ -239,6 +237,7 @@ declare module 'types' {
 
   export interface TokenResponse {
     token: string;
+    userType?: string;
   }
 
   export interface TransactionRequest {
@@ -301,16 +300,15 @@ declare module 'types' {
   }
 
   export interface RatingRequest {
-    value: number,
-    comment: string,
-    user_id: string
+    value: number;
+    comment: string;
+    user_id: string;
   }
 
   export interface Rating {
-    id: string,
-    value: number,
-    comment: string,
-    user_id: string
+    id: string;
+    value: number;
+    comment: string;
+    user_id: string;
   }
-
 }

@@ -27,4 +27,3 @@ export { default as PaymentPage } from "./payment/PaymentPage";
 export { default as SuccessPage } from "./payment/SuccessPage";
 export { default as ChangeInformation } from "./registration/ChangeInformation";
 export { default as SkillsAndLinks } from "./registration/SkillsAndLinks";
-
