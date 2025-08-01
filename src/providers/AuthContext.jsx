@@ -1,207 +1,208 @@
-"use client"
+"use client";
 
-import { createContext, useContext, useState, useEffect, useCallback } from "react"
-import { jwtDecode } from "jwt-decode"
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import {
   isTokenExpired,
   getTimeUntilExpiration,
-  getUserIdFromToken,
-  getEmailFromToken,
-  handleTokenResponse
-} from "@/utils/tokenUtils"
-import { login as apiLogin } from "@/utils/authApi"
-import { getUserById } from "@/utils/userApi"
+  handleTokenResponse,
+} from "@/utils/tokenUtils";
+import { storage } from "@/utils/storage";
+import { login as apiLogin } from "@/utils/authApi";
+import { getUserById } from "@/utils/userApi";
 
 const AuthContext = createContext({
   user: null,
   loading: true,
-  login: () => {},
+  login: () => Promise.resolve({ requiresProfileUpdate: false }),
   logout: () => {},
   isAuthenticated: false,
-})
-
-// Configuration constants
-const TOKEN_BUFFER_MINUTES = 5
-const TOKEN_CHECK_INTERVAL = 5 * 60 * 1000 // 5 minutes
-const LOGOUT_DELAY = 300 // 300ms
+});
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Check if user is authenticated
-  const isAuthenticated = !!user
+  const isAuthenticated = !!user;
 
-  // Logout function with cleanup
   const logout = useCallback(async (reason = "manual") => {
     try {
-      setLoading(true)
+      setLoading(true);
 
       if (reason === "expired") {
-        console.log("Session expired, logging out...")
+        console.log("Session expired, logging out...");
       }
 
-      await new Promise((resolve) => setTimeout(resolve, LOGOUT_DELAY))
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
-      setUser(null)
-      localStorage.removeItem("user")
-      localStorage.removeItem("token")
+      setUser(null);
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      storage.removeUserType();
 
       if (typeof document !== "undefined") {
-        document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
+        document.cookie =
+          "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       }
     } catch (error) {
-      console.error("Logout error:", error)
-      setUser(null)
-      localStorage.removeItem("user")
-      localStorage.removeItem("token")
+      console.error("Logout error:", error);
+      setUser(null);
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      storage.removeUserType();
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [])
+  }, []);
 
   const checkTokenExpiration = useCallback(() => {
-    const storedToken = localStorage.getItem("token")
-    if (storedToken && isTokenExpired(storedToken, TOKEN_BUFFER_MINUTES)) {
-      console.log("Token expired, logging out...")
-      logout("expired")
-      return false
+    const storedToken = localStorage.getItem("token");
+    if (storedToken && isTokenExpired(storedToken, 5)) {
+      console.log("Token expired, logging out...");
+      logout("expired");
+      return false;
     }
+    return true;
+  }, [logout]);
 
-    return true
-  }, [logout])
-
-  // Set up token expiration timer
   useEffect(() => {
-    if (!user) return
+    if (!user) return;
 
-    const storedToken = localStorage.getItem("token")
-    if (!storedToken) return
+    const storedToken = localStorage.getItem("token");
+    if (!storedToken) return;
 
-    const timeUntilExpiration = getTimeUntilExpiration(storedToken)
-    if (!timeUntilExpiration) return
+    const timeUntilExpiration = getTimeUntilExpiration(storedToken);
+    if (!timeUntilExpiration) return;
 
-    // If token expires in less than buffer time, logout immediately
-    const bufferTime = TOKEN_BUFFER_MINUTES * 60 * 1000
+    const bufferTime = 5 * 60 * 1000;
     if (timeUntilExpiration <= bufferTime) {
-      logout("expired")
-      return
+      logout("expired");
+      return;
     }
 
-    // Set timer to logout before expiration
     const timeoutId = setTimeout(() => {
-      logout("expired")
-    }, timeUntilExpiration - bufferTime)
+      logout("expired");
+    }, timeUntilExpiration - bufferTime);
 
-    return () => clearTimeout(timeoutId)
-  }, [user, logout])
+    return () => clearTimeout(timeoutId);
+  }, [user, logout]);
 
-  // Periodic token validation
   useEffect(() => {
-    if (!isAuthenticated) return
+    if (!isAuthenticated) return;
 
     const intervalId = setInterval(() => {
-      checkTokenExpiration()
-    }, TOKEN_CHECK_INTERVAL)
+      checkTokenExpiration();
+    }, 5 * 60 * 1000);
 
-    return () => clearInterval(intervalId)
-  }, [isAuthenticated, checkTokenExpiration])
+    return () => clearInterval(intervalId);
+  }, [isAuthenticated, checkTokenExpiration]);
 
-  // Initialize auth state
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        const storedUser = localStorage.getItem("user")
-        const storedToken = localStorage.getItem("token")
+        const storedUser = localStorage.getItem("user");
+        const storedToken = localStorage.getItem("token");
+        const storedUserType = storage.getUserType();
 
         if (storedUser && storedToken) {
-          // Check if token is expired
-          if (isTokenExpired(storedToken, TOKEN_BUFFER_MINUTES)) {
-            console.log("Stored token is expired, clearing auth data")
-            localStorage.removeItem("user")
-            localStorage.removeItem("token")
-            return
+          if (isTokenExpired(storedToken, 5)) {
+            console.log("Stored token is expired, clearing auth data");
+            localStorage.removeItem("user");
+            localStorage.removeItem("token");
+            storage.removeUserType();
+            return;
           }
 
-          const parsedUser = JSON.parse(storedUser)
-
+          const parsedUser = JSON.parse(storedUser);
           if (parsedUser.email) {
-            setUser(parsedUser)
+            setUser({
+              ...parsedUser,
+              userType: storedUserType ? storedUserType.toLowerCase() : "free",
+            });
           } else {
-            // Invalid user data, clear storage
-            localStorage.removeItem("user")
-            localStorage.removeItem("token")
+            localStorage.removeItem("user");
+            localStorage.removeItem("token");
+            storage.removeUserType();
           }
         }
       } catch (error) {
-        console.error("Error parsing stored user data:", error)
-        // Clear invalid data
-        localStorage.removeItem("user")
-        localStorage.removeItem("token")
+        console.error("Error parsing stored user data:", error);
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        storage.removeUserType();
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    initializeAuth()
-  }, [])
+    initializeAuth();
+  }, []);
 
   const login = async (email, password) => {
     try {
-      setLoading(true)
+      setLoading(true);
 
-      const { token } = await apiLogin({ username: email, password })
-      
-      const decodedToken = jwtDecode(token)
-      const userId = getUserIdFromToken(token)
-      const emailFromToken = getEmailFromToken(token)
-      const name = decodedToken.name
+      const { token } = await apiLogin({ username: email, password });
+      const tokenData = handleTokenResponse(token);
+
+      if (!tokenData) {
+        throw new Error("Invalid token response");
+      }
 
       const userData = {
-        email: emailFromToken,
-        name: name,
-        id: userId,
-        user_id: userId,
-        token: token,
-      }
+        email: tokenData.email,
+        name: tokenData.name,
+        id: tokenData.userId,
+        user_id: tokenData.userId,
+        token,
+        userType: tokenData.userType || "free",
+      };
 
-      // Store user data and token
-      setUser(userData)
-      localStorage.setItem("user", JSON.stringify(userData))
-      localStorage.setItem("token", userData.token)
+      setUser(userData);
+      localStorage.setItem("user", JSON.stringify(userData));
+      localStorage.setItem("token", token);
 
-      // Check if user needs to update profile
-      const res = await getUserById(userId)
-      const phone = res?.data?.user_information?.phone_number
+      const res = await getUserById(userData.user_id);
+      const phone = res?.data?.user_information?.phone_number;
 
       return {
-        requiresProfileUpdate: !phone
-      }
+        requiresProfileUpdate: !phone,
+      };
     } catch (error) {
-      console.error("Login error:", error)
-      throw error
+      console.error("Login error:", error);
+      throw error;
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
+
+  const updateUser = (newUserData) => {
+    const updatedUser = { ...user, ...newUserData };
+    setUser(updatedUser);
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+  };
 
   const value = {
     user,
     loading,
     login,
     logout,
+    updateUser,
     isAuthenticated,
-  }
+  };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
 
 export const useAuth = () => {
-  const context = useContext(AuthContext)
-
+  const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider")
+    throw new Error("useAuth must be used within an AuthProvider");
   }
-
-  return context
-}
+  return context;
+};
