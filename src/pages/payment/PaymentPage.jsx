@@ -19,7 +19,7 @@ export default function PaymentPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { updateUser } = useAuth();
-  const transactionData = location.state;
+  const transactionData = location.state?.payos_response?.data || {};
 
   const [paymentStatus, setPaymentStatus] = useState("pending");
   const [timeLeft, setTimeLeft] = useState(600);
