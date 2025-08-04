@@ -5,6 +5,7 @@ import { createTransaction } from "@/utils/transactionAPI";
 import { Check, Crown, Eye, Star, Target, Zap } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { plans } from "@/mock/data";
 
 function PremiumPlansPage() {
   const [selectedPlan, setSelectedPlan] = useState(null);
@@ -75,48 +76,6 @@ function PremiumPlansPage() {
       console.error("Error creating transaction:", err);
     }
   };
-
-  const plans = [
-    {
-      id: "free",
-      name: "Miễn phí",
-      price: "0",
-      period: "Mãi mãi",
-      description: "Hoàn hảo để bắt đầu",
-      popular: false,
-      benefits: [
-        "Ứng tuyển 5 công việc mỗi tháng",
-        "Tạo hồ sơ cơ bản",
-        "Bộ lọc tìm kiếm việc làm",
-        "Thông báo email",
-        "Mẫu CV tiêu chuẩn",
-      ],
-      buttonText: "Bắt đầu ngay",
-      buttonStyle: "bg-gray-600 hover:bg-gray-700 text-white",
-    },
-    {
-      id: "premium",
-      name: "Premium",
-      price: "59000",
-      period: "mỗi tháng",
-      description: "Mở khóa tiềm năng nghề nghiệp",
-      popular: true,
-      benefits: [
-        "Ứng tuyển không giới hạn",
-        "Tối ưu CV bằng AI",
-        "Ưu tiên trong danh sách ứng viên",
-        "Phân tích và thống kê nâng cao",
-        "Gợi ý việc làm cá nhân hóa",
-        "Nhắn tin trực tiếp với nhà tuyển dụng",
-        "Mẫu CV cao cấp",
-        "Công cụ chuẩn bị phỏng vấn",
-        "Hướng dẫn thương lượng lương",
-        "Tư vấn nghề nghiệp cá nhân",
-      ],
-      buttonText: "Nâng cấp Premium",
-      buttonStyle: "bg-indigo-600 hover:bg-indigo-700 text-white",
-    },
-  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
