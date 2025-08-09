@@ -1,130 +1,214 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import {
-  CheckCircle,
-  Clock,
-  QrCode,
-  X,
-  XCircle,
-  RefreshCw,
-  ArrowLeft,
-} from "lucide-react";
-import { QRCodeCanvas } from "qrcode.react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "@/providers/AuthContext";
-import { storage } from "@/utils/storage";
+"use client"
+
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
+import { CheckCircle, Clock, QrCode, X, XCircle, RefreshCw, ArrowLeft } from "lucide-react"
+import { QRCodeCanvas } from "qrcode.react"
+import { useCallback, useEffect, useRef, useState } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
+import { useAuth } from "@/providers/AuthContext"
+import { storage } from "@/utils/storage"
 
 export default function PaymentPage() {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { updateUser } = useAuth();
-  const transactionData = location.state?.payos_response?.data || {};
+  const location = useLocation()
+  const navigate = useNavigate()
+  const { updateUser } = useAuth()
+  const transactionData = location.state?.payos_response?.data || {}
 
-  const [paymentStatus, setPaymentStatus] = useState("pending");
-  const [timeLeft, setTimeLeft] = useState(600);
-  const [showInstructions, setShowInstructions] = useState(false);
-  const timerRef = useRef(null);
+  const [paymentStatus, setPaymentStatus] = useState("pending")
+  const [timeLeft, setTimeLeft] = useState(600)
+  const [showInstructions, setShowInstructions] = useState(false)
+  const [isPolling, setIsPolling] = useState(true)
+  const timerRef = useRef(null)
+  const pollingRef = useRef(null)
 
   // Check if transaction data exists
   useEffect(() => {
-    if (!transactionData) {
-      console.error("No transaction data found");
-      navigate("/account-plan");
+    if (!transactionData || !transactionData.orderCode) {
+      console.error("No transaction data found")
+      navigate("/account-plan")
     }
-  }, [transactionData, navigate]);
+  }, [transactionData, navigate])
 
   // Format currency
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
       currency: "VND",
-    }).format(amount);
-  };
+    }).format(amount)
+  }
 
   // Format time
   const formatTime = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
-  };
+    const minutes = Math.floor(seconds / 60)
+    const remainingSeconds = seconds % 60
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
+  }
+
+  // Check transaction status
+  const checkTransactionStatus = useCallback(async () => {
+    if (!transactionData.orderCode || !isPolling) return
+
+    try {
+      const response = await fetch(`https://backend.matchlent.xyz/api/transactions/order-code/${transactionData.orderCode}`)
+
+      if (response.ok) {
+        const data = await response.json()
+        console.log("Transaction status:", data)
+
+        if (data.status === "SUCCESS") {
+          setPaymentStatus("completed")
+          setIsPolling(false)
+
+          // Clear intervals
+          if (timerRef.current) {
+            clearInterval(timerRef.current)
+          }
+          if (pollingRef.current) {
+            clearInterval(pollingRef.current)
+          }
+
+          // Update user type and redirect
+          storage.setUserType("premium")
+          updateUser({ userType: "premium" })
+
+          // Redirect to success page after a short delay
+          setTimeout(() => {
+            navigate("/payment/success", {
+              state: {
+                orderCode: transactionData.orderCode,
+                amount: transactionData.amount,
+                status: "SUCCESS",
+              },
+            })
+          }, 1500)
+        } else if (data.status === "CANCELLED") {
+          setPaymentStatus("cancelled")
+          setIsPolling(false)
+
+          if (timerRef.current) {
+            clearInterval(timerRef.current)
+          }
+          if (pollingRef.current) {
+            clearInterval(pollingRef.current)
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error checking transaction status:", error)
+    }
+  }, [transactionData.orderCode, isPolling, navigate, updateUser])
+
+  // Start polling for transaction status
+  useEffect(() => {
+    if (paymentStatus === "pending" && isPolling && transactionData.orderCode) {
+      // Initial check
+      checkTransactionStatus()
+
+      // Set up polling every 5 seconds
+      pollingRef.current = setInterval(() => {
+        checkTransactionStatus()
+      }, 5000)
+    }
+
+    return () => {
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current)
+      }
+    }
+  }, [paymentStatus, isPolling, checkTransactionStatus, transactionData.orderCode])
 
   // Handle cancel payment
   const handleCancel = () => {
-    setPaymentStatus("cancelled");
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-    }
-    navigate("/account-plan");
-  };
+    setPaymentStatus("cancelled")
+    setIsPolling(false)
 
-  // Handle payment completed (manual confirmation)
-  const handlePaymentCompleted = () => {
-    setPaymentStatus("completed");
     if (timerRef.current) {
-      clearInterval(timerRef.current);
+      clearInterval(timerRef.current)
     }
-    // Update userType to "premium" upon successful payment
-    storage.setUserType("premium");
-    updateUser({ userType: "premium" });
-  };
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current)
+    }
+
+    navigate("/account-plan")
+  }
 
   // Handle retry payment
   const handleRetry = () => {
-    navigate("/account-plan");
-  };
+    navigate("/account-plan")
+  }
 
   // Handle back to plans
   const handleBackToPlans = () => {
+    setIsPolling(false)
+
     if (timerRef.current) {
-      clearInterval(timerRef.current);
+      clearInterval(timerRef.current)
     }
-    navigate("/account-plan");
-  };
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current)
+    }
+
+    navigate("/account-plan")
+  }
 
   // Start countdown timer
   const startTimer = useCallback(() => {
     if (timerRef.current) {
-      clearInterval(timerRef.current);
+      clearInterval(timerRef.current)
     }
 
     timerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          setPaymentStatus("failed");
-          return 0;
+          setPaymentStatus("failed")
+          setIsPolling(false)
+
+          if (pollingRef.current) {
+            clearInterval(pollingRef.current)
+          }
+
+          return 0
         }
-        return prev - 1;
-      });
-    }, 1000);
-  }, []);
+        return prev - 1
+      })
+    }, 1000)
+  }, [])
 
   useEffect(() => {
     if (paymentStatus === "pending") {
-      startTimer();
+      startTimer()
     }
 
     return () => {
       if (timerRef.current) {
-        clearInterval(timerRef.current);
+        clearInterval(timerRef.current)
       }
-    };
-  }, [paymentStatus, startTimer]);
+    }
+  }, [paymentStatus, startTimer])
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+      }
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current)
+      }
+    }
+  }, [])
 
   // Don't render if no transaction data
-  if (!transactionData) {
+  if (!transactionData || !transactionData.orderCode) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600 mb-4">
-            Không tìm thấy thông tin giao dịch
-          </p>
-          <Button onClick={() => navigate("/account-plan")}>
-            Quay lại chọn gói
-          </Button>
+          <p className="text-gray-600 mb-4">Không tìm thấy thông tin giao dịch</p>
+          <Button onClick={() => navigate("/account-plan")}>Quay lại chọn gói</Button>
         </div>
       </div>
-    );
+    )
   }
 
   // Render status content
@@ -137,20 +221,12 @@ export default function PaymentPage() {
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-green-600 mb-2">
-                Thanh toán thành công!
-              </h2>
-              <p className="text-gray-600">
-                Cảm ơn bạn đã nâng cấp lên Premium.
-              </p>
-              <p className="text-sm text-gray-500 mt-2">
-                Mã giao dịch: {transactionData.orderCode}
-              </p>
+              <h2 className="text-2xl font-bold text-green-600 mb-2">Thanh toán thành công!</h2>
+              <p className="text-gray-600">Đang chuyển hướng đến trang thành công...</p>
+              <p className="text-sm text-gray-500 mt-2">Mã giao dịch: {transactionData.orderCode}</p>
             </div>
             <div className="bg-green-50 rounded-xl p-4 space-y-2">
-              <p className="text-green-800 font-medium">
-                🎉 Chúc mừng! Bạn đã mở khóa:
-              </p>
+              <p className="text-green-800 font-medium">🎉 Chúc mừng! Bạn đã mở khóa:</p>
               <ul className="text-sm text-green-700 space-y-1">
                 <li>• Ứng tuyển không giới hạn</li>
                 <li>• Tối ưu CV bằng AI</li>
@@ -158,11 +234,8 @@ export default function PaymentPage() {
                 <li>• Và nhiều tính năng khác...</li>
               </ul>
             </div>
-            <Button onClick={() => navigate("/")} className="w-full">
-              Bắt đầu sử dụng Premium
-            </Button>
           </div>
-        );
+        )
 
       case "failed":
         return (
@@ -171,19 +244,11 @@ export default function PaymentPage() {
               <XCircle className="w-8 h-8 text-red-600" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-red-600 mb-2">
-                Hết thời gian thanh toán
-              </h2>
-              <p className="text-gray-600">
-                Mã QR đã hết hạn. Vui lòng tạo giao dịch mới.
-              </p>
+              <h2 className="text-2xl font-bold text-red-600 mb-2">Hết thời gian thanh toán</h2>
+              <p className="text-gray-600">Mã QR đã hết hạn. Vui lòng tạo giao dịch mới.</p>
             </div>
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={handleCancel}
-                className="flex-1 bg-transparent"
-              >
+              <Button variant="outline" onClick={handleCancel} className="flex-1 bg-transparent">
                 Hủy bỏ
               </Button>
               <Button onClick={handleRetry} className="flex-1">
@@ -192,7 +257,7 @@ export default function PaymentPage() {
               </Button>
             </div>
           </div>
-        );
+        )
 
       case "cancelled":
         return (
@@ -201,20 +266,14 @@ export default function PaymentPage() {
               <X className="w-8 h-8 text-gray-600" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-600 mb-2">
-                Đã hủy thanh toán
-              </h2>
-              <p className="text-gray-600">Bạn đã hủy giao dịch này.</p>
+              <h2 className="text-2xl font-bold text-gray-600 mb-2">Thanh toán đã bị hủy</h2>
+              <p className="text-gray-600">Giao dịch đã được hủy bởi hệ thống hoặc người dùng.</p>
             </div>
-            <Button
-              variant="outline"
-              onClick={() => navigate("/account-plan")}
-              className="w-full"
-            >
+            <Button variant="outline" onClick={() => navigate("/account-plan")} className="w-full">
               Quay lại chọn gói
             </Button>
           </div>
-        );
+        )
 
       default:
         return (
@@ -243,13 +302,9 @@ export default function PaymentPage() {
                 <div className="text-center space-y-2">
                   <div className="flex items-center justify-center gap-2 text-blue-600">
                     <QrCode className="w-5 h-5" />
-                    <span className="font-medium">
-                      Quét mã QR để thanh toán
-                    </span>
+                    <span className="font-medium">Quét mã QR để thanh toán</span>
                   </div>
-                  <p className="text-sm text-gray-500">
-                    Sử dụng ứng dụng ngân hàng hoặc ví điện tử để quét mã
-                  </p>
+                  <p className="text-sm text-gray-500">Sử dụng ứng dụng ngân hàng hoặc ví điện tử để quét mã</p>
                 </div>
               </div>
 
@@ -257,34 +312,24 @@ export default function PaymentPage() {
               <div className="space-y-4">
                 {/* Payment Details */}
                 <div className="bg-gray-50 rounded-xl p-4 space-y-3">
-                  <h4 className="font-semibold text-gray-800 mb-2">
-                    Thông tin thanh toán
-                  </h4>
+                  <h4 className="font-semibold text-gray-800 mb-2">Thông tin thanh toán</h4>
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-600">Gói:</span>
-                      <span className="font-semibold text-indigo-600">
-                        Premium
-                      </span>
+                      <span className="font-semibold text-indigo-600">Premium</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-600">Số tiền:</span>
-                      <span className="font-bold text-lg">
-                        {formatCurrency(transactionData.amount)}
-                      </span>
+                      <span className="font-bold text-lg">{formatCurrency(transactionData.amount)}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-600">Mã đơn hàng:</span>
-                      <span className="font-mono text-sm">
-                        {transactionData.orderCode}
-                      </span>
+                      <span className="font-mono text-sm">{transactionData.orderCode}</span>
                     </div>
                     {transactionData.description && (
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600">Mô tả:</span>
-                        <span className="text-sm">
-                          {transactionData.description}
-                        </span>
+                        <span className="text-sm">{transactionData.description}</span>
                       </div>
                     )}
                   </div>
@@ -292,9 +337,7 @@ export default function PaymentPage() {
 
                 {/* Premium Benefits */}
                 <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-4 border border-indigo-100">
-                  <h4 className="font-semibold text-indigo-800 mb-2">
-                    🚀 Sau khi thanh toán, bạn sẽ có:
-                  </h4>
+                  <h4 className="font-semibold text-indigo-800 mb-2">🚀 Sau khi thanh toán, bạn sẽ có:</h4>
                   <ul className="text-sm text-indigo-700 space-y-1">
                     <li>• Ứng tuyển không giới hạn</li>
                     <li>• Tối ưu CV bằng AI</li>
@@ -311,16 +354,8 @@ export default function PaymentPage() {
                 onClick={() => setShowInstructions(!showInstructions)}
                 className="flex items-center justify-between w-full text-left"
               >
-                <span className="font-medium text-blue-800">
-                  Hướng dẫn thanh toán
-                </span>
-                <span
-                  className={`transform transition-transform ${
-                    showInstructions ? "rotate-180" : ""
-                  }`}
-                >
-                  ▼
-                </span>
+                <span className="font-medium text-blue-800">Hướng dẫn thanh toán</span>
+                <span className={`transform transition-transform ${showInstructions ? "rotate-180" : ""}`}>▼</span>
               </button>
 
               {showInstructions && (
@@ -332,7 +367,7 @@ export default function PaymentPage() {
                   </div>
                   <div className="space-y-2 text-sm text-blue-700">
                     <p>4. Xác nhận thông tin và hoàn tất thanh toán</p>
-                    <p>5. Nhấn "Đã thanh toán" sau khi hoàn tất</p>
+                    <p>5. Hệ thống sẽ tự động xác nhận thanh toán</p>
                   </div>
                 </div>
               )}
@@ -341,19 +376,11 @@ export default function PaymentPage() {
             {/* Status indicator */}
             <div className="flex items-center justify-center gap-2 text-blue-600">
               <div className="animate-pulse w-2 h-2 bg-blue-600 rounded-full"></div>
-              <span className="text-sm">Đang chờ thanh toán...</span>
+              <span className="text-sm">Đang chờ thanh toán... (Tự động kiểm tra mỗi 5 giây)</span>
             </div>
 
             {/* Action buttons */}
-            <div className="grid sm:grid-cols-3 gap-3">
-              <Button
-                onClick={handlePaymentCompleted}
-                className="sm:col-span-3 bg-green-600 hover:bg-green-700"
-              >
-                <CheckCircle className="w-4 h-4 mr-2" />
-                Đã thanh toán
-              </Button>
-
+            <div className="grid sm:grid-cols-2 gap-3">
               <Button
                 variant="outline"
                 onClick={handleBackToPlans}
@@ -366,15 +393,15 @@ export default function PaymentPage() {
               <Button
                 variant="outline"
                 onClick={handleCancel}
-                className="sm:col-span-2 border-red-200 text-red-600 hover:bg-red-50 bg-transparent"
+                className="border-red-200 text-red-600 hover:bg-red-50 bg-transparent"
               >
                 Hủy thanh toán
               </Button>
             </div>
           </div>
-        );
+        )
     }
-  };
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -384,17 +411,13 @@ export default function PaymentPage() {
           <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
             <CardHeader className="text-center pb-4">
               <CardTitle className="text-2xl font-bold text-gray-800">
-                {paymentStatus === "pending"
-                  ? "Thanh toán QR Code"
-                  : "Trạng thái thanh toán"}
+                {paymentStatus === "pending" ? "Thanh toán QR Code" : "Trạng thái thanh toán"}
               </CardTitle>
             </CardHeader>
-            <CardContent className="px-6 pb-6">
-              {renderStatusContent()}
-            </CardContent>
+            <CardContent className="px-6 pb-6">{renderStatusContent()}</CardContent>
           </Card>
         </div>
       </div>
     </div>
-  );
+  )
 }

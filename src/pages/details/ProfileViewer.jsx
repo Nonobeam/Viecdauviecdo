@@ -1,89 +1,117 @@
-import TabList from "@/components/TabList";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { getSkills, getUserById } from "@/utils/userApi";
-import { Loader, Mail, MapPin, Phone } from "lucide-react";
-import { lazy, Suspense, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+"use client"
 
-const CV = lazy(() => import("@/pages/details/module/CV"));
-const UserProjects = lazy(() => import("@/pages/details/module/UserProjects"));
-const JoinedProjects = lazy(() =>
-  import("@/pages/details/module/JoinedProjects")
-);
+import TabList from "@/components/TabList"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { getSkills, getUserById } from "@/utils/userApi"
+import { Loader, Mail, MapPin, Phone, Crown, Star } from "lucide-react"
+import { lazy, Suspense, useEffect, useState } from "react" // Re-added lazy import
+import { useParams } from "react-router-dom"
+import PlanSelector from "@/components/PlanSelector"
+
+// Reverted to original lazy imports
+const CV = lazy(() => import("@/pages/details/module/CV"))
+const UserProjects = lazy(() => import("@/pages/details/module/UserProjects"))
+const JoinedProjects = lazy(() => import("@/pages/details/module/JoinedProjects"))
+
+// Utility function to decode JWT token
+const decodeToken = (token) => {
+  try {
+    const base64Url = token.split(".")[1]
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/")
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join(""),
+    )
+    return JSON.parse(jsonPayload)
+  } catch (error) {
+    console.error("Error decoding token:", error)
+    return null
+  }
+}
 
 const ProjectTabs = ({ userId }) => {
-  const tabs = ["userProjects", "joinedProjects"];
+  const tabs = ["userProjects", "joinedProjects"]
   const labels = {
     userProjects: "Dự án của họ",
     joinedProjects: "Dự án tham gia",
-  };
-  const [activeTab, setActiveTab] = useState(tabs[0]);
+  }
+  const [activeTab, setActiveTab] = useState(tabs[0])
   return (
     <div className="p-8">
       {/* Tab Content */}
       <main className="flex-1 flex flex-col">
-        <TabList
-          tabs={tabs}
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          labels={labels}
-        />
+        <TabList tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} labels={labels} />
         <div className="flex-1 overflow-y-auto">
           <Suspense fallback={<Loader />}>
             {activeTab === "userProjects" && <UserProjects userId={userId} />}
-            {activeTab === "joinedProjects" && (
-              <JoinedProjects userId={userId} />
-            )}
+            {activeTab === "joinedProjects" && <JoinedProjects userId={userId} />}
           </Suspense>
         </div>
       </main>
     </div>
-  );
-};
+  )
+}
 
 const ProfileViewer = () => {
-  const { id } = useParams();
-  const [userData, setUserData] = useState(null);
-  const [userInformation, setUserInformation] = useState(null);
-  const [skills, setSkills] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { id } = useParams()
+  const [userData, setUserData] = useState(null)
+  const [userInformation, setUserInformation] = useState(null)
+  const [skills, setSkills] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [currentPack, setCurrentPack] = useState("FREE") // State to hold the pack from JWT
+  const [isOwnProfile, setIsOwnProfile] = useState(false)
 
   const fetchUser = async () => {
-    if (!id) return;
+    if (!id) return
 
     try {
-      setLoading(true);
-      const fetchedUser = await getUserById(id);
-      setUserData(fetchedUser.data);
-      setUserInformation(fetchedUser.data.user_information);
+      setLoading(true)
+      const fetchedUser = await getUserById(id)
+      setUserData(fetchedUser.data)
+      setUserInformation(fetchedUser.data.user_information)
+
+      // Check if this is the current user's profile and get pack from token
+      const token = localStorage.getItem("token")
+      if (token) {
+        const decodedToken = decodeToken(token)
+        if (decodedToken && decodedToken.user_id === id) {
+          setIsOwnProfile(true)
+          if (decodedToken.pack) {
+            setCurrentPack(decodedToken.pack.toUpperCase()) // Set currentPack from decoded token
+            console.log("ProfileViewer - Current Pack from Token:", decodedToken.pack.toUpperCase())
+          }
+        }
+      }
     } catch (error) {
-      console.error("Failed to fetch user:", error);
-      setError("Không thể tải thông tin người dùng");
+      console.error("Failed to fetch user:", error)
+      setError("Không thể tải thông tin người dùng")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const fetchSkills = async () => {
-    if (!id) return;
+    if (!id) return
 
     try {
-      const userSkills = await getSkills(id);
-      setSkills(userSkills.data || []);
+      const userSkills = await getSkills(id)
+      setSkills(userSkills.data || [])
     } catch (error) {
-      console.error("Failed to fetch skills:", error);
-      setSkills([]);
+      console.error("Failed to fetch skills:", error)
+      setSkills([])
     }
-  };
+  }
 
   useEffect(() => {
     if (id) {
-      fetchUser();
-      fetchSkills();
+      fetchUser()
+      fetchSkills()
     }
-  }, [id]);
+  }, [id])
 
   const getSkillBadgeColor = (index) => {
     const colors = [
@@ -92,9 +120,34 @@ const ProfileViewer = () => {
       "bg-gradient-to-r from-green-500 to-emerald-500 text-white",
       "bg-gradient-to-r from-orange-500 to-red-500 text-white",
       "bg-gradient-to-r from-indigo-500 to-purple-500 text-white",
-    ];
-    return colors[index % colors.length];
-  };
+    ]
+    return colors[index % colors.length]
+  }
+
+  const getPlanBadge = (pack) => {
+    switch (pack) {
+      case "PREMIUM":
+        return (
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+            <Crown className="w-4 h-4" />
+            Premium
+          </div>
+        )
+      case "PRO":
+        return (
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+            <Star className="w-4 h-4" />
+            Pro
+          </div>
+        )
+      default:
+        return (
+          <div className="inline-flex items-center gap-2 bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm font-medium">
+            Free
+          </div>
+        )
+    }
+  }
 
   if (loading) {
     return (
@@ -104,22 +157,18 @@ const ProfileViewer = () => {
           <span className="text-lg text-gray-600">Đang tải thông tin...</span>
         </div>
       </div>
-    );
+    )
   }
 
   if (error || !userData) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Không tìm thấy người dùng
-          </h2>
-          <p className="text-gray-600">
-            {error || "Người dùng này không tồn tại"}
-          </p>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Không tìm thấy người dùng</h2>
+          <p className="text-gray-600">{error || "Người dùng này không tồn tại"}</p>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -150,19 +199,16 @@ const ProfileViewer = () => {
                   <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                     {userInformation?.full_name || "N/A"}
                   </h1>
-                  <p className="text-lg text-gray-600 font-medium">
-                    {userInformation?.job_title || "N/A"}
-                  </p>
+                  <p className="text-lg text-gray-600 font-medium mb-3">{userInformation?.job_title || "N/A"}</p>
+
+                  {/* Plan Badge */}
+                  <div className="mb-4">{getPlanBadge(currentPack)}</div>
                 </div>
 
                 {/* About Section */}
                 <div className="space-y-4">
-                  <h2 className="text-xl font-bold text-gray-800">
-                    Thông tin chung
-                  </h2>
-                  <p className="text-gray-600 leading-relaxed">
-                    {userInformation?.summary || "Chưa có thông tin"}
-                  </p>
+                  <h2 className="text-xl font-bold text-gray-800">Thông tin chung</h2>
+                  <p className="text-gray-600 leading-relaxed">{userInformation?.summary || "Chưa có thông tin"}</p>
                 </div>
 
                 {/* Location Info */}
@@ -170,12 +216,9 @@ const ProfileViewer = () => {
                   <div className="flex items-center gap-3 text-gray-600">
                     <MapPin className="h-5 w-5 text-purple-500" />
                     <div>
-                      <p className="font-medium">
-                        {userInformation?.country || "N/A"}
-                      </p>
+                      <p className="font-medium">{userInformation?.country || "N/A"}</p>
                       <p className="text-sm">
-                        {userInformation?.state || "N/A"},{" "}
-                        {userInformation?.city || "N/A"}
+                        {userInformation?.state || "N/A"}, {userInformation?.city || "N/A"}
                       </p>
                     </div>
                   </div>
@@ -187,15 +230,11 @@ const ProfileViewer = () => {
                   <div className="space-y-2">
                     <div className="flex items-center gap-3 text-gray-600">
                       <Mail className="h-4 w-4 text-purple-500" />
-                      <span className="text-sm">
-                        {userData?.email || "N/A"}
-                      </span>
+                      <span className="text-sm">{userData?.email || "N/A"}</span>
                     </div>
                     <div className="flex items-center gap-3 text-gray-600">
                       <Phone className="h-4 w-4 text-purple-500" />
-                      <span className="text-sm">
-                        {userInformation?.phone_number || "N/A"}
-                      </span>
+                      <span className="text-sm">{userInformation?.phone_number || "N/A"}</span>
                     </div>
                   </div>
                 </div>
@@ -208,20 +247,23 @@ const ProfileViewer = () => {
                       skills.map((skill, index) => (
                         <Badge
                           key={skill}
-                          className={`${getSkillBadgeColor(
-                            index
-                          )} border-0 shadow-md font-medium px-3 py-1`}
+                          className={`${getSkillBadgeColor(index)} border-0 shadow-md font-medium px-3 py-1`}
                         >
                           {skill}
                         </Badge>
                       ))
                     ) : (
-                      <p className="text-gray-500 text-sm">
-                        Chưa có kỹ năng nào
-                      </p>
+                      <p className="text-gray-500 text-sm">Chưa có kỹ năng nào</p>
                     )}
                   </div>
                 </div>
+
+                {/* Plan Selector - Only show for own profile */}
+                {isOwnProfile && (
+                  <div className="space-y-4">
+                    <PlanSelector compact={true} showTitle={true} />
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -241,7 +283,7 @@ const ProfileViewer = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ProfileViewer;
+export default ProfileViewer

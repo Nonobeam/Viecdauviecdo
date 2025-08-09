@@ -1,33 +1,53 @@
-'use client'
+"use client"
 
 import { useAuth } from "@/providers/AuthContext"
 import { createTransaction } from "@/utils/transactionAPI"
-import { Eye, Star, Target, Zap, BadgeCheck, Shield, TrendingUp } from 'lucide-react'
-import React, { useEffect, useState } from "react"
+import { Eye, Star, Zap, BadgeCheck, Shield, TrendingUp } from "lucide-react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { plans } from "@/mock/data"
 import PlanCard from "@/components/Subscription/PlanCard"
 import FeatureCard from "@/components/Subscription/FeatureCard"
 
+// Utility function to decode JWT token
+const decodeToken = (token) => {
+  try {
+    const base64Url = token.split(".")[1]
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/")
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join(""),
+    )
+    return JSON.parse(jsonPayload)
+  } catch (error) {
+    console.error("Error decoding token:", error)
+    return null
+  }
+}
+
 const PremiumPlansPage = () => {
   const [selectedPlan, setSelectedPlan] = useState(null)
+  const [currentPack, setCurrentPack] = useState("FREE") // State to hold the pack from JWT
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
   const { user, loading } = useAuth()
 
   useEffect(() => {
-    if (!loading && user) {
-      const userTypeFromUser = user.userType || "free"
-      const parsedUserTypeFromUser =
-        typeof userTypeFromUser === "string" &&
-        userTypeFromUser.startsWith('"') &&
-        userTypeFromUser.endsWith('"')
-          ? JSON.parse(userTypeFromUser)
-          : userTypeFromUser
-      const finalUserType = parsedUserTypeFromUser.toLowerCase()
-      setSelectedPlan(finalUserType === "premium" ? "premium" : "free")
-    } else if (!loading && !user) {
+    // Get current pack from token in localStorage
+    const token = localStorage.getItem("token")
+    if (token) {
+      const decodedToken = decodeToken(token)
+      if (decodedToken && decodedToken.pack) {
+        setCurrentPack(decodedToken.pack.toUpperCase()) // Set currentPack from decoded token
+        setSelectedPlan(decodedToken.pack.toLowerCase())
+      }
+    }
+
+    if (!loading && !user) {
       setSelectedPlan("free")
+      setCurrentPack("FREE")
     }
   }, [loading, user])
 
@@ -36,6 +56,12 @@ const PremiumPlansPage = () => {
   }
 
   const handleSelectPlan = async (planId) => {
+    // Prevent selecting free plan if user already has PRO/PREMIUM
+    if (planId === "free" && (currentPack === "PRO" || currentPack === "PREMIUM")) {
+      alert("Bạn không thể chuyển về gói miễn phí khi đã có gói trả phí.")
+      return
+    }
+
     if (planId === selectedPlan || isLoading) return
 
     setIsLoading(true)
@@ -56,7 +82,7 @@ const PremiumPlansPage = () => {
       const orderCode = generateOrderCode()
       const transactionRequest = {
         order_code: orderCode,
-        amount: parseInt(plan.price),
+        amount: Number.parseInt(plan.price),
         holder_id: user?.user_id || "",
         description: plan.name,
         buyer_name: undefined,
@@ -67,10 +93,10 @@ const PremiumPlansPage = () => {
           {
             name: user?.user_id || "unknown",
             quantity: 1,
-            price: parseInt(plan.price),
+            price: Number.parseInt(plan.price),
           },
         ],
-        cancel_url: `${window.location.origin}/premium-plans?status=cancelled`,
+        cancel_url: `${window.location.origin}/payment/cancel`,
         return_url: `${window.location.origin}/payment/success`,
         expired_at: Math.floor(Date.now() / 1000) + 5 * 60,
         signature: undefined,
@@ -80,104 +106,75 @@ const PremiumPlansPage = () => {
       console.log(transactionRequest)
 
       const response = await createTransaction(transactionRequest)
-      
+
       console.log("=== DEBUG: Full Response ===")
       console.log(response)
-      console.log("=== DEBUG: Response Type ===")
-      console.log(typeof response)
-      console.log("=== DEBUG: Response.data ===")
-      console.log(response?.data)
 
-      // Check different possible response structures
-      if (response && response.data) {
-        console.log("=== DEBUG: Found response.data ===")
-        console.log(response.data)
-        
-        // Check for the checkout URL in different possible locations
-        const checkoutUrl = response.data?.payos_response?.data?.checkoutUrl || 
-                           response.data?.data?.checkoutUrl ||
-                           response.data?.checkoutUrl
+      if (response) {
+        console.log("=== DEBUG: Navigating to payment page with QR data ===")
 
-        console.log("=== DEBUG: Checkout URL ===")
-        console.log(checkoutUrl)
-
-        if (checkoutUrl) {
-          localStorage.setItem('pendingTransaction', JSON.stringify({
-            transactionId: response.data.transaction_id || response.data?.data?.transaction_id,
-            orderCode: orderCode,
-            planId: planId,
-            amount: plan.price,
-            planName: plan.name
-          }))
-          
-          console.log("=== DEBUG: Redirecting to checkout ===")
-          window.location.href = checkoutUrl
-        } else {
-          console.log("=== DEBUG: No checkout URL found, using fallback ===")
-          navigate('/payment', { 
-            state: { 
-              transactionData: response.data,
-              planInfo: plan 
-            } 
-          })
-        }
-      } else if (response && !response.data) {
-        // Maybe the response structure is different
-        console.log("=== DEBUG: Response without .data property ===")
-        console.log("Checking if response itself contains the data...")
-        
-        const checkoutUrl = response?.payos_response?.data?.checkoutUrl || 
-                           response?.data?.checkoutUrl ||
-                           response?.checkoutUrl
-
-        if (checkoutUrl) {
-          localStorage.setItem('pendingTransaction', JSON.stringify({
+        localStorage.setItem(
+          "pendingTransaction",
+          JSON.stringify({
             transactionId: response.transaction_id,
             orderCode: orderCode,
             planId: planId,
             amount: plan.price,
-            planName: plan.name
-          }))
-          
-          window.location.href = checkoutUrl
-        } else {
-          navigate('/payment', { 
-            state: { 
-              transactionData: response,
-              planInfo: plan 
-            } 
-          })
-        }
-      } else {
-        console.log("=== DEBUG: No valid response ===")
-        throw new Error("Invalid response from server")
-      }
+            planName: plan.name,
+          }),
+        )
 
+        const qrCode = response?.payos_response?.data?.qrCode
+        const payosData = response?.payos_response?.data
+
+        if (!qrCode) {
+          console.error("QR Code not found in response")
+          console.error("Response structure:", response)
+          throw new Error("QR Code not found in response")
+        }
+
+        console.log("=== DEBUG: QR Code found ===")
+        console.log("QR Code:", qrCode)
+
+        navigate("/payment", {
+          state: {
+            payos_response: {
+              data: {
+                orderCode: payosData?.orderCode || orderCode,
+                amount: payosData?.amount || plan.price,
+                description: payosData?.description || plan.name,
+                qrCode: qrCode,
+                accountNumber: payosData?.accountNumber,
+                accountName: payosData?.accountName,
+                expiredAt: payosData?.expiredAt,
+                status: payosData?.status,
+                bin: payosData?.bin,
+                currency: payosData?.currency,
+              },
+            },
+            planInfo: plan,
+          },
+        })
+      } else {
+        console.log("=== DEBUG: No response received ===")
+        throw new Error("No response received from server")
+      }
     } catch (err) {
       console.error("=== DEBUG: Error creating transaction ===")
       console.error(err)
-      console.error("Error details:", err.message)
-      console.error("Error stack:", err.stack)
-      
-      // Show more detailed error message
+
       alert(`Có lỗi xảy ra khi tạo giao dịch: ${err.message}. Vui lòng thử lại.`)
     } finally {
       setIsLoading(false)
     }
   }
 
-  const jobSeekerPlans = plans.filter((plan) =>
-    ["free", "matchlent-pro", "matchlent-premium"].includes(plan.id)
-  )
+  const jobSeekerPlans = plans.filter((plan) => ["free", "matchlent-pro", "matchlent-premium"].includes(plan.id))
 
-  const employerPlans = plans.filter((plan) =>
-    [
-      "matchlent-basic",
-      "matchlent-elite", 
-      "matchlent-platinum",
-      "matchlent-ads",
-    ].includes(plan.id)
-  )
+  // Comment out employer plans
+  // const employerPlans = plans.filter((plan) =>
+  //   ["matchlent-basic", "matchlent-elite", "matchlent-platinum", "matchlent-ads"].includes(plan.id),
+  // )
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50/50 via-white to-purple-50/50 pb-16">
@@ -187,26 +184,26 @@ const PremiumPlansPage = () => {
           <div className="absolute top-0 left-0 w-full h-full"></div>
         </div>
         <div className="container mx-auto px-4 pb-8 relative z-10">
-          <h1 className="text-4xl font-bold text-white mb-2 animate-fade-in">
-            Chọn gói của bạn
-          </h1>
+          <h1 className="text-4xl font-bold text-white mb-2 animate-fade-in">Chọn gói của bạn</h1>
           <p className="text-xl text-indigo-100 max-w-3xl animate-fade-in [animation-delay:100ms]">
-            Mở khóa các tính năng mạnh mẽ để tăng tốc tìm kiếm việc làm hoặc tìm
-            ứng viên chất lượng
+            Mở khóa các tính năng mạnh mẽ để tăng tốc tìm kiếm việc làm
           </p>
+          <div className="mt-4">
+            <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm">Gói hiện tại: {currentPack}</span>
+          </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 -mt-12">
+      <div className="container mx-auto px-4 mt-8">
+        {" "}
+        {/* Changed -mt-12 to mt-8 */}
         {/* Job Seeker Plans */}
         <section className="mb-16 animate-fade-in [animation-delay:200ms]">
           <div className="flex items-center mb-6">
             <div className="bg-indigo-100 text-indigo-800 p-2 rounded-full mr-3">
               <Zap className="w-5 h-5" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-800">
-              Gói dành cho người tìm việc
-            </h2>
+            <h2 className="text-2xl font-bold text-gray-800">Gói dành cho người tìm việc</h2>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {jobSeekerPlans.map((plan) => (
@@ -214,22 +211,20 @@ const PremiumPlansPage = () => {
                 key={plan.id}
                 plan={plan}
                 selectedPlan={selectedPlan}
+                currentPack={currentPack}
                 handleSelectPlan={handleSelectPlan}
                 isLoading={isLoading}
               />
             ))}
           </div>
         </section>
-
-        {/* Employer Plans */}
-        <section className="animate-fade-in [animation-delay:300ms]">
+        {/* Commented out Employer Plans */}
+        {/* <section className="animate-fade-in [animation-delay:300ms]">
           <div className="flex items-center mb-6">
             <div className="bg-blue-100 text-blue-800 p-2 rounded-full mr-3 flex items-center justify-center">
               <Target className="w-5 h-5" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-800">
-              Gói dành cho nhà tuyển dụng
-            </h2>
+            <h2 className="text-2xl font-bold text-gray-800">Gói dành cho nhà tuyển dụng</h2>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {employerPlans.map((plan) => (
@@ -237,21 +232,18 @@ const PremiumPlansPage = () => {
                 key={plan.id}
                 plan={plan}
                 selectedPlan={selectedPlan}
+                currentPack={currentPack}
                 handleSelectPlan={handleSelectPlan}
                 isLoading={isLoading}
               />
             ))}
           </div>
-        </section>
-
+        </section> */}
         {/* Features Section */}
         <div className="mt-16 bg-white rounded-xl shadow-lg p-8 animate-fade-in [animation-delay:400ms]">
-          <h3 className="text-2xl font-bold text-center text-gray-900 mb-2">
-            Tại sao nâng cấp tài khoản?
-          </h3>
+          <h3 className="text-2xl font-bold text-center text-gray-900 mb-2">Tại sao nâng cấp tài khoản?</h3>
           <p className="text-gray-600 text-center mb-8 max-w-2xl mx-auto">
-            Khám phá các lợi ích độc quyền giúp bạn tiết kiệm thời gian và đạt
-            được kết quả tốt hơn
+            Khám phá các lợi ích độc quyền giúp bạn tiết kiệm thời gian và đạt được kết quả tốt hơn
           </p>
           <div className="grid md:grid-cols-3 gap-8">
             <FeatureCard
@@ -274,7 +266,6 @@ const PremiumPlansPage = () => {
             />
           </div>
         </div>
-
         {/* Trust Badges */}
         <div className="mt-12 grid md:grid-cols-3 gap-6">
           <div className="bg-white rounded-lg p-6 shadow-sm flex items-center">
