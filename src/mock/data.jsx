@@ -1,5 +1,3 @@
-import { Star, Crown, Zap } from "lucide-react";
-
 const talents = [
   {
     id: 1,
@@ -205,8 +203,8 @@ export const plans = [
   {
     id: "matchlent-pro",
     name: "Matchlent Pro",
-    price: "50000",
-    discountedPrice: "30000",
+    price: "30000",
+    discountedPrice: "50000",
     period: "mỗi tháng",
     description: "Nâng cao cơ hội nghề nghiệp của bạn",
     popular: false,
@@ -226,8 +224,8 @@ export const plans = [
   {
     id: "matchlent-premium",
     name: "Matchlent Premium",
-    price: "100000",
-    discountedPrice: "50000",
+    price: "50000",
+    discountedPrice: "100000",
     period: "mỗi tháng",
     description: "Tối ưu hóa sự nghiệp với các công cụ chuyên sâu",
     popular: true,
