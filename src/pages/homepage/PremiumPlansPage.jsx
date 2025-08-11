@@ -1,85 +1,86 @@
-"use client"
-
-import { useAuth } from "@/providers/AuthContext"
-import { createTransaction } from "@/utils/transactionAPI"
-import { Eye, Star, Zap, BadgeCheck, Shield, TrendingUp } from "lucide-react"
-import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { plans } from "@/mock/data"
-import PlanCard from "@/components/Subscription/PlanCard"
-import FeatureCard from "@/components/Subscription/FeatureCard"
+import { useAuth } from "@/providers/AuthContext";
+import { createTransaction } from "@/utils/transactionAPI";
+import { Eye, Star, Zap, BadgeCheck, Shield, TrendingUp } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { plans } from "@/mock/data";
+import PlanCard from "@/components/Subscription/PlanCard";
+import FeatureCard from "@/components/Subscription/FeatureCard";
 
 // Utility function to decode JWT token
 const decodeToken = (token) => {
   try {
-    const base64Url = token.split(".")[1]
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/")
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
     const jsonPayload = decodeURIComponent(
       atob(base64)
         .split("")
         .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-        .join(""),
-    )
-    return JSON.parse(jsonPayload)
+        .join("")
+    );
+    return JSON.parse(jsonPayload);
   } catch (error) {
-    console.error("Error decoding token:", error)
-    return null
+    console.error("Error decoding token:", error);
+    return null;
   }
-}
+};
 
 const PremiumPlansPage = () => {
-  const [selectedPlan, setSelectedPlan] = useState(null)
-  const [currentPack, setCurrentPack] = useState("FREE") // State to hold the pack from JWT
-  const [isLoading, setIsLoading] = useState(false)
-  const navigate = useNavigate()
-  const { user, loading } = useAuth()
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [currentPack, setCurrentPack] = useState("FREE"); // State to hold the pack from JWT
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     // Get current pack from token in localStorage
-    const token = localStorage.getItem("token")
+    const token = localStorage.getItem("token");
     if (token) {
-      const decodedToken = decodeToken(token)
+      const decodedToken = decodeToken(token);
       if (decodedToken && decodedToken.pack) {
-        setCurrentPack(decodedToken.pack.toUpperCase()) // Set currentPack from decoded token
-        setSelectedPlan(decodedToken.pack.toLowerCase())
+        setCurrentPack(decodedToken.pack.toUpperCase()); // Set currentPack from decoded token
+        setSelectedPlan(decodedToken.pack.toLowerCase());
       }
     }
 
     if (!loading && !user) {
-      setSelectedPlan("free")
-      setCurrentPack("FREE")
+      setSelectedPlan("free");
+      setCurrentPack("FREE");
     }
-  }, [loading, user])
+  }, [loading, user]);
 
   const generateOrderCode = () => {
-    return Math.floor(100000 + Math.random() * 900000)
-  }
+    return Math.floor(100000 + Math.random() * 900000);
+  };
 
   const handleSelectPlan = async (planId) => {
     // Prevent selecting free plan if user already has PRO/PREMIUM
-    if (planId === "free" && (currentPack === "PRO" || currentPack === "PREMIUM")) {
-      alert("Bạn không thể chuyển về gói miễn phí khi đã có gói trả phí.")
-      return
+    if (
+      planId === "free" &&
+      (currentPack === "PRO" || currentPack === "PREMIUM")
+    ) {
+      alert("Bạn không thể chuyển về gói miễn phí khi đã có gói trả phí.");
+      return;
     }
 
-    if (planId === selectedPlan || isLoading) return
+    if (planId === selectedPlan || isLoading) return;
 
-    setIsLoading(true)
-    setSelectedPlan(planId)
+    setIsLoading(true);
+    setSelectedPlan(planId);
 
     if (planId === "free") {
-      setIsLoading(false)
-      return
+      setIsLoading(false);
+      return;
     }
 
-    const plan = plans.find((p) => p.id === planId)
+    const plan = plans.find((p) => p.id === planId);
     if (!plan) {
-      setIsLoading(false)
-      return
+      setIsLoading(false);
+      return;
     }
 
     try {
-      const orderCode = generateOrderCode()
+      const orderCode = generateOrderCode();
       const transactionRequest = {
         order_code: orderCode,
         amount: Number.parseInt(plan.price),
@@ -100,18 +101,12 @@ const PremiumPlansPage = () => {
         return_url: `${window.location.origin}/payment/success`,
         expired_at: Math.floor(Date.now() / 1000) + 5 * 60,
         signature: undefined,
-      }
+      };
 
-      console.log("=== DEBUG: Transaction Request ===")
-      console.log(transactionRequest)
-
-      const response = await createTransaction(transactionRequest)
-
-      console.log("=== DEBUG: Full Response ===")
-      console.log(response)
+      const response = await createTransaction(transactionRequest);
 
       if (response) {
-        console.log("=== DEBUG: Navigating to payment page with QR data ===")
+        console.log("=== DEBUG: Navigating to payment page with QR data ===");
 
         localStorage.setItem(
           "pendingTransaction",
@@ -121,20 +116,20 @@ const PremiumPlansPage = () => {
             planId: planId,
             amount: plan.price,
             planName: plan.name,
-          }),
-        )
+          })
+        );
 
-        const qrCode = response?.payos_response?.data?.qrCode
-        const payosData = response?.payos_response?.data
+        const qrCode = response?.payos_response?.data?.qrCode;
+        const payosData = response?.payos_response?.data;
 
         if (!qrCode) {
-          console.error("QR Code not found in response")
-          console.error("Response structure:", response)
-          throw new Error("QR Code not found in response")
+          console.error("QR Code not found in response");
+          console.error("Response structure:", response);
+          throw new Error("QR Code not found in response");
         }
 
-        console.log("=== DEBUG: QR Code found ===")
-        console.log("QR Code:", qrCode)
+        console.log("=== DEBUG: QR Code found ===");
+        console.log("QR Code:", qrCode);
 
         navigate("/payment", {
           state: {
@@ -154,27 +149,26 @@ const PremiumPlansPage = () => {
             },
             planInfo: plan,
           },
-        })
+        });
       } else {
-        console.log("=== DEBUG: No response received ===")
-        throw new Error("No response received from server")
+        console.log("=== DEBUG: No response received ===");
+        throw new Error("No response received from server");
       }
     } catch (err) {
-      console.error("=== DEBUG: Error creating transaction ===")
-      console.error(err)
+      console.error("=== DEBUG: Error creating transaction ===");
+      console.error(err);
 
-      alert(`Có lỗi xảy ra khi tạo giao dịch: ${err.message}. Vui lòng thử lại.`)
+      alert(
+        `Có lỗi xảy ra khi tạo giao dịch: ${err.message}. Vui lòng thử lại.`
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
-  const jobSeekerPlans = plans.filter((plan) => ["free", "matchlent-pro", "matchlent-premium"].includes(plan.id))
-
-  // Comment out employer plans
-  // const employerPlans = plans.filter((plan) =>
-  //   ["matchlent-basic", "matchlent-elite", "matchlent-platinum", "matchlent-ads"].includes(plan.id),
-  // )
+  const jobSeekerPlans = plans.filter((plan) =>
+    ["free", "matchlent-pro", "matchlent-premium"].includes(plan.id)
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50/50 via-white to-purple-50/50 pb-16">
@@ -184,26 +178,30 @@ const PremiumPlansPage = () => {
           <div className="absolute top-0 left-0 w-full h-full"></div>
         </div>
         <div className="container mx-auto px-4 pb-8 relative z-10">
-          <h1 className="text-4xl font-bold text-white mb-2 animate-fade-in">Chọn gói của bạn</h1>
+          <h1 className="text-4xl font-bold text-white mb-2 animate-fade-in">
+            Chọn gói của bạn
+          </h1>
           <p className="text-xl text-indigo-100 max-w-3xl animate-fade-in [animation-delay:100ms]">
             Mở khóa các tính năng mạnh mẽ để tăng tốc tìm kiếm việc làm
           </p>
           <div className="mt-4">
-            <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm">Gói hiện tại: {currentPack}</span>
+            <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm">
+              Gói hiện tại: {currentPack}
+            </span>
           </div>
         </div>
       </div>
 
       <div className="container mx-auto px-4 mt-8">
-        {" "}
-        {/* Changed -mt-12 to mt-8 */}
         {/* Job Seeker Plans */}
         <section className="mb-16 animate-fade-in [animation-delay:200ms]">
           <div className="flex items-center mb-6">
             <div className="bg-indigo-100 text-indigo-800 p-2 rounded-full mr-3">
               <Zap className="w-5 h-5" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-800">Gói dành cho người tìm việc</h2>
+            <h2 className="text-2xl font-bold text-gray-800">
+              Gói dành cho người tìm việc
+            </h2>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {jobSeekerPlans.map((plan) => (
@@ -218,32 +216,14 @@ const PremiumPlansPage = () => {
             ))}
           </div>
         </section>
-        {/* Commented out Employer Plans */}
-        {/* <section className="animate-fade-in [animation-delay:300ms]">
-          <div className="flex items-center mb-6">
-            <div className="bg-blue-100 text-blue-800 p-2 rounded-full mr-3 flex items-center justify-center">
-              <Target className="w-5 h-5" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-800">Gói dành cho nhà tuyển dụng</h2>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {employerPlans.map((plan) => (
-              <PlanCard
-                key={plan.id}
-                plan={plan}
-                selectedPlan={selectedPlan}
-                currentPack={currentPack}
-                handleSelectPlan={handleSelectPlan}
-                isLoading={isLoading}
-              />
-            ))}
-          </div>
-        </section> */}
         {/* Features Section */}
         <div className="mt-16 bg-white rounded-xl shadow-lg p-8 animate-fade-in [animation-delay:400ms]">
-          <h3 className="text-2xl font-bold text-center text-gray-900 mb-2">Tại sao nâng cấp tài khoản?</h3>
+          <h3 className="text-2xl font-bold text-center text-gray-900 mb-2">
+            Tại sao nâng cấp tài khoản?
+          </h3>
           <p className="text-gray-600 text-center mb-8 max-w-2xl mx-auto">
-            Khám phá các lợi ích độc quyền giúp bạn tiết kiệm thời gian và đạt được kết quả tốt hơn
+            Khám phá các lợi ích độc quyền giúp bạn tiết kiệm thời gian và đạt
+            được kết quả tốt hơn
           </p>
           <div className="grid md:grid-cols-3 gap-8">
             <FeatureCard
@@ -268,22 +248,31 @@ const PremiumPlansPage = () => {
         </div>
         {/* Trust Badges */}
         <div className="mt-12 grid md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-lg p-6 shadow-sm flex items-center">
-            <Shield className="w-6 h-6 text-green-500 mr-3" />
-            <span className="text-gray-700">Bảo mật thanh toán</span>
+          <div className="bg-white rounded-lg p-6 shadow-md flex items-center group transition-transform duration-300 hover:scale-105 hover:shadow-xl cursor-pointer relative overflow-hidden">
+            <span className="absolute right-0 top-0 w-2 h-2 bg-yellow-400 rounded-bl-full animate-pulse opacity-70"></span>
+            <Star className="w-7 h-7 text-yellow-500 mr-4 group-hover:rotate-12 transition-transform duration-300" />
+            <span className="text-gray-800 font-semibold group-hover:text-yellow-600 transition-colors duration-300">
+              Linh hoạt chuyển đổi giữa các gói
+            </span>
           </div>
-          <div className="bg-white rounded-lg p-6 shadow-sm flex items-center">
-            <BadgeCheck className="w-6 h-6 text-blue-500 mr-3" />
-            <span className="text-gray-700">Chất lượng đảm bảo</span>
+          <div className="bg-white rounded-lg p-6 shadow-md flex items-center group transition-transform duration-300 hover:scale-105 hover:shadow-xl cursor-pointer relative overflow-hidden">
+            <span className="absolute left-0 bottom-0 w-2 h-2 bg-green-400 rounded-tr-full animate-pulse opacity-70"></span>
+            <BadgeCheck className="w-7 h-7 text-green-500 mr-4 group-hover:scale-125 transition-transform duration-300" />
+            <span className="text-gray-800 font-semibold group-hover:text-green-600 transition-colors duration-300">
+              Kích hoạt gói ngay lập tức
+            </span>
           </div>
-          <div className="bg-white rounded-lg p-6 shadow-sm flex items-center">
-            <Star className="w-6 h-6 text-yellow-500 mr-3" />
-            <span className="text-gray-700">Hoàn tiền trong 30 ngày</span>
+          <div className="bg-white rounded-lg p-6 shadow-md flex items-center group transition-transform duration-300 hover:scale-105 hover:shadow-xl cursor-pointer relative overflow-hidden">
+            <span className="absolute left-0 top-0 w-2 h-2 bg-blue-400 rounded-br-full animate-pulse opacity-70"></span>
+            <Shield className="w-7 h-7 text-blue-500 mr-4 group-hover:scale-110 transition-transform duration-300" />
+            <span className="text-gray-800 font-semibold group-hover:text-blue-600 transition-colors duration-300">
+              Tài nguyên độc quyền cho thành viên
+            </span>
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PremiumPlansPage
+export default PremiumPlansPage;
