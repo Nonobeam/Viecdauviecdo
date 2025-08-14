@@ -6,6 +6,39 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { CheckCircle, Home, XCircle } from "lucide-react"
 
+function decodeJwt(token) {
+  try {
+    const payload = token.split(".")[1]
+    const base64 = payload.replace(/-/g, "+").replace(/_/g, "/")
+    const json = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    )
+    return JSON.parse(json)
+  } catch (e) {
+    console.error("Cannot decode JWT:", e)
+    return null
+  }
+}
+
+async function fetchUserById(userId, token) {
+  const res = await fetch(`https://backend.matchlent.xyz/api/users/${userId}`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    credentials: "include",
+  })
+  if (!res.ok) {
+    const text = await res.text().catch(() => "")
+    throw new Error(`Fetch user failed: ${res.status} ${text}`)
+  }
+  return res.json()
+}
+
 export default function SuccessPage() {
   const location = useLocation()
   const navigate = useNavigate()
@@ -21,8 +54,9 @@ export default function SuccessPage() {
     new Intl.NumberFormat("vi-VN", {
       style: "currency",
       currency: "VND",
-    }).format(amount)
+    }).format(Number(amount || 0))
 
+  // Đếm ngược quay về trang chủ
   useEffect(() => {
     const timer = setInterval(() => {
       setCountdown((prev) => {
@@ -34,11 +68,28 @@ export default function SuccessPage() {
         return prev - 1
       })
     }, 1000)
-
     return () => clearInterval(timer)
   }, [navigate])
 
   const isSuccess = cancel !== "true" && status !== "CANCELLED"
+
+  // Gọi API lấy user và lưu vào localStorage
+  useEffect(() => {
+    const token = localStorage.getItem("token")
+    if (!token) return
+
+    const claims = decodeJwt(token)
+    const userId = claims?.user_id
+    if (!userId) return
+
+    fetchUserById(userId, token)
+      .then((user) => {
+        localStorage.setItem("user", JSON.stringify(user))
+      })
+      .catch((err) => {
+        console.error("Fetch user error:", err)
+      })
+  }, [])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
@@ -59,7 +110,9 @@ export default function SuccessPage() {
         <CardContent className="text-center space-y-6">
           <div>
             <p className="text-gray-600 mb-4">
-              {!isSuccess ? "Bạn đã huỷ giao dịch." : "Cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của chúng tôi!"}
+              {!isSuccess
+                ? "Bạn đã huỷ giao dịch."
+                : "Cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của chúng tôi!"}
             </p>
           </div>
 
@@ -85,7 +138,8 @@ export default function SuccessPage() {
 
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
             <p className="text-sm text-yellow-800">
-              Tự động chuyển về trang chủ sau <span className="font-bold text-yellow-900">{countdown}</span> giây
+              Tự động chuyển về trang chủ sau{" "}
+              <span className="font-bold text-yellow-900">{countdown}</span> giây
             </p>
           </div>
 
